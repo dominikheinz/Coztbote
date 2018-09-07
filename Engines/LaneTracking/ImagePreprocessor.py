@@ -17,21 +17,23 @@ class ImagePreprocessor:
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
 
         # Convert gray image to bw image
-        img_bw = self.img_to_bw(img_gray)
+        img_bw = self.grey_to_bw(img_gray)
 
         # Convert array to image
         return self.numpyarray_to_pil(img_bw)
 
-    def img_to_bw(self, image):
-        width, height = image.shape
+    def grey_to_bw(self, image, threshold=127):
+        '''
+        Converts an image to a binary image
+        :param image: Numpy array representation of the greyscale image
+        :param threshold: Maximum value which to be mapped to 0, all above will be mapped to 1
+        :return: Numpy array of the binary image
+        '''
 
-        for w in range(0, width):
-            for h in range(0, height):
-                if image[w, h] > 60:
-                    image[w, h] = 1
-                else:
-                    image[w, h] = 0
-        return image
+        bw_image = image.copy()
+        numpy.subtract(bw_image, threshold)
+        numpy.clip(bw_image, 0, 1)
+        return bw_image
 
     def pil_to_numpyarray(self, image):
         return numpy.array(image)
