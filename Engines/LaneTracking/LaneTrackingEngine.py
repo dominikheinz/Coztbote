@@ -1,13 +1,14 @@
-import cozmo
-import PIL
+from cv2 import *
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 class LaneTrackingEngine:
 
     def __init__(self):
-        print("Processing still image")
+        pass
 
-
-    def ProcessStillImage(self, stillImage):
-       image = cozmo.world.CameraImage(stillImage)
-       rawImage = image.raw_image
-       print(rawImage)
+    def process_still_image(self, image):
+       processor = ImagePreprocessor()
+       img_raw = image.raw_image
+       img_bw = processor.rgb_to_bw(img_raw)
+       img_bw.show()
+       exit(0)

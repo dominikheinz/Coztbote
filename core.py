@@ -1,18 +1,23 @@
 import cozmo
-from cozmo.util import degrees, distance_mm, speed_mmps
+import time
+from cv2 import *
 from Engines.LaneTracking import LaneTrackingEngine
 
 
-def cozmo_program(robot: cozmo.robot.Robot):
-    # Process still image
+def start_cozmo_script(robot: cozmo.robot.Robot):
+    # Setup Lanetracking Engine
     engine = LaneTrackingEngine.LaneTrackingEngine
 
-    # Grab still image from cozmo
-    robot.add_event_handler(cozmo.world.EvtNewCameraImage, engine.ProcessStillImage())
-
+    # Setup event handlers
     robot.camera.image_stream_enabled = True
+    robot.camera.color_image_enabled = True
 
-    while True:
-        pass
+    time.sleep(1)
 
-cozmo.run_program(cozmo_program)
+    robot.add_event_handler(cozmo.world.EvtNewCameraImage, engine.process_still_image)
+
+    # Sleep 1 second before exit
+    time.sleep(1)
+
+
+cozmo.run_program(start_cozmo_script)
