@@ -8,21 +8,18 @@ class ImagePreprocessor:
     def __init__(self):
         pass
 
-    def rgb_to_bw(self, img_rgb):
-
+    def rgb_to_bw(self, img_gray):
         # Cast rgb image to numpy array
-        img_rgb = self.pil_to_numpyarray(img_rgb)
-
-        # Convert to gray scale image
-        img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+        img_gray = self.pil_to_numpyarray(img_gray)[:, :, 1]
 
         # Convert gray image to bw image
-        img_bw = self.grey_to_bw(img_gray)
+        img_bw = self.grey_to_bw(img_gray, 60)
 
-        # Convert array to image
-        return self.numpyarray_to_pil(img_bw)
+        img_bw = self.smoothing(img_bw)
 
-    def grey_to_bw(self, image, threshold=127):
+        return img_bw
+
+    def grey_to_bw(self, image, threshold=60):
         '''
         Converts an image to a binary image
         :param image: Numpy array representation of the greyscale image
@@ -30,10 +27,19 @@ class ImagePreprocessor:
         :return: Numpy array of the binary image
         '''
 
-        bw_image = image.copy()
-        numpy.subtract(bw_image, threshold)
-        numpy.clip(bw_image, 0, 1)
+        bw_image = image > threshold
+        bw_image = bw_image * 1
         return bw_image
+
+    def smoothing(self, image):
+        smoothed_image = numpy.array(image, dtype=numpy.uint8)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        smoothed_image = cv2.erode(smoothed_image, kernel)
+        smoothed_image = cv2.dilate(smoothed_image, kernel)
+        smoothed_image = cv2.dilate(smoothed_image, kernel)
+        smoothed_image = cv2.erode(smoothed_image, kernel)
+
+        return smoothed_image
 
     def pil_to_numpyarray(self, image):
         return numpy.array(image)
