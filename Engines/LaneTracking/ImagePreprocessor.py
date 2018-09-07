@@ -13,7 +13,7 @@ class ImagePreprocessor:
         img_gray = self.pil_to_numpyarray(img_gray)[:, :, 1]
 
         # Convert gray image to bw image
-        img_bw = self.grey_to_bw(img_gray, 60)
+        img_bw = self.grey_to_bw(img_gray, 38)
 
         img_bw = self.smoothing(img_bw)
 
