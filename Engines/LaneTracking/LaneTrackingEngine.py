@@ -1,6 +1,8 @@
 from cv2 import *
 import numpy
 import datetime
+from Engines.LaneTracking.GridField import GridField
+from Engines.LaneTracking.ImageGrid import ImageGrid
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 
@@ -18,7 +20,12 @@ class LaneTrackingEngine:
             processor = ImagePreprocessor()
             img_raw = image.raw_image
             img_bw = processor.rgb_to_bw(img_raw)
-            cv2.imshow("Cam1", numpy.multiply(img_bw, 255 * 255))
+
+            image_grid = ImageGrid(img_bw)
+
+            cv2.imshow("Cam", numpy.multiply(img_bw, 255 * 255))
+            cv2.imshow("Cam5", numpy.multiply(image_grid.get_field(GridField.middle_middle), 255 * 255))
+
             cv2.waitKey(1)
 
             self.last_timestamp = datetime.datetime.now()

@@ -20,12 +20,12 @@ class ImagePreprocessor:
         return img_bw
 
     def grey_to_bw(self, image, threshold=60):
-        '''
+        """
         Converts an image to a binary image
         :param image: Numpy array representation of the greyscale image
         :param threshold: Maximum value which to be mapped to 0, all above will be mapped to 1
         :return: Numpy array of the binary image
-        '''
+        """
 
         bw_image = image > threshold
         bw_image = bw_image * 1
