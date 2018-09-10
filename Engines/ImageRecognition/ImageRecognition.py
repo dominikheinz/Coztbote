@@ -15,16 +15,22 @@ def cube_to_face(robot: cozmo.robot.Robot):
         initialize(robot)
         #perceivedCubes = []
 
-        perceivedCubes = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube, timeout=20)
+        perceivedCubes = wait_for_cube_to_appear(robot)
         print("Cube observed: " + perceivedCubes[0].descriptive_name)
 
         perceivedFaces = []
 
-        perceivedFaces = wait_for_cube(robot,perceivedFaces)
+        perceivedFaces = wait_for_face(robot,perceivedFaces)
 
         check_cube_for_face(robot,perceivedFaces[0].name ,key_value[perceivedFaces[0].name],perceivedCubes[0].object_id)
 
         print("FINISHED, next run!")
+
+#waits for a Cube to appear and return its data
+def wait_for_cube_to_appear(robot: cozmo.robot.Robot):
+    perceivedCube = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube, timeout=20)
+    return perceivedCube
+
 
 #Used to set Cozmo to default position. Fork down and Head up
 def initialize(robot: cozmo.robot.Robot):
@@ -34,21 +40,21 @@ def initialize(robot: cozmo.robot.Robot):
     action_lower_head.wait_for_completed()
     action_set_liftfork.wait_for_completed()
 
-#Sets Cozmo in waiting state until Cube appears
-def wait_for_cube(robot: cozmo.robot.Robot, perceivedFaces):
+#Sets Cozmo in waiting state until face appears
+def wait_for_face(robot: cozmo.robot.Robot, perceivedFaces):
     perceivedFaces.append(robot.wait_for(
         cozmo.faces.EvtFaceAppeared).face)  # Saves an Instance of Face contained by the face appeared Event
     print("Name of the person: " + perceivedFaces[0].name)
     return perceivedFaces
 
-#Sets Cozmo in waiting state until face "appears" and checks if face is matching the Cube
-def check_cube_for_face(robot: cozmo.robot.Robot,name, idFace, idCube):
+#checks if face is matching the Cube
+def check_cube_for_face(robot: cozmo.robot.Robot ,name , idFace, idCube):
     if not name == '':
         if idFace == idCube:
             print("MATCH")
-            robot.set_lift_height(1, 5, 10, 1, False, 0).wait_for_completed()
+            robot.set_lift_height(1, 5, 10, 1, False, 0).wait_for_completed()   #Raising Forks if correct
         else:
-            robot.say_text("ES PASST NICHT!!").wait_for_completed()
+            robot.say_text("ES PASST NICHT!!").wait_for_completed()             #Saying Line if no Match
 
 cozmo.run_program(cube_to_face)
 
