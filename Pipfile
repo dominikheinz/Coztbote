@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 opencv-python = "*"
+pillow = "*"
+numpy = "*"
+cozmo = {version = "*", extras = ["camera"]}
 
 [dev-packages]
 
