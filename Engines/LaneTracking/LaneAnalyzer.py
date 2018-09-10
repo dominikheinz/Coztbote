@@ -3,7 +3,6 @@ from Engines.LaneTracking.GridField import GridField
 
 
 class LaneAnalyzer:
-
     last_correction = 0
 
     def __init__(self):
@@ -31,5 +30,5 @@ class LaneAnalyzer:
         return ret
 
     @staticmethod
-    def calc_black_pixel_ratio(image):
-        return ((image.shape[0] * image.shape[1]) - numpy.sum(image)) / (image.shape[0] * image.shape[1])
+    def calc_black_pixel_ratio(img):
+        return ((img.shape[0] * img.shape[1]) - numpy.sum(img)) / (img.shape[0] * img.shape[1])

@@ -9,11 +9,13 @@ class DriveController:
 
     def go(self):
         self.robot.drive_wheel_motors(Settings.cozmo_dive_speed, Settings.cozmo_dive_speed)
+        pass
 
     def correct(self, correction_value):
         if correction_value > 0:
-            self.robot.drive_wheel_motors(Settings.cozmo_dive_speed * 0.7, 0)
+            self.robot.drive_wheel_motors(Settings.cozmo_turn_speed_fast_wheel, Settings.cozmo_turn_speed_slow_wheel)
         elif correction_value < 0:
-            self.robot.drive_wheel_motors(0, Settings.cozmo_dive_speed * 0.7)
+            self.robot.drive_wheel_motors(Settings.cozmo_turn_speed_slow_wheel, Settings.cozmo_turn_speed_fast_wheel)
         else:
             self.robot.drive_wheel_motors(Settings.cozmo_dive_speed, Settings.cozmo_dive_speed)
+        pass
