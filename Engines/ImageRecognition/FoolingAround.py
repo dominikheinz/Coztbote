@@ -8,7 +8,7 @@ def deliver(robot: cozmo.robot.Robot):
 
     cube1 = robot.world.get_light_cube(LightCube1Id)  # looks like a paperclip
     cube2 = robot.world.get_light_cube(LightCube2Id)  # looks like a lamp / heart
-    #cube3 = robot.world.get_light_cube(LightCube3Id)  # looks like the letters 'ab' over 'T'
+    cube3 = robot.world.get_light_cube(LightCube3Id)  # looks like the letters 'ab' over 'T'
 
     print("Raising head and lowering forklift!")
     robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE / 8).wait_for_completed()
@@ -66,3 +66,37 @@ def deliver(robot: cozmo.robot.Robot):
         robot.say_text("Das war wohl ein Schuss in den Ofen!").wait_for_completed()
 
 cozmo.run_program(deliver)
+
+##########################################################################################################
+##########################################################################################################
+
+def recognize_face(robot: cozmo.robot.Robot):
+
+    face_appeared_event_array = []
+
+    #Gesichter einlesen
+    print("now scanning for faces")
+    face_appeared_event_array.append(robot.wait_for(cozmo.faces.EvtFaceAppeared))
+    print("First face recognized")
+    face_appeared_event_array.append(robot.wait_for(cozmo.faces.EvtFaceAppeared))
+    print("Second face recognized")
+    face_appeared_event_array.append(robot.wait_for(cozmo.faces.EvtFaceAppeared))
+    print("Third face recognized")
+
+    #Events ausgeben
+    print("Known Events:")
+
+    for event in face_appeared_event_array:
+        print(event)
+
+
+    #Face id aus Event extrahieren und ausgeben
+    faces = []
+    for event in face_appeared_event_array:
+        faces.append(event.face)
+    print("Known Faces by Id:")
+    for face in faces:
+        print(str(face.face_id) + " " + face.name)
+
+
+cozmo.run_program(recognize_face)
