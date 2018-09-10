@@ -10,7 +10,6 @@ class LaneTrackingEngine:
     robot = None
     drive_controller = None
     last_timestamp = None
-    last_correction = 0
 
     def __init__(self, robot, drive_controller):
         self.robot = robot
@@ -19,8 +18,7 @@ class LaneTrackingEngine:
         pass
 
     def process_still_image(self, e, image):
-        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=200) \
-                or self.drive_controller.is_turning:
+        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=200):
             processor = ImagePreprocessor()
             img_raw = image.raw_image
             img_bw = processor.rgb_to_bw(img_raw)
@@ -34,8 +32,7 @@ class LaneTrackingEngine:
             lane_correction = lane_analyzer.calculate_lane_correction(image_grid)
             print("Correction:", lane_correction)
 
-            if lane_correction != self.last_correction:
+            if lane_correction != None:
                 self.drive_controller.correct(lane_correction)
-                self.last_correction = lane_correction
 
             self.last_timestamp = datetime.datetime.now()

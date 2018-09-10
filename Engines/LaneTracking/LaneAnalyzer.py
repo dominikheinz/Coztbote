@@ -4,6 +4,8 @@ from Engines.LaneTracking.GridField import GridField
 
 class LaneAnalyzer:
 
+    last_correction = 0
+
     def __init__(self):
         pass
 
@@ -19,7 +21,14 @@ class LaneAnalyzer:
         if right_ratio > middle_ratio * 0.8:
             lane_correction += 3
 
-        return lane_correction
+        ret = None
+
+        if left_ratio + middle_ratio + right_ratio > 0.1 and self.last_correction != lane_correction:
+            ret = lane_correction
+
+        self.last_correction = lane_correction
+
+        return ret
 
     @staticmethod
     def calc_black_pixel_ratio(image):
