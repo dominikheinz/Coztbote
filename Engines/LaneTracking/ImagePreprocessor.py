@@ -1,6 +1,7 @@
 import numpy
 from PIL import Image
 from cv2 import *
+from Settings.DebugUtils import DebugUtils
 from Settings.CozmoSettings import Settings
 
 
@@ -10,13 +11,12 @@ class ImagePreprocessor:
         pass
 
     def rgb_to_bw(self, img_gray):
+
         # Cast rgb image to numpy array
         img_gray = self.pil_to_numpyarray(img_gray)[:, :, 1]
 
         # Convert gray image to bw image
         img_bw = self.grey_to_bw(img_gray)
-
-        img_bw = self.smoothing(img_bw)
 
         return img_bw
 
@@ -27,8 +27,12 @@ class ImagePreprocessor:
         :return: Numpy array of the binary image
         """
 
+        # Convert image values to binary mask
         bw_image = image > Settings.image_binarization_threshold
-        bw_image = bw_image * 1  # Convert bool to int
+
+        # Convert array into int array
+        bw_image = bw_image * 1
+
         return bw_image
 
     def smoothing(self, image):
@@ -41,8 +45,15 @@ class ImagePreprocessor:
 
         return smoothed_image
 
+
     def pil_to_numpyarray(self, image):
-        return numpy.array(image)
+        tmr = DebugUtils.start_timer()
+        arr = numpy.array(image)
+        tmr.stop_timer("pil_to_numpyarray")
+        return arr
 
     def numpyarray_to_pil(self, image):
-        return Image.fromarray(numpy.uint8(image * 255))
+        tmr = DebugUtils.start_timer()
+        img = Image.fromarray(numpy.uint8(image * 255))
+        tmr.stop_timer("numpyarray_to_pil")
+        return img

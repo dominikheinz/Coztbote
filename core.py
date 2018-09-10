@@ -10,6 +10,7 @@ def start_cozmo_script(robot: cozmo.robot.Robot):
     engine = LaneTrackingEngine.LaneTrackingEngine(robot, drive_controller)
 
     # Setup event handlers
+    robot.enable_stop_on_cliff(False)
     robot.camera.image_stream_enabled = True
     robot.camera.color_image_enabled = False
     robot.set_head_light(False)
