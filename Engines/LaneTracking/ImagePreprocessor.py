@@ -10,6 +10,8 @@ class ImagePreprocessor:
     def __init__(self):
         pass
 
+
+
     def rgb_to_bw(self, img_gray):
 
         # Cast rgb image to numpy array

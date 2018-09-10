@@ -12,6 +12,7 @@ class LaneTrackingEngine:
     robot = None
     drive_controller = None
     last_timestamp = None
+    current_cam_frame = None
 
     processor = None
     lane_analyzer = None
@@ -25,11 +26,19 @@ class LaneTrackingEngine:
         self.lane_analyzer = LaneAnalyzer()
         pass
 
+    def get_current_frame(self):
+        print("screenshot")
+        return self.current_cam_frame
+
+
     def process_still_image(self, e, image):
         if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=200):
 
             # Convert image to black white
             img_bw = self.processor.rgb_to_bw(image.raw_image)
+
+            # Update current frame
+            self.current_cam_frame = img_bw
 
             # Image segmentation
             image_grid = ImageGrid(img_bw)
