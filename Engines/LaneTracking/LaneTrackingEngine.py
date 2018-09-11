@@ -1,7 +1,7 @@
 from cv2 import *
 import numpy
 import datetime
-from Engines.LaneTracking.ImageGrid import ImageGrid
+from Engines.LaneTracking.PixelRow import PixelRow
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Engines.LaneTracking.LaneAnalyzer import LaneAnalyzer
 from Settings.DebugUtils import DebugUtils
@@ -29,7 +29,6 @@ class LaneTrackingEngine:
     def get_current_frame(self):
         return self.current_cam_frame
 
-
     def process_still_image(self, e, image):
         if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=200):
 
@@ -39,15 +38,17 @@ class LaneTrackingEngine:
             # Update current frame
             self.current_cam_frame = img_bw * 255
 
+            canny = cv2.Canny(img_bw, 100, 200)
+
             # Image segmentation
-            image_grid = ImageGrid(img_bw)
+            rows_to_test = PixelRow.get_pixel_rows(canny)
 
             # Show cam live preview if enabled
             if Settings.cozmo_show_cam_live_feed:
                 self.show_cam_frame(img_bw)
 
             # Calculate lane correction based on image data
-            lane_correction = self.lane_analyzer.calculate_lane_correction(image_grid)
+            lane_correction = self.lane_analyzer.calculate_lane_correction(rows_to_test)
 
             # If correction is required let cozmo correct
             if lane_correction is not None:

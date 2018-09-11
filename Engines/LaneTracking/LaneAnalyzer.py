@@ -8,33 +8,21 @@ class LaneAnalyzer:
     def __init__(self):
         pass
 
-    def calculate_lane_correction(self, image_grid):
+    def calculate_lane_correction(self, pixel_rows):
 
-        # Calculate black pixel ration for the bottom segments
-        left_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_left))
-        middle_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_middle))
-        right_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_right))
+        # currently work only with one row
+        row = pixel_rows[0]
 
-        # Correction is 0 by default
-        lane_correction = 0
+        wanted_offset = row.wanted_offset
 
-        # Set correction if black pixel ration changes
-        if left_ratio > middle_ratio * 0.8:
-            lane_correction -= 1
-        if right_ratio > middle_ratio * 0.8:
-            lane_correction += 1
+        lane_correction = wanted_offset - row.right_edge_offset
+        lane_correction /= 320
 
-        # Return none if correction didnt change
-        ret = None
+        print("wanted offset: ", wanted_offset)
+        print("left pos: ", row.left_edge_pos, '\t', "right pos: ", row.right_edge_pos)
+        print("left offset: ", row.left_edge_offset, '\t', "right offset: ", row.right_edge_offset)
 
-        # Repeat last correct on lane depature
-        if left_ratio + middle_ratio + right_ratio > 0.1 and self.last_correction != lane_correction:
-            ret = lane_correction
-
-            # Overwrite old correction with new one
-            self.last_correction = lane_correction
-
-        return ret
+        return lane_correction
 
     @staticmethod
     def calc_black_pixel_ratio(img):

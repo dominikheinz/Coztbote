@@ -23,7 +23,7 @@ img = cv2.imread('./../../Screenshots/Screenshot-2018-09-11-10-23-32.png')
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 img_gray = img_gray[:, 40:280]
 
-line_number = 150
+line_number = 200
 
 img[line_number] = [0, 0, 255]
 
