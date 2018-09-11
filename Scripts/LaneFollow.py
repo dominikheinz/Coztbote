@@ -2,14 +2,21 @@ import cozmo
 import time
 from Engines.DriveController import DriveController
 from Engines.LaneTracking import LaneTrackingEngine
+import pynput
+
+def handle_hotkeys(keycode):
+    if pynput.keyboard.KeyCode(char='s') == keycode:
+        print("Screenshot")
+
 
 def run(robot: cozmo.robot.Robot):
-
-
 
     # Setup Lanetracking Engine
     drive_controller = DriveController.DriveController(robot)
     engine = LaneTrackingEngine.LaneTrackingEngine(robot, drive_controller)
+
+    with keyboard.Listener(on_press=handle_hotkeys) as listener:
+        listener.join()
 
     # Setup event handlers
     robot.enable_stop_on_cliff(False)
