@@ -1,0 +1,34 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "dbc4832e245e9c61832ba853ec4f0dbced2831f42d9346f52189d68ed8aeae82"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "cozmo": {
+            "hashes": [
+                "sha256:246898d76e596239aa90aa403904ba137a546771f5909bae618a7915f41266d0"
+            ],
+            "index": "pypi",
+            "version": "==1.4.4"
+        },
+        "cozmoclad": {
+            "hashes": [
+                "sha256:b7a96382315861ef207eddb84b1e89a701efc55780fa9ef0bf15c66bacf1c42a"
+            ],
+            "version": "==2.9.0"
+        }
+    },
+    "develop": {}
+}
