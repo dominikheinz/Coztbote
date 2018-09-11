@@ -1,10 +1,15 @@
 import cozmo
 from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 
-
+"""
+Used for observing cubes and facing and comparing pairs of faces and cubes that have been defined as matching by dictionary
+"""
 class ImageRecognition:
 
-    # Detects a face by turning and scanning, then returns it
+    """
+    Detects a face by turning and scanning, then returns it
+    :return: face that has been observed
+    """
     @staticmethod
     def look_for_faces(robot: cozmo.robot.Robot):
         print("Setting Head angle for face detection..")
@@ -18,7 +23,11 @@ class ImageRecognition:
                 robot.turn_in_place(degrees(30), False, 1).wait_for_completed()
         return face
 
-    # waits for a Cube to appear and return its data
+    """ 
+    Waits for a Cube to appear and return its data
+    :param timeout: how long the robot will wait for an observable cube until it stops
+    :return: the cube that has been spotted
+    """
     @staticmethod
     def search_for_cube(robot: cozmo.robot.Robot, timeout):
         look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
@@ -28,7 +37,9 @@ class ImageRecognition:
         print("Stopped looking around")
         return perceivedCube[0]
 
-    # Used to set Cozmo to default position. Fork down and Head up
+    """
+    Makes robot ready for duty. Shows battery, and sets head tilt and forklift to neutral
+    """
     @staticmethod
     def initialize(robot: cozmo.robot.Robot):
         print("My Battery is: " + str(robot.battery_voltage))
@@ -41,7 +52,11 @@ class ImageRecognition:
         action_lower_head.wait_for_completed()
         action_set_forklift.wait_for_completed()
 
-    # Sets Cozmo in waiting state until face appears
+    """
+    Sets Cozmo in waiting state until face appears
+    :param perceivedFaces: An array containing faces, used to append a face
+    :return: the face array after being appended a new face
+    """
     @staticmethod
     def wait_for_face(robot: cozmo.robot.Robot, perceivedFaces):
         perceivedFaces.append(robot.wait_for(
@@ -49,7 +64,15 @@ class ImageRecognition:
         print("Name of the person: " + perceivedFaces[0].name)
         return perceivedFaces
 
-    # checks if face is matching the Cube
+
+    """
+    Checks if face is matching the Cube
+    :param name: name of the face that has been observed
+    :param idFace: id of the face that has been observed
+    :param idCube: id of the cube that has been observed
+    :param face: the face itself that has been observed
+    :return: bool that determines whether the given pair is matching 
+    """
     @staticmethod
     def compare_cube_and_face(robot: cozmo.robot.Robot, name, idFace, idCube, face):
         robot.turn_towards_face(face).wait_for_completed()
