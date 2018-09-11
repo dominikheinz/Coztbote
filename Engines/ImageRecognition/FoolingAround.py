@@ -4,8 +4,8 @@ import cozmo
 from cozmo.objects import LightCube1Id, LightCube2Id, LightCube3Id
 from cozmo.util import degrees, distance_mm, Speed
 
-def deliver(robot: cozmo.robot.Robot):
 
+def deliver(robot: cozmo.robot.Robot):
     cube1 = robot.world.get_light_cube(LightCube1Id)  # looks like a paperclip
     cube2 = robot.world.get_light_cube(LightCube2Id)  # looks like a lamp / heart
     cube3 = robot.world.get_light_cube(LightCube3Id)  # looks like the letters 'ab' over 'T'
@@ -20,8 +20,7 @@ def deliver(robot: cozmo.robot.Robot):
     print("objects detected!")
 
     print("going to first cube!")
-    #robot.go_to_object(cube1, distance_mm(80.0)).wait_for_completed()
-
+    # robot.go_to_object(cube1, distance_mm(80.0)).wait_for_completed()
 
     print("Picking it up!")
     currentAction = robot.pickup_object(cube1, False, False, 3)
@@ -38,19 +37,19 @@ def deliver(robot: cozmo.robot.Robot):
     if len(perceivedCubes) == 2:
 
         print("looking around!")
-        #robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+        # robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
 
-        #currentBehaviour = robot.run_timed_behavior(cozmo.behavior.BehaviorTypes.StackBlocks, active_time=60)
+        # currentBehaviour = robot.run_timed_behavior(cozmo.behavior.BehaviorTypes.StackBlocks, active_time=60)
         currentAction = robot.go_to_object(cube2, distance_mm(80.0)).wait_for_completed()
 
         currentcubes = 0
         while len(currentcubes) == 0:
             print("finding and moving towards failed, trying again!")
-            currentcubes = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube, timeout=60)
+            currentcubes = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube,
+                                                                      timeout=60)
             robot.turn_in_place(degrees(40)).wait_for_completed()
 
-            #robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-
+            # robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
 
         currentAction = robot.go_to_object(cube2, distance_mm(80.0)).wait_for_completed()
 
@@ -65,16 +64,17 @@ def deliver(robot: cozmo.robot.Robot):
     else:
         robot.say_text("Das war wohl ein Schuss in den Ofen!").wait_for_completed()
 
+
 cozmo.run_program(deliver)
+
 
 ##########################################################################################################
 ##########################################################################################################
 
 def recognize_face(robot: cozmo.robot.Robot):
-
     face_appeared_event_array = []
 
-    #Gesichter einlesen
+    # Gesichter einlesen
     print("now scanning for faces")
     face_appeared_event_array.append(robot.wait_for(cozmo.faces.EvtFaceAppeared))
     print("First face recognized")
@@ -83,14 +83,13 @@ def recognize_face(robot: cozmo.robot.Robot):
     face_appeared_event_array.append(robot.wait_for(cozmo.faces.EvtFaceAppeared))
     print("Third face recognized")
 
-    #Events ausgeben
+    # Events ausgeben
     print("Known Events:")
 
     for event in face_appeared_event_array:
         print(event)
 
-
-    #Face id aus Event extrahieren und ausgeben
+    # Face id aus Event extrahieren und ausgeben
     faces = []
     for event in face_appeared_event_array:
         faces.append(event.face)
