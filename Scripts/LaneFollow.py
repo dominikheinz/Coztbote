@@ -37,7 +37,5 @@ def run(robot: cozmo.robot.Robot):
 
     drive_controller.go()
 
-    print("Battery Voltage:", robot.battery_voltage)
-
     with keyboard.Listener(on_press=handle_hotkeys) as listener:
         listener.join()

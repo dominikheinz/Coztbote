@@ -52,7 +52,7 @@ class LaneTrackingEngine:
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
 
-            tmr.stop_timer()
+            tmr.stop_timer("process_still_image")
 
     def show_cam_frame(self, image, lane_analyzer_dots):
         image = cv2.cvtColor(image * 255, cv2.COLOR_GRAY2BGR)
@@ -73,5 +73,7 @@ class LaneTrackingEngine:
         cv2.waitKey(1)
 
     def show_cam_overlay(self, image):
-        overlay_text = "Correction: " + str(self.lane_analyzer.last_correction)
-        cv2.putText(image, overlay_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        overlay_text_correction = "Correction: " + str(self.lane_analyzer.last_correction)
+        overlay_text_voltage = "Battery Voltage: " + str(round(self.robot.battery_voltage, 1)) + "V"
+        cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
