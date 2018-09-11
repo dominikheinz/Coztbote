@@ -52,12 +52,11 @@ class LaneTrackingEngine:
             self.last_timestamp = datetime.datetime.now()
 
     def show_cam_frame(self, image, lane_analyzer_dots):
-
-        #image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        image = cv2.cvtColor(image * 255, cv2.COLOR_GRAY2BGR)
         # img_bw = self.print_dots(img_bw)
         cv2.circle(image, lane_analyzer_dots[0], radius=3, color=(0, 0, 255), thickness=5)
         cv2.circle(image, lane_analyzer_dots[1], radius=3, color=(0, 0, 255), thickness=5)
         cv2.circle(image, lane_analyzer_dots[2], radius=3, color=(0, 0, 255), thickness=5)
 
-        cv2.imshow("Cam", numpy.multiply(image, 65025))
+        cv2.imshow("Cam", image)
         cv2.waitKey(1)

@@ -29,12 +29,11 @@ class ImagePreprocessor:
         bw_image = image > Settings.image_binarization_threshold
 
         # Convert array into int array
-        bw_image = bw_image * 1
+        bw_image = numpy.array(bw_image, dtype=numpy.uint8)
 
         return bw_image
 
     def smoothing(self, image):
-        smoothed_image = numpy.array(image, dtype=numpy.uint8)
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
         smoothed_image = cv2.erode(smoothed_image, kernel)
         smoothed_image = cv2.dilate(smoothed_image, kernel)
@@ -44,7 +43,7 @@ class ImagePreprocessor:
         return smoothed_image
 
     def pil_to_numpyarray(self, image):
-        arr = numpy.array(image)
+        arr = numpy.array(image, dtype=numpy.uint8)
         return arr
 
     def numpyarray_to_pil(self, image):

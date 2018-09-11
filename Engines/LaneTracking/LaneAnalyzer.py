@@ -27,16 +27,11 @@ class LaneAnalyzer:
         """
         image = numpy.array(image, dtype=numpy.uint8) - 1
 
-        print(image.shape)
         start_row_1 = int(image.shape[0] / 3)
         row_height = int((image.shape[0] - start_row_1) / 3)
         end_row_1 = start_row_1 + row_height
         end_row_2 = end_row_1 + row_height
         end_row_3 = image.shape[0]
-
-        print(start_row_1, end_row_1)
-
-        print(DebugUtils.unique_count(image[start_row_1:end_row_1]))
 
         x_row_1 = int(numpy.mean(numpy.nonzero(image[start_row_1:end_row_1])[1]))
         x_row_2 = int(numpy.mean(numpy.nonzero(image[end_row_1:end_row_2])[1]))
