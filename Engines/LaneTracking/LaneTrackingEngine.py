@@ -29,7 +29,8 @@ class LaneTrackingEngine:
         return self.current_cam_frame
 
     def process_still_image(self, e, image):
-        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=Settings.cozmo_framerate_limit):
+        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(
+                milliseconds=Settings.cozmo_framerate_limit):
             tmr = DebugUtils.start_timer()
             # Convert image to black white
             img_bw = self.processor.rgb_to_bw(image.raw_image)
@@ -63,5 +64,6 @@ class LaneTrackingEngine:
         if lane_analyzer_dots[2] is not None:
             cv2.circle(image, lane_analyzer_dots[2], radius=3, color=(0, 0, 255), thickness=5)
 
+        image = cv2.resize(image, (1080, 720))
         cv2.imshow("Cam", image)
         cv2.waitKey(1)

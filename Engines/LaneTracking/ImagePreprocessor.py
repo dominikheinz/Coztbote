@@ -33,6 +33,8 @@ class ImagePreprocessor:
 
         return bw_image
 
+
+
     def smoothing(self, image):
         smoothed_image = image.copy()
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
