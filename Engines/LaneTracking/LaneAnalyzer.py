@@ -1,10 +1,12 @@
 import numpy
+import math
 from Settings.DebugUtils import DebugUtils
 
 
 class LaneAnalyzer:
     last_correction = 0
     last_points = None
+    last_stripe_sums = None
 
     def __init__(self):
         pass
@@ -12,10 +14,12 @@ class LaneAnalyzer:
     def calculate_lane_correction(self, image):
         x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
         x_center = int(image.shape[1] / 2)
-        immediate_lane_correction = (x_center - x_row_1) / x_center / 10
-        future_lane_correction = (x_center - x_row_2) / x_center / 10
+        if x_row_2 is not None:
+            lane_correction = -((x_center - x_row_2) / x_center)
+        else:
+            lane_correction = self.last_correction
 
-        lane_correction = (immediate_lane_correction * 2 + future_lane_correction) / 3
+        self.last_correction = lane_correction
 
         return lane_correction
 
@@ -33,14 +37,28 @@ class LaneAnalyzer:
         end_row_2 = end_row_1 + row_height
         end_row_3 = image.shape[0]
 
-        x_row_1 = int(numpy.mean(numpy.nonzero(image[start_row_1:end_row_1])[1]))
-        x_row_2 = int(numpy.mean(numpy.nonzero(image[end_row_1:end_row_2])[1]))
-        x_row_3 = int(numpy.mean(numpy.nonzero(image[end_row_2:end_row_3])[1]))
+        x_row_1 = numpy.mean(numpy.nonzero(image[start_row_1:end_row_1])[1])
+        x_row_2 = numpy.mean(numpy.nonzero(image[end_row_1:end_row_2])[1])
+        x_row_3 = numpy.mean(numpy.nonzero(image[end_row_2:end_row_3])[1])
 
-        self.last_points = (
-            (x_row_1, int((start_row_1 + end_row_1) / 2)),
-            (x_row_2, int((end_row_1 + end_row_2) / 2)),
-            (x_row_3, int((end_row_2 + end_row_3) / 2))
-        )
+        x_row_1 = int(x_row_1) if not math.isnan(x_row_1) else None
+        x_row_2 = int(x_row_2) if not math.isnan(x_row_2) else None
+        x_row_3 = int(x_row_3) if not math.isnan(x_row_3) else None
+
+        row_1_point = (x_row_1, int((start_row_1 + end_row_1) / 2))
+        row_2_point = (x_row_2, int((end_row_1 + end_row_2) / 2))
+        row_3_point = (x_row_3, int((end_row_2 + end_row_3) / 2))
+
+        # Presumably no lane visible
+        if x_row_1 is None or numpy.count_nonzero(image[start_row_1:end_row_1]) < 1000:
+            row_1_point = None
+        if x_row_2 is None or numpy.count_nonzero(image[end_row_1:end_row_2]) < 1000:
+            row_2_point = None
+        if x_row_3 is None or numpy.count_nonzero(image[end_row_2:end_row_3]) < 1000:
+            row_3_point = None
+
+        self.last_points = (row_1_point, row_2_point, row_3_point)
+
+        print(self.last_points)
 
         return x_row_1, x_row_2, x_row_3

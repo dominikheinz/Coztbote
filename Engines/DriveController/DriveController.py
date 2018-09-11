@@ -14,11 +14,11 @@ class DriveController:
     def correct(self, correction_value):
         if Settings.cozmo_enable_drive:
             if correction_value > 0:
-                print("Correction: Right")
-                self.robot.drive_wheel_motors(Settings.cozmo_turn_speed_fast_wheel, Settings.cozmo_turn_speed_slow_wheel)
+                print("Correction: Right", correction_value)
+                self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed * (1-abs(correction_value)))
             elif correction_value < 0:
-                print("Correction: Left")
-                self.robot.drive_wheel_motors(Settings.cozmo_turn_speed_slow_wheel, Settings.cozmo_turn_speed_fast_wheel)
+                print("Correction: Left", correction_value)
+                self.robot.drive_wheel_motors(Settings.cozmo_drive_speed * (1-abs(correction_value)), Settings.cozmo_drive_speed)
             else:
                 print("Correction: None")
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
