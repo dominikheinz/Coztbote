@@ -14,10 +14,14 @@ class LaneAnalyzer:
     def calculate_lane_correction(self, image):
         x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
         x_center = int(image.shape[1] / 2)
-        if x_row_2 is not None:
-            lane_correction = -((x_center - x_row_2) / x_center)
+        if x_row_1 is not None:
+            lane_correction = -((x_center - x_row_1) / x_center)
+        elif x_row_2 is not None:
+            lane_correction = (-((x_center - x_row_2) / x_center)) * 1.2
+        elif x_row_3 is not None:
+            lane_correction = (-((x_center - x_row_3) / x_center)) * 1.5
         else:
-            lane_correction = self.last_correction
+            lane_correction = 1 if self.last_correction > 0 else -1
 
         self.last_correction = lane_correction
 

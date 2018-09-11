@@ -29,8 +29,8 @@ class LaneTrackingEngine:
         return self.current_cam_frame
 
     def process_still_image(self, e, image):
-        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=200):
-
+        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(milliseconds=Settings.cozmo_framerate_limit):
+            tmr = DebugUtils.start_timer()
             # Convert image to black white
             img_bw = self.processor.rgb_to_bw(image.raw_image)
 
@@ -50,6 +50,8 @@ class LaneTrackingEngine:
 
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
+
+            tmr.stop_timer()
 
     def show_cam_frame(self, image, lane_analyzer_dots):
         image = cv2.cvtColor(image * 255, cv2.COLOR_GRAY2BGR)
