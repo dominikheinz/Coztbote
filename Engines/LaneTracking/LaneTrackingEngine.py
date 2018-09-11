@@ -64,6 +64,14 @@ class LaneTrackingEngine:
         if lane_analyzer_dots[2] is not None:
             cv2.circle(image, lane_analyzer_dots[2], radius=3, color=(0, 0, 255), thickness=5)
 
-        image = cv2.resize(image, (1080, 720))
+        image = cv2.resize(image, Settings.cozmo_preview_resolution)
+
+        # Display overlay text in preview window
+        self.show_cam_overlay(image)
+
         cv2.imshow("Cam", image)
         cv2.waitKey(1)
+
+    def show_cam_overlay(self, image):
+        overlay_text = "Correction: " + str(self.lane_analyzer.last_correction)
+        cv2.putText(image, overlay_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)

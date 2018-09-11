@@ -6,7 +6,7 @@ from Settings.DebugUtils import DebugUtils
 class LaneAnalyzer:
     last_correction = 0
     last_points = None
-    last_stripe_sums = None
+
 
     def __init__(self):
         pass
@@ -17,9 +17,9 @@ class LaneAnalyzer:
         if x_row_1 is not None:
             lane_correction = -((x_center - x_row_1) / x_center)
         elif x_row_2 is not None:
-            lane_correction = (-((x_center - x_row_2) / x_center)) * 1.2
+            lane_correction = (-((x_center - x_row_2) / x_center)) * 1.4
         elif x_row_3 is not None:
-            lane_correction = (-((x_center - x_row_3) / x_center)) * 1.5
+            lane_correction = (-((x_center - x_row_3) / x_center)) * 1.8
         else:
             lane_correction = 1 if self.last_correction > 0 else -1
 
