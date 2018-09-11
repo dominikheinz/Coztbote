@@ -27,7 +27,6 @@ class LaneTrackingEngine:
         pass
 
     def get_current_frame(self):
-        print("screenshot")
         return self.current_cam_frame
 
 
@@ -38,13 +37,13 @@ class LaneTrackingEngine:
             img_bw = self.processor.rgb_to_bw(image.raw_image)
 
             # Update current frame
-            self.current_cam_frame = img_bw
+            self.current_cam_frame = img_bw * 255
 
             # Image segmentation
             image_grid = ImageGrid(img_bw)
 
             # Show cam live preview if enabled
-            if Settings.cozmo_cam_live_feed:
+            if Settings.cozmo_show_cam_live_feed:
                 self.show_cam_frame(img_bw)
 
             # Calculate lane correction based on image data

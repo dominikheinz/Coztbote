@@ -1,22 +1,27 @@
 import cozmo
 import time
+import datetime
+import cv2
 from Engines.DriveController import DriveController
 from Engines.LaneTracking import LaneTrackingEngine
-import pynput
+from pynput import keyboard
+
+engine = None
+
 
 def handle_hotkeys(keycode):
-    if pynput.keyboard.KeyCode(char='s') == keycode:
-        print("Screenshot")
+    global engine
+    if keyboard.KeyCode(char='s') == keycode:
+        file_date_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        cv2.imwrite("Screenshots/Screenshot-" + file_date_string + ".jpg", engine.get_current_frame())
+        print("Screenshot", file_date_string, "saved")
 
 
 def run(robot: cozmo.robot.Robot):
-
+    global engine
     # Setup Lanetracking Engine
     drive_controller = DriveController.DriveController(robot)
     engine = LaneTrackingEngine.LaneTrackingEngine(robot, drive_controller)
-
-    with keyboard.Listener(on_press=handle_hotkeys) as listener:
-        listener.join()
 
     # Setup event handlers
     robot.enable_stop_on_cliff(False)
@@ -34,5 +39,5 @@ def run(robot: cozmo.robot.Robot):
 
     print("Battery Voltage:", robot.battery_voltage)
 
-    while True:
-        pass
+    with keyboard.Listener(on_press=handle_hotkeys) as listener:
+        listener.join()
