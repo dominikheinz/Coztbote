@@ -13,7 +13,7 @@ def handle_hotkeys(keycode):
     global engine
     if keyboard.KeyCode(char='s') == keycode:
         file_date_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        cv2.imwrite("Screenshots/Screenshot-" + file_date_string + ".jpg", engine.get_current_frame())
+        cv2.imwrite("Screenshots/Screenshot-" + file_date_string + ".png", engine.get_current_frame())
         print("Screenshot", file_date_string, "saved")
 
 

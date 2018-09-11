@@ -1,41 +1,51 @@
 import numpy
-from Engines.LaneTracking.GridField import GridField
+from Settings.DebugUtils import DebugUtils
 
 
 class LaneAnalyzer:
     last_correction = 0
+    last_points = None
 
     def __init__(self):
         pass
 
-    def calculate_lane_correction(self, image_grid):
+    def calculate_lane_correction(self, image):
+        x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
+        x_center = int(image.shape[1] / 2)
+        immediate_lane_correction = (x_center - x_row_1) / x_center / 10
+        future_lane_correction = (x_center - x_row_2) / x_center / 10
 
-        # Calculate black pixel ration for the bottom segments
-        left_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_left))
-        middle_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_middle))
-        right_ratio = self.calc_black_pixel_ratio(image_grid.get_field(GridField.bottom_right))
+        lane_correction = (immediate_lane_correction * 2 + future_lane_correction) / 3
 
-        # Correction is 0 by default
-        lane_correction = 0
+        return lane_correction
 
-        # Set correction if black pixel ration changes
-        if left_ratio > middle_ratio * 0.8:
-            lane_correction -= 1
-        if right_ratio > middle_ratio * 0.8:
-            lane_correction += 1
+    def calculate_lane_points(self, image):
+        """
+        Calculates three points which are on the lane
+        :param image: Frame from Cozmos feed
+        :return: Three points on the lane
+        """
+        image = numpy.array(image, dtype=numpy.uint8) - 1
 
-        # Return none if correction didnt change
-        ret = None
+        print(image.shape)
+        start_row_1 = int(image.shape[0] / 3)
+        row_height = int((image.shape[0] - start_row_1) / 3)
+        end_row_1 = start_row_1 + row_height
+        end_row_2 = end_row_1 + row_height
+        end_row_3 = image.shape[0]
 
-        # Repeat last correct on lane depature
-        if left_ratio + middle_ratio + right_ratio > 0.1 and self.last_correction != lane_correction:
-            ret = lane_correction
+        print(start_row_1, end_row_1)
 
-            # Overwrite old correction with new one
-            self.last_correction = lane_correction
+        print(DebugUtils.unique_count(image[start_row_1:end_row_1]))
 
-        return ret
+        x_row_1 = int(numpy.mean(numpy.nonzero(image[start_row_1:end_row_1])[1]))
+        x_row_2 = int(numpy.mean(numpy.nonzero(image[end_row_1:end_row_2])[1]))
+        x_row_3 = int(numpy.mean(numpy.nonzero(image[end_row_2:end_row_3])[1]))
 
-    @staticmethod
-    def calc_black_pixel_ratio(img):
-        return ((img.shape[0] * img.shape[1]) - numpy.sum(img)) / (img.shape[0] * img.shape[1])
+        self.last_points = (
+            (x_row_1, int((start_row_1 + end_row_1) / 2)),
+            (x_row_2, int((end_row_1 + end_row_2) / 2)),
+            (x_row_3, int((end_row_2 + end_row_3) / 2))
+        )
+
+        return x_row_1, x_row_2, x_row_3
