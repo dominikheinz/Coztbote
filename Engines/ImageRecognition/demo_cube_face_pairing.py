@@ -1,14 +1,13 @@
 import cozmo
 from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 
-from Engines.ImageRecognition import ImageRecognition
+from Engines.ImageRecognition.ImageRecognition import ImageRecognition
 
 
 # Scans a cube, then a face. Determines whether or not the cube belongs to the face according to a dictionary
 # Then proceeds to deliver the cube to the person whose face is matching in the dictionary
 def demo_haul_cube_to_face(robot: cozmo.robot.Robot):
-
-    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
+    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
 
     while True:
         ImageRecognition.initialize(robot)
@@ -32,14 +31,14 @@ def demo_haul_cube_to_face(robot: cozmo.robot.Robot):
 
         robot.set_lift_height(0.4).wait_for_completed()
 
-        perceived_faces.append(look_for_faces(robot))
+        perceived_faces.append(ImageRecognition.look_for_faces(robot))
         is_matching = ImageRecognition.compare_cube_and_face(robot, perceived_faces[0].name,
                                                              owner_dict[perceived_faces[0].name],
                                                              perceived_cubes[0].object_id, perceived_faces[0])
         while not is_matching:
             perceived_faces = []
             # robot.turn_in_place(degrees(90)).wait_for_completed()
-            perceived_faces.append(look_for_faces(robot))
+            perceived_faces.append(ImageRecognition.look_for_faces(robot))
             is_matching = ImageRecognition.compare_cube_and_face(robot, perceived_faces[0].name,
                                                                  owner_dict[perceived_faces[0].name],
                                                                  perceived_cubes[0].object_id, perceived_faces[0])
@@ -53,4 +52,5 @@ def demo_haul_cube_to_face(robot: cozmo.robot.Robot):
 
         print("FINISHED, next run!")
 
-    cozmo.run_program(ImageRecognition.demo_haul_cube_to_face)
+
+cozmo.run_program(demo_haul_cube_to_face)
