@@ -8,6 +8,7 @@ opencv-python = "*"
 pillow = "*"
 numpy = "*"
 cozmo = {version = "*", extras = ["camera"]}
+pynput = "*"
 
 [dev-packages]
 
