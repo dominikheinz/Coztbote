@@ -1,7 +1,7 @@
 import cozmo
 from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 
-from Engines.ImageRecognition.ImageRecognition import ImageRecognition
+from Engines.ImageRecognition.CubeFacePairing import CubeFacePairing
 
 
 # Scans a cube, then a face. Determines whether or not the cube belongs to the face according to a dictionary
@@ -10,13 +10,13 @@ def demo_haul_cube_to_face(robot: cozmo.robot.Robot):
     owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
 
     while True:
-        ImageRecognition.initialize(robot)
+        CubeFacePairing.initialize(robot)
 
         perceived_cubes = []
         perceived_faces = []
 
         try:
-            cube = ImageRecognition.search_for_cube(robot, 10)
+            cube = CubeFacePairing.search_for_cube(robot, 10)
             print("Cube found")
             perceived_cubes.append(cube)
             print("Cube observed: " + cube.descriptive_name)
@@ -31,17 +31,17 @@ def demo_haul_cube_to_face(robot: cozmo.robot.Robot):
 
         robot.set_lift_height(0.4).wait_for_completed()
 
-        perceived_faces.append(ImageRecognition.look_for_faces(robot))
-        is_matching = ImageRecognition.compare_cube_and_face(robot, perceived_faces[0].name,
-                                                             owner_dict[perceived_faces[0].name],
-                                                             perceived_cubes[0].object_id, perceived_faces[0])
+        perceived_faces.append(CubeFacePairing.look_for_faces(robot))
+        is_matching = CubeFacePairing.compare_cube_and_face(robot, perceived_faces[0].name,
+                                                            owner_dict[perceived_faces[0].name],
+                                                            perceived_cubes[0].object_id, perceived_faces[0])
         while not is_matching:
             perceived_faces = []
             # robot.turn_in_place(degrees(90)).wait_for_completed()
-            perceived_faces.append(ImageRecognition.look_for_faces(robot))
-            is_matching = ImageRecognition.compare_cube_and_face(robot, perceived_faces[0].name,
-                                                                 owner_dict[perceived_faces[0].name],
-                                                                 perceived_cubes[0].object_id, perceived_faces[0])
+            perceived_faces.append(CubeFacePairing.look_for_faces(robot))
+            is_matching = CubeFacePairing.compare_cube_and_face(robot, perceived_faces[0].name,
+                                                                owner_dict[perceived_faces[0].name],
+                                                                perceived_cubes[0].object_id, perceived_faces[0])
 
         robot.drive_straight(distance_mm(150), speed_mmps(50)).wait_for_completed()
         action_speak = robot.say_text("Hier ist dein Würfel " + perceived_faces[0].name, in_parallel=True,

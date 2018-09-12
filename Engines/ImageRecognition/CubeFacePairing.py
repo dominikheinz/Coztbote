@@ -8,7 +8,7 @@ Used for observing cubes and facing and comparing pairs of faces and cubes that 
 """
 
 
-class ImageRecognition:
+class CubeFacePairing:
     """
     Detects a face by turning and scanning, then returns it
     :return: face that has been observed
