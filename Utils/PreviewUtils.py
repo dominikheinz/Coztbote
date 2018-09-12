@@ -53,7 +53,7 @@ class PreviewUtils(metaclass=Singleton):
 
     def show_cam_overlay(self, image):
         correction_text = ("Left" if self.lane_analyzer.last_correction < 0 else "Right")
-        correction_text += " (" + str(self.lane_analyzer.last_correction) + ")"
+        correction_text += " (" + str(round(self.lane_analyzer.last_correction,2)) + ")"
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
