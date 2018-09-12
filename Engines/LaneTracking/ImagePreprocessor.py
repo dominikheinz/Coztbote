@@ -7,16 +7,24 @@ class ImagePreprocessor:
     def __init__(self):
         pass
 
-    def rgb_to_bw(self, img_gray):
-        # Cast rgb image to numpy array
-        img_gray = self.pil_to_numpyarray(img_gray)[:, :, 1]
+    def pil_rgb_to_numpy_binary(self, pil_img):
+        """
+        Convert an rgb pil image to binary numpy array
+        :param pil_img: A pil image
+        :return: A numpy array with values 0 as black, 1 as white
+        """
+        # Convert pil image to numpy array
+        rgb_img = self.pil_to_numpy(pil_img)
 
-        # Convert gray image to bw image
-        img_bw = self.grey_to_bw(img_gray)
+        # Tri-channel (rgb) to single channel (grey)
+        rgb_img = rgb_img[:, :, 1]
 
-        return img_bw
+        # Convert gray image to binary image
+        bin_img = self.gray_to_binary(rgb_img)
 
-    def grey_to_bw(self, image):
+        return bin_img
+
+    def gray_to_binary(self, image):
         """
         Converts an image to a binary image
         :param image: Numpy array representation of the greyscale image
@@ -31,6 +39,11 @@ class ImagePreprocessor:
 
         return bw_image
 
-    def pil_to_numpyarray(self, image):
+    def pil_to_numpy(self, image):
+        """
+        Convert a pil image to a numpy array
+        :param image: A pil image
+        :return: A numpy array
+        """
         arr = numpy.array(image, dtype=numpy.uint8)
         return arr
