@@ -1,29 +1,28 @@
-from cv2 import *
-import numpy
 import datetime
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
-from Engines.LaneTracking.LaneAnalyzer import LaneAnalyzer
-from Settings.DebugUtils import DebugUtils
+from Utils.DebugUtils import DebugUtils
 from Settings.CozmoSettings import Settings
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.InstanceManager import InstanceManager
 
 
 class LaneTrackingEngine:
     robot = None
     drive_controller = None
+    preview_utils = None
+    lane_analyzer = None
+    processor = None
+
     last_timestamp = None
     current_cam_frame = None
 
-    processor = None
-    lane_analyzer = None
+    def __init__(self):
+        self.robot = InstanceManager.get_instance("Robot")
+        self.drive_controller = InstanceManager.get_instance("DriveController")
+        self.preview_utils = InstanceManager.get_instance("PreviewUtils")
+        self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
 
-    def __init__(self, robot, drive_controller):
-        self.robot = robot
-        self.drive_controller = drive_controller
         self.last_timestamp = datetime.datetime.now()
-
         self.processor = ImagePreprocessor()
-        self.lane_analyzer = LaneAnalyzer()
-        pass
 
     def get_current_frame(self):
         return self.current_cam_frame
@@ -31,7 +30,7 @@ class LaneTrackingEngine:
     def process_still_image(self, e, image):
         if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(
                 milliseconds=Settings.cozmo_framerate_limit):
-            tmr = DebugUtils.start_timer()
+            # tmr = DebugUtils.start_timer()
             # Convert image to black white
             img_bw = self.processor.rgb_to_bw(image.raw_image)
 
@@ -47,33 +46,9 @@ class LaneTrackingEngine:
 
             # Show cam live preview if enabled
             if Settings.cozmo_show_cam_live_feed:
-                self.show_cam_frame(img_bw, self.lane_analyzer.last_points)
+                self.preview_utils.show_cam_frame(img_bw)
 
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
 
-            tmr.stop_timer("process_still_image")
-
-    def show_cam_frame(self, image, lane_analyzer_dots):
-        image = cv2.cvtColor(image * 255, cv2.COLOR_GRAY2BGR)
-        # img_bw = self.print_dots(img_bw)
-        if lane_analyzer_dots[0] is not None:
-            cv2.circle(image, lane_analyzer_dots[0], radius=3, color=(255, 0, 0), thickness=5)
-        if lane_analyzer_dots[1] is not None:
-            cv2.circle(image, lane_analyzer_dots[1], radius=3, color=(0, 255, 0), thickness=5)
-        if lane_analyzer_dots[2] is not None:
-            cv2.circle(image, lane_analyzer_dots[2], radius=3, color=(0, 0, 255), thickness=5)
-
-        image = cv2.resize(image, Settings.cozmo_preview_resolution)
-
-        # Display overlay text in preview window
-        self.show_cam_overlay(image)
-
-        cv2.imshow("Cam", image)
-        cv2.waitKey(1)
-
-    def show_cam_overlay(self, image):
-        overlay_text_correction = "Correction: " + str(self.lane_analyzer.last_correction)
-        overlay_text_voltage = "Battery Voltage: " + str(round(self.robot.battery_voltage, 1)) + "V"
-        cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
-        cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+            # tmr.stop_timer("process_still_image")

@@ -1,6 +1,4 @@
 import numpy
-from PIL import Image
-from cv2 import *
 from Settings.CozmoSettings import Settings
 
 
@@ -33,22 +31,6 @@ class ImagePreprocessor:
 
         return bw_image
 
-
-
-    def smoothing(self, image):
-        smoothed_image = image.copy()
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-        smoothed_image = cv2.erode(smoothed_image, kernel)
-        smoothed_image = cv2.dilate(smoothed_image, kernel)
-        smoothed_image = cv2.dilate(smoothed_image, kernel)
-        smoothed_image = cv2.erode(smoothed_image, kernel)
-
-        return smoothed_image
-
     def pil_to_numpyarray(self, image):
         arr = numpy.array(image, dtype=numpy.uint8)
         return arr
-
-    def numpyarray_to_pil(self, image):
-        img = Image.fromarray(numpy.uint8(image * 255))
-        return img
