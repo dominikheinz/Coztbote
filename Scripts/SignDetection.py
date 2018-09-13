@@ -1,11 +1,8 @@
 import cozmo
-import time
-import datetime
-import cv2
 from Engines.DriveController import DriveController
-from Engines.LaneTracking import LaneTrackingEngine
-from Engines.LaneTracking import LaneAnalyzer
-from Utils import SignTrackingEngine
+from Engines.LaneTracking import LaneAnalyzer, LaneTrackingEngine
+from Engines.SignDetection import SignTrackingEngine
+from Scripts.LaneFollow import handle_hotkeys
 from Utils.InstanceManager import InstanceManager
 from pynput import keyboard
 from Utils.PreviewUtils import PreviewUtils
@@ -24,6 +21,10 @@ def run(robot_obj: cozmo.robot.Robot):
     drive_obj = DriveController.DriveController()
     InstanceManager.add_instance("DriveController", drive_obj)
 
+    lane_tracking_obj = LaneTrackingEngine.LaneTrackingEngine()
+    InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
+
+    """NEW"""
     signtracking_obj = SignTrackingEngine.SignTrackingEngine()
     InstanceManager.add_instance("SignTrackingEngine", signtracking_obj)
 
@@ -37,7 +38,8 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.set_lift_height(1.0, in_parallel=True)
 
     # Setup event handler
-    robot_obj.add_event_handler(cozmo.world.EvtNewCameraImage, lanetracking_obj.process_still_image)
+    """NEW"""
+    robot_obj.add_event_handler(cozmo.world.EvtNewCameraImage, signtracking_obj.process_frame)
 
     # Start driving engine
     drive_obj.go()
