@@ -5,11 +5,11 @@ from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Utils.InstanceManager import InstanceManager
 
 
-class LaneTrackingEngine:
+class SignTrackingEngine:
     robot = None
     drive_controller = None
     preview_utils = None
-    lane_analyzer = None
+    sign_analyzer = None
     processor = None
 
     last_timestamp = None
@@ -19,7 +19,7 @@ class LaneTrackingEngine:
         self.robot = InstanceManager.get_instance("Robot")
         self.drive_controller = InstanceManager.get_instance("DriveController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
-        self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
+        self.sign_analyzer = InstanceManager.get_instance("SignAnalyzer")
 
         self.last_timestamp = datetime.datetime.now()
         self.processor = ImagePreprocessor()
@@ -27,7 +27,8 @@ class LaneTrackingEngine:
     def get_current_frame(self):
         return self.current_cam_frame
 
-    def process_still_image(self, e, image):
+    def process_still_image(self, e, image):    # second parameter is always the event, saving it in 'e'
+        # "Cool Down" for image processing, computing power cant keep up with the rate images arrive
         if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(
                 milliseconds=Settings.cozmo_framerate_limit):
             # tmr = DebugUtils.start_timer()
@@ -42,6 +43,7 @@ class LaneTrackingEngine:
                 self.drive_controller.correct(lane_correction)
 
             # Update current frame
+            #self.current_cam_frame = img_bw * 255
             self.current_cam_frame = img_bw * 255
 
             # Show cam live preview if enabled
