@@ -13,4 +13,9 @@ class Settings:
     cozmo_show_cam_live_feed = True
     cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)
-    cozmo_preview_screenshot_include_points = True
+    cozmo_preview_screenshot_include_points = False
+
+    # Lane segment identifier settings
+    lane_segment_horizontal_viewport_offset = 10
+
+

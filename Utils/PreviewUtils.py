@@ -7,12 +7,11 @@ from Utils.InstanceManager import InstanceManager
 
 
 class PreviewUtils(metaclass=Singleton):
-    lane_analyzer_obj = None
-    robot_obj = None
+
     last_frame = None
 
     def __init__(self):
-        self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
+        self.lane_analyzer_obj = InstanceManager.get_instance("LaneAnalyzer")
         self.robot_obj = InstanceManager.get_instance("Robot")
 
     def show_cam_frame(self, image):
@@ -26,22 +25,22 @@ class PreviewUtils(metaclass=Singleton):
 
         # Update last frame without points
         if not Settings.cozmo_preview_screenshot_include_points:
-            self.last_frame = image
+            self.last_frame = image.copy()
 
         # Draw navigation points
-        if self.lane_analyzer.last_points[0] is not None:
-            cv2.circle(image, self.lane_analyzer.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
-        if self.lane_analyzer.last_points[1] is not None:
-            cv2.circle(image, self.lane_analyzer.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
-        if self.lane_analyzer.last_points[2] is not None:
-            cv2.circle(image, self.lane_analyzer.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
-
-        # Resize preview window
-        image = cv2.resize(image, Settings.cozmo_preview_resolution, interpolation=cv2.INTER_NEAREST)
+        if self.lane_analyzer_obj.last_points[0] is not None:
+            cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
+        if self.lane_analyzer_obj.last_points[1] is not None:
+            cv2.circle(image, self.lane_analyzer_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
+        if self.lane_analyzer_obj.last_points[2] is not None:
+            cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
 
         # Update last frame with points
         if Settings.cozmo_preview_screenshot_include_points:
-            self.last_frame = image
+            self.last_frame = image.copy()
+
+        # Resize preview window
+        image = cv2.resize(image, Settings.cozmo_preview_resolution, interpolation=cv2.INTER_NEAREST)
 
         # Display overlay text in preview window
         self.apply_info_overlay(image)
@@ -65,8 +64,8 @@ class PreviewUtils(metaclass=Singleton):
         :param image: The image to apply to
         :type image: Numpy array
         """
-        correction_text = ("Left" if self.lane_analyzer.last_correction < 0 else "Right")
-        correction_text += " (" + str(round(self.lane_analyzer.last_correction,2)) + ")"
+        correction_text = ("Left" if self.lane_analyzer_obj.last_correction < 0 else "Right")
+        correction_text += " (" + str(round(self.lane_analyzer_obj.last_correction, 2)) + ")"
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
