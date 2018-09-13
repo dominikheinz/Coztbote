@@ -27,23 +27,24 @@ class SignTrackingEngine:
     def get_current_frame(self):
         return self.current_cam_frame
 
-    def process_still_image(self, e, image):    # second parameter is always the event, saving it in 'e'
+    def process_frame(self, e, image):    # second parameter is always the event, saving it in 'e'
         # "Cool Down" for image processing, computing power cant keep up with the rate images arrive
         if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=Settings.cozmo_framerate_limit):
+                milliseconds=Settings.cozmo_img_processing_ms_limit):
             # tmr = DebugUtils.start_timer()
             # Convert image to black white
-            img_bw = self.processor.rgb_to_bw(image.raw_image)  # already in binary form
+            img_bw = self.processor.pil_rgb_to_numpy_binary(image.raw_image)  # already in binary form
 
             # Calculate lane correction based on image data
-            lane_correction = self.lane_analyzer.calculate_lane_correction(img_bw)
+            # lane_correction = self.lane_analyzer.calculate_lane_correction(img_bw)
+            lane_correction = self.sign_analyzer.calculate_lane_correction(img_bw)
 
             # If correction is required let cozmo correct
             if lane_correction is not None:
                 self.drive_controller.correct(lane_correction)
 
             # Update current frame
-            #self.current_cam_frame = img_bw * 255
+            # self.current_cam_frame = img_bw * 255
             self.current_cam_frame = img_bw * 255
 
             # Show cam live preview if enabled
