@@ -11,6 +11,6 @@ class Settings:
 
     # Live preview settings
     cozmo_show_cam_live_feed = True
-    cozmo_framerate_limit = 40
+    cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)
     cozmo_preview_screenshot_include_points = True

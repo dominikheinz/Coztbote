@@ -18,17 +18,17 @@
     "default": {
         "cozmo": {
             "hashes": [
-                "sha256:246898d76e596239aa90aa403904ba137a546771f5909bae618a7915f41266d0"
+                "sha256:03e921e96bafca8e3ae1b054c65355223199fb6a33b796813993b2b9966e5469"
             ],
             "index": "pypi",
             "markers": null,
-            "version": "==1.4.4"
+            "version": "==1.4.5"
         },
         "cozmoclad": {
             "hashes": [
-                "sha256:b7a96382315861ef207eddb84b1e89a701efc55780fa9ef0bf15c66bacf1c42a"
+                "sha256:99c6f07bb4cc50e78b26f55d36d4d0c0680f2d7efcbfeefc068dcba41827e144"
             ],
-            "version": "==2.9.0"
+            "version": "==3.0.0"
         },
         "numpy": {
             "hashes": [
@@ -139,14 +139,6 @@
             ],
             "index": "pypi",
             "version": "==1.4"
-        },
-        "python-xlib": {
-            "hashes": [
-                "sha256:2ffa01fa51bdf53842fa4e3f9e2501f8147d4abf546a83e9c2b091982da2e1a8",
-                "sha256:c3deb8329038620d07b21be05673fa5a495dd8b04a2d9f4dca37a3811d192ae4"
-            ],
-            "markers": "'linux' in sys_platform",
-            "version": "==0.23"
         },
         "six": {
             "hashes": [

@@ -10,6 +10,12 @@ class LaneAnalyzer:
         pass
 
     def calculate_lane_correction(self, image):
+        """
+        Calculates a correction value between [-1..1], negative values meaning correct to the left,
+        positive values to the right. The closer the value is to 0, the slighter the correction needs to be.
+        :param image:
+        :return:
+        """
         x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
 
         # Calculate center of image
@@ -32,8 +38,9 @@ class LaneAnalyzer:
     def calculate_lane_points(self, image):
         """
         Calculates three points which are on the lane
-        :param image: Frame from Cozmos feed
+        :param image: Frame from Cozmos feed as numpy array
         :return: Three points on the lane
+        :rtype: int, int, int
         """
 
         # Ensure unsigned values and make black nonzero and white zero
