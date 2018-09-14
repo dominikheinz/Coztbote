@@ -13,5 +13,7 @@ class SignHandler:
     def do_something(self):
         if self.lane_analyzer.sign_count != 0:
             self.lane_analyzer.sign_recognition_cooldown = True
-            self.robot.turn_in_place(degrees(180)).wait_for_complete()
+            print("AAAAAAAAAAAAAAAAAAA")
+            #self.robot.say_text("action")
+            #self.robot.turn_in_place(degrees(180)).wait_for_complete()
             self.lane_analyzer.sign_recognition_cooldown = False

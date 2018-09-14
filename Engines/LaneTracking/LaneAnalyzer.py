@@ -18,6 +18,9 @@ class LaneAnalyzer:
         :param image:
         :return:
         """
+
+        print("flag:",self.sign_recognition_cooldown)
+
         x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
 
         # Calculate center of image
