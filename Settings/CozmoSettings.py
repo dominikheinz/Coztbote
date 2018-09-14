@@ -14,7 +14,7 @@ class Settings:
     cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)   # before: 1080, 720
     cozmo_preview_screenshot_include_points = True
-    show_contures_in_extra_window = False
+    show_contures_in_extra_window = True
 
     # Measurement settings for contures
     min_pixel_sign = 150

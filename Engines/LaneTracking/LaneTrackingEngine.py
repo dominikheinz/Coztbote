@@ -2,6 +2,7 @@ import datetime
 from Settings.CozmoSettings import Settings
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Utils.InstanceManager import InstanceManager
+from Engines.SignHandler import SignHandler
 
 
 class LaneTrackingEngine:
@@ -20,6 +21,7 @@ class LaneTrackingEngine:
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
         self.processor = ImagePreprocessor()
+        self.sign_handler = InstanceManager.get_instance("SignHandler")
 
         self.last_timestamp = datetime.datetime.now()
 
@@ -45,7 +47,7 @@ class LaneTrackingEngine:
             bin_img = self.processor.pil_rgb_to_numpy_binary(image.raw_image)
 
             # Counting signs and overwrite attribute in Lane Analyzer
-            if not self.processor.sign_recognition_cooldown:
+            if not self.lane_analyzer.sign_recognition_cooldown:
                 self.lane_analyzer.sign_count = self.processor.calculate_number_of_signs(bin_img)
 
             # Calculate lane correction based on image data
@@ -64,3 +66,5 @@ class LaneTrackingEngine:
 
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
+
+            #self.sign_handler.do_something()

@@ -6,6 +6,7 @@ class LaneAnalyzer:
     last_correction = 0
     last_points = None
     sign_count = 0
+    sign_recognition_cooldown = False
 
     def __init__(self):
         pass

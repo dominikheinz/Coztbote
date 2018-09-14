@@ -5,8 +5,6 @@ from Settings.CozmoSettings import Settings
 
 class ImagePreprocessor:
 
-    sign_recognition_cooldown = False
-
     def __init__(self):
         pass
 

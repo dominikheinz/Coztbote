@@ -3,6 +3,7 @@ from pynput import keyboard
 from Engines.DriveController import DriveController
 from Engines.LaneTracking import LaneTrackingEngine
 from Engines.LaneTracking import LaneAnalyzer
+from Engines.SignHandler import SignHandler
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 
@@ -35,6 +36,9 @@ def run(robot_obj: cozmo.robot.Robot):
 
     drive_obj = DriveController.DriveController()
     InstanceManager.add_instance("DriveController", drive_obj)
+
+    sign_handler_obj = SignHandler.SignHandler()
+    InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
     lane_tracking_obj = LaneTrackingEngine.LaneTrackingEngine()
     InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
