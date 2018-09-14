@@ -1,6 +1,7 @@
 import numpy
 import cv2
 from Settings.CozmoSettings import Settings
+from Engines.LaneTracking.PixelRow import PixelRow
 
 
 class LaneSegmentIdentifier:
@@ -9,34 +10,20 @@ class LaneSegmentIdentifier:
         pass
 
     def analyze_lane_segment(self, image):
-
         # Crop out relevant area
         image = self.crop_image(image)
 
-        # Extract road shape
-        road_shape = self.extract_road_shape(image)
+        self.create_pixel_rows(image)
 
-        # Extract the pixel stripes
-        pixel_pattern = self.extract_pixelpattern(image[ ?? ])
+    def create_pixel_rows(img, step=40):
+        h, w = img.shape
 
-        if pixel_pattern == aaa:
-            bla
-        elif pixel_pattern == bbb:
-            blabla
+        pixel_rows = []
 
-    def calculate_pixel_pattern(self, image):
-        pixel_row1 =  self.create_pixel_row(image, 26)
-        pixel_row2 = self.create_pixel_row(image, 92)
-        pixel_row3 = self.create_pixel_row(image, 145)
+        for i in range(h, 10, step):
+            pixel_rows.append(PixelRow(img[i]))
 
-    def create_pixel_row(self, image, y_pos):
-
-        # Sum rows along y axis
-
-        summed_row = numpy.add(numpy.add(top_row, middle_row), bottom_row)
-
-        # If at most one pixel was white set it to black
-        return numpy.array(summed_row < 2, dtype=numpy.uint8)
+        return pixel_rows
 
     def crop_image(self, image):
         """
@@ -49,4 +36,4 @@ class LaneSegmentIdentifier:
         """
         offset = Settings.lane_segment_horizontal_viewport_offset
         h, w = image.shape
-        return image[start_h / 3:h, offset:w - offset]
+        return image[h / 3:h, offset:w - offset]

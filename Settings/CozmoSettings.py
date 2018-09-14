@@ -17,5 +17,4 @@ class Settings:
 
     # Lane segment identifier settings
     lane_segment_horizontal_viewport_offset = 10
-
-
+    lane_pattern_min_width_threshold = 6

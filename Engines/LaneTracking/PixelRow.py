@@ -1,48 +1,79 @@
-class PixelRow():
-    index = None
+from itertools import groupby
+from Utils.DebugUtils import DebugUtils
+from Settings.CozmoSettings import Settings
+import numpy
 
-    left_edge_pos = 0
-    right_edge_pos = 0
 
-    edge_distance = None
+class PixelRow:
 
-    left_edge_offset = 0
-    right_edge_offset = 0
+    pattern = None
+    b_w_count = None
 
-    def __init__(self, raw_row, index):
+    def __init__(self, raw_row):
 
         self.raw_row = raw_row
-        self.index = index
 
-        self.calculate_edges()
-        self.calculate_offsets()
+        self.raw_b_w_count = self.run_length_encoding(raw_row)
 
-        self.wanted_offset = (self.right_edge_pos - self.left_edge_pos) / 2
+        # Julians Version
+        self.clean_row()
 
-    def calculate_edges(self):
+        # Fabis Version
+        self.eliminate_noise()
 
-        for i in range(self.raw_row.shape[0]):
+        print(self.b_w_count)
 
-            if self.raw_row[i] == 255:
+    def run_length_encoding(self, data):
+        return numpy.array([[len(list(group)), name] for name, group in groupby(data)])
 
-                if self.left_edge_pos is None:
-                    self.left_edge_pos = i
+    def eliminate_noise(self):
 
+        new_list = [[0, -1]]
+
+        last_segment_was_invalid = False
+
+        for i in range(self.raw_b_w_count.shape[0]):
+
+            amount = self.raw_b_w_count[i, 0]
+
+            if self.raw_b_w_count[i, 0] < Settings.lane_pattern_min_width_threshold:
+
+                new_list[-1][0] += amount
+                new_list[-1][1] = 1 - self.raw_b_w_count[i]
+
+                last_segment_was_invalid = True
+
+            elif last_segment_was_invalid:
+                new_list[-1][0] += amount
+                last_segment_was_invalid = False
+
+            else:
+                new_list.append([amount, self.raw_b_w_count[i, 0]])
+
+        self.b_w_count = numpy.array(new_list)
+
+    def clean_row(self):
+        self.b_w_count = []
+
+        last_segment_was_invalid = False
+
+        for i, segment in self.raw_b_w_count:
+            if segment[0] < Settings.lane_pattern_min_width_threshold:
+                if self.raw_b_w_count.shape[0] == 0:
+                    # Append element with inverted value
+                    self.b_w_count.append([segment[0], 1 - segment[1]])
                 else:
-                    self.right_edge_pos = i
-                    break
+                    # Add count to last element
+                    self.b_w_count[-1][0] += segment[0]
+                last_segment_was_invalid = True
+            else:
+                if last_segment_was_invalid:
+                    # Add count to last element
+                    self.b_w_count[-1][0] += segment[0]
+                else:
+                    # Append new value
+                    self.b_w_count.append([segment[0], 1 - segment[1]])
 
-    def calculate_offsets(self):
+                last_segment_was_invalid = False
 
-        self.left_edge_offset = 160 - self.left_edge_pos
-        self.right_edge_offset = self.right_edge_pos - 160
-
-    @staticmethod
-    def get_pixel_rows(img, number_of_rows=3, step=40):
-        h, w = img.shape
-        pixel_rows = []
-
-        for i in range(number_of_rows):
-            pixel_rows.append(PixelRow(img[h - (step + i * step)], i))
-
-        return pixel_rows
+            self.b_w_count = numpy.array(self.b_w_count)
