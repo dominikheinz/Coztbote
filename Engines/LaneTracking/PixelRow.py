@@ -10,4 +10,3 @@ class PixelRow:
         rle_data = ImagePreprocessor.run_length_encoding(raw_row)
         rle_data = ImagePreprocessor.cleanup_row_noise(rle_data)
 
-        
