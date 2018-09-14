@@ -73,7 +73,7 @@ class ImagePreprocessor:
             if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
                 cv2.drawContours(image, [contour], 0, 128, 2)
                 contour_counter += 1
-                contour_allowed = self.contours_in_allowed_area(contour, contour_allowed, end_row_2)
+                contour_allowed = self.contours_in_allowed_area(contour, end_row_2)
 
         # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
@@ -88,7 +88,14 @@ class ImagePreprocessor:
 
         return sign_count
 
-    def contours_in_allowed_area(self, contour, contour_allowed, end_row_2):
+    def contours_in_allowed_area(self, contour, end_row_2):
+        """
+        Checks if the contour is inside allowed area
+        :param contour: the contour to be checked
+        :param end_row_2: the border marking where the allowed area starts
+        :return: boolean if the contour is inside the allowed area
+        """
+        contour_allowed = False
         if contour[0][0][1] > end_row_2:
             contour_allowed = True
         return contour_allowed
