@@ -4,11 +4,13 @@ from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 
 class PixelRow:
-    pattern = None
+    pattern = numpy.array(0)  # e.g. [[26, 1],[107, 0],[187, 1]]
+    detailed_pattern = numpy.array(0)  # e.g. [1, 0, 1]
 
     def __init__(self, raw_row):
         self.raw_pattern_data = ImagePreprocessor.run_length_encoding(raw_row)
         self.cleanup_row_noise()
+        self.pattern = self.detailed_pattern[:, 1]
 
     def cleanup_row_noise(self):
         """
@@ -22,7 +24,9 @@ class PixelRow:
             run_length = self.raw_pattern_data[i, 0]
             run_color = self.raw_pattern_data[i, 1]
 
-            def run_too_small(x): return x < Settings.lane_pattern_min_width_threshold
+            def run_too_small(x):
+                return x < Settings.lane_pattern_min_width_threshold
+
             list_is_empty = new_list[0][1] == -1
 
             # Run is too small -> run is added to previous run
@@ -49,4 +53,4 @@ class PixelRow:
                 else:
                     new_list.append(self.raw_pattern_data[i])
 
-        self.pattern = numpy.array(new_list)
+        self.detailed_pattern = numpy.array(new_list)
