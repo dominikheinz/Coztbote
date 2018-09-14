@@ -1,7 +1,7 @@
 import numpy
 import cv2
 from Settings.CozmoSettings import Settings
-from itertools import repeat, chain, groupby
+from itertools import groupby
 
 
 class ImagePreprocessor:
@@ -14,16 +14,16 @@ class ImagePreprocessor:
         :return: A numpy array with values 0 as black, 1 as white
         """
         # Convert pil image to numpy array
-        rgb_img = self.pil_to_numpy(pil_img)
+        rgb_img = ImagePreprocessor.pil_to_numpy(pil_img)
 
         # Tri-channel (rgb) to single channel (gray)
         gray_img = cv2.cvtColor(rgb_img, cv2.COLOR_RGB2GRAY)
 
         # Convert gray image to binary image
-        bin_img = self.gray_to_binary(gray_img)
+        bin_img = ImagePreprocessor.gray_to_binary(gray_img)
 
         # Apply smoothing by using morphological operations
-        return self.morphological_opening(bin_img)
+        return ImagePreprocessor.morphological_opening(bin_img)
 
     @staticmethod
     def gray_to_binary(image):
@@ -97,8 +97,8 @@ class ImagePreprocessor:
     def run_length_encoding(data_array):
         """
         Encode an array with run length run_length_encoding
-        :param data: Data to Encode
-        :type data: Array
+        :param data_array: Data to Encode
+        :type data_array: Array
         :return: The encoded Data
         :rtype: Numpy array
         """
