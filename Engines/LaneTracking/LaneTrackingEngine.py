@@ -14,6 +14,7 @@ class LaneTrackingEngine:
 
     last_timestamp = None
     current_cam_frame = None
+    cooldown_start = None
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
@@ -49,6 +50,7 @@ class LaneTrackingEngine:
             # Counting signs and overwrite attribute in Lane Analyzer
             if not self.lane_analyzer.sign_recognition_cooldown:
                 self.lane_analyzer.sign_count = self.processor.calculate_number_of_signs(bin_img)
+                self.cooldown_start = datetime.datetime.now()
 
             # Calculate lane correction based on image data
             lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
@@ -67,4 +69,4 @@ class LaneTrackingEngine:
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
 
-            #self.sign_handler.do_something()
+            self.sign_handler.do_something(self.cooldown_start)
