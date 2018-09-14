@@ -1,7 +1,5 @@
 import cv2
 import numpy
-import operator
-import random
 
 image = cv2.imread("../Screenshots/Cozmo_2018-09-13-13-59-38.png")
 

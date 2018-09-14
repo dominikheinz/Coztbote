@@ -1,5 +1,3 @@
-import numpy
-import cv2
 from Settings.CozmoSettings import Settings
 from Engines.LaneTracking.PixelRow import PixelRow
 
@@ -13,16 +11,22 @@ class LaneSegmentIdentifier:
         # Crop out relevant area
         image = self.crop_image(image)
 
-        self.create_pixel_rows(image)
+        # Obtain pixel rows from shape
+        rows = self.create_pixel_rows(image)
 
     def create_pixel_rows(img, step=40):
+        """
+        Extracts pixel rows from the image
+        :param img: Source images
+        :type img: Binary numpy array
+        :param step: Pixel distance between each row
+        :return: An array of PixelRow objects
+        """
         h, w = img.shape
-
         pixel_rows = []
 
-        for i in range(h, 10, step):
+        for i in range(h, Settings.lane_segment_bottom_viewport_offset, step):
             pixel_rows.append(PixelRow(img[i]))
-
         return pixel_rows
 
     def crop_image(self, image):
