@@ -7,7 +7,7 @@ name = "pypi"
 opencv-python = "*"
 pillow = "*"
 numpy = "*"
-cozmo = "==1.4.5"
+cozmo = "*"
 pynput = "*"
 
 [dev-packages]

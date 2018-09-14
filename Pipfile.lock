@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "356a19f154fd6c0982bd76224814dc8a63cebb0cb16c0b34108c885f40af2233"
+            "sha256": "26e0af90ae8e2d98ef4bdd3b48ebaa941773721bcdbf0c7d3cc61ccc43437353"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -138,14 +138,6 @@
             ],
             "index": "pypi",
             "version": "==1.4"
-        },
-        "python-xlib": {
-            "hashes": [
-                "sha256:2ffa01fa51bdf53842fa4e3f9e2501f8147d4abf546a83e9c2b091982da2e1a8",
-                "sha256:c3deb8329038620d07b21be05673fa5a495dd8b04a2d9f4dca37a3811d192ae4"
-            ],
-            "markers": "'linux' in sys_platform",
-            "version": "==0.23"
         },
         "six": {
             "hashes": [
