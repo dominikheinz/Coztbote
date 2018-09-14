@@ -45,7 +45,8 @@ class LaneTrackingEngine:
             bin_img = self.processor.pil_rgb_to_numpy_binary(image.raw_image)
 
             # Counting signs and overwrite attribute in Lane Analyzer
-            self.lane_analyzer.sign_count = self.processor.calculate_number_of_signs(bin_img)
+            if not self.processor.sign_recognition_cooldown:
+                self.lane_analyzer.sign_count = self.processor.calculate_number_of_signs(bin_img)
 
             # Calculate lane correction based on image data
             lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)

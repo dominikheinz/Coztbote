@@ -5,6 +5,8 @@ from Settings.CozmoSettings import Settings
 
 class ImagePreprocessor:
 
+    sign_recognition_cooldown = False
+
     def __init__(self):
         pass
 
@@ -50,6 +52,11 @@ class ImagePreprocessor:
         return arr
 
     def calculate_number_of_signs(self, image):
+        """
+        Tracks all contours and process them to find signs
+        :param image: image in binary form
+        :return: amount of tracked signs
+        """
         image = numpy.array(image, dtype=numpy.uint8) - 1
 
         start_row_1 = int(image.shape[0] / 3)
@@ -66,15 +73,22 @@ class ImagePreprocessor:
             if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
                 cv2.drawContours(image, [contour], 0, 128, 2)
                 contour_counter += 1
-                if contour[0][0][1] > end_row_2:
-                    contour_allowed = True
+                contour_allowed = self.contours_in_allowed_area(contour, contour_allowed, end_row_2)
 
+        # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
             cv2.imshow("with contours", image)
 
+        # Refreshes the amount of found contours if they are in allowed area
         if contour_allowed:
             sign_count = contour_counter
+        # Sets amount of signs to zero if contours aren`t in allowed area
         else:
             sign_count = 0
 
         return sign_count
+
+    def contours_in_allowed_area(self, contour, contour_allowed, end_row_2):
+        if contour[0][0][1] > end_row_2:
+            contour_allowed = True
+        return contour_allowed
