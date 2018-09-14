@@ -1,6 +1,6 @@
 import cozmo
 from pynput import keyboard
-from Engines.DriveController import DriveController
+from Engines.RobotController import DriveController
 from Engines.LaneTracking import LaneTrackingEngine
 from Engines.LaneTracking import LaneAnalyzer
 from Utils.InstanceManager import InstanceManager
@@ -34,7 +34,7 @@ def run(robot_obj: cozmo.robot.Robot):
     InstanceManager.add_instance("PreviewUtils", preview_obj)
 
     drive_obj = DriveController.DriveController()
-    InstanceManager.add_instance("DriveController", drive_obj)
+    InstanceManager.add_instance("RobotController", drive_obj)
 
     lane_tracking_obj = LaneTrackingEngine.LaneTrackingEngine()
     InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)

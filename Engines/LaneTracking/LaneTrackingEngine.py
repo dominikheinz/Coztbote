@@ -16,7 +16,7 @@ class LaneTrackingEngine:
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
-        self.drive_controller = InstanceManager.get_instance("DriveController")
+        self.drive_controller = InstanceManager.get_instance("RobotController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
         self.processor = ImagePreprocessor()
