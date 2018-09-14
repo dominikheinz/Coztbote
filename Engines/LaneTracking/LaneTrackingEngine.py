@@ -1,15 +1,15 @@
 import datetime
 from Settings.CozmoSettings import Settings
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Utils.InstanceManager import InstanceManager
 from Utils.DebugUtils import DebugUtils
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+
 
 class LaneTrackingEngine:
     robot = None
     drive_controller = None
     preview_utils = None
     lane_analyzer = None
-    processor = None
 
     last_timestamp = None
     current_cam_frame = None
@@ -19,7 +19,6 @@ class LaneTrackingEngine:
         self.drive_controller = InstanceManager.get_instance("RobotController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
-        self.processor = ImagePreprocessor()
 
         self.last_timestamp = datetime.datetime.now()
 
@@ -43,11 +42,11 @@ class LaneTrackingEngine:
                 milliseconds=Settings.cozmo_img_processing_ms_limit):
             tmr = DebugUtils.start_timer()
             # Convert image to binary
-            bin_img = self.processor.pil_rgb_to_numpy_binary(image.raw_image)
+            bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image.raw_image)
 
             # Extract lane shape and remove noise
 
-            bin_img = self.processor.extract_lane_shape(bin_img)
+            bin_img = ImagePreprocessor.extract_lane_shape(bin_img)
 
             # Calculate lane correction based on image data
             lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
@@ -67,4 +66,3 @@ class LaneTrackingEngine:
             self.last_timestamp = datetime.datetime.now()
 
             DebugUtils.stop_timer(tmr, "extract_lane_shape")
-
