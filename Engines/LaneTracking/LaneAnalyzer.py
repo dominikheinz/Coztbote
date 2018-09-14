@@ -5,6 +5,7 @@ import math
 class LaneAnalyzer:
     last_correction = 0
     last_points = None
+    sign_count = 0
 
     def __init__(self):
         pass

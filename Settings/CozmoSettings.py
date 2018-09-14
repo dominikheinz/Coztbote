@@ -12,5 +12,10 @@ class Settings:
     # Live preview settings
     cozmo_show_cam_live_feed = True
     cozmo_img_processing_ms_limit = 40
-    cozmo_preview_resolution = (1080, 720)
+    cozmo_preview_resolution = (1080, 720)   # before: 1080, 720
     cozmo_preview_screenshot_include_points = True
+    show_contures_in_extra_window = False
+
+    # Measurement settings for contures
+    min_pixel_sign = 150
+    max_pixel_sign = 1200
