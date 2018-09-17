@@ -3,7 +3,8 @@ class Settings:
     # Environment settings
     image_binarization_threshold = 30
     cooldown_time_ms = 5000
-    disable_sign_detection = True
+    disable_sign_detection = False
+    disable_cooldown = True
 
     # Driving settings
     cozmo_enable_drive = False
@@ -26,4 +27,6 @@ class Settings:
 
     # Measurement settings for contures
     min_pixel_sign = 150
-    max_pixel_sign = 1200
+    max_pixel_sign = 1400
+    pixel_offset = 15
+    

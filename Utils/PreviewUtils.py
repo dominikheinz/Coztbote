@@ -4,6 +4,7 @@ import os
 from Settings.CozmoSettings import Settings
 from Utils.Singleton import Singleton
 from Utils.InstanceManager import InstanceManager
+from Engines.RobotController.RobotStatusController import RobotStatusController
 
 
 class PreviewUtils(metaclass=Singleton):
@@ -68,7 +69,7 @@ class PreviewUtils(metaclass=Singleton):
         correction_text += " (" + str(round(self.lane_analyzer_obj.last_correction, 2)) + ")"
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
-        overlay_text_signs = "Amount of Signs: " + str(self.lane_analyzer_obj.sign_count)
+        overlay_text_signs = "Amount of Signs: " + str(RobotStatusController.sign_count)
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
