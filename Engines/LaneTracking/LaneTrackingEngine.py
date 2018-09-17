@@ -4,6 +4,7 @@ from Utils.InstanceManager import InstanceManager
 from Utils.DebugUtils import DebugUtils
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Engines.RobotController.RobotStatusController import RobotStatusController
+from Engines.RobotController.DriveController import  DriveController
 
 class LaneTrackingEngine:
 
@@ -76,4 +77,5 @@ class LaneTrackingEngine:
             if not Settings.disable_sign_detection:
                 self.sign_handler.check_for_cooldown(RobotStatusController.cooldown_start, Settings.disable_cooldown)
 
+            self.sign_handler.check_driving_cooldown()
             #DebugUtils.stop_timer(tmr, "extract_lane_shape")

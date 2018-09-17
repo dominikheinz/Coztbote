@@ -5,6 +5,8 @@ class Settings:
     cooldown_time_ms = 5000
     disable_sign_detection = False
     disable_cooldown = False
+    wait_time_sign1 = 4000  # wait time for stop sign
+    wait_time_sign2 = 0     # wait time for turn around sign
 
     # Driving settings
     cozmo_enable_drive = True

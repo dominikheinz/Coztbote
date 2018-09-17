@@ -4,5 +4,5 @@ class RobotStatusController:
     cooldown_start = None
     sign_count = 0
     sign_recognition_cooldown = False
-    action_cooldown_ms = datetime.datetime.now()
-    action_start = None
+    action_cooldown_ms = 0
+    action_start = datetime.datetime.now()

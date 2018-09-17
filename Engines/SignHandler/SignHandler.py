@@ -42,18 +42,18 @@ class SignHandler:
             print("2")
             DriveController.allow_driving = False
             RobotStatusController.action_start = datetime.datetime.now()
-            RobotStatusController.action_cooldown_ms = 10000
+            RobotStatusController.action_cooldown_ms = Settings.wait_time_sign1
 
         elif sign_count is 4:
             print("4")
             DriveController.allow_driving = False
             self.robot.turn_in_place(degrees(180)).wait_for_completed()
             RobotStatusController.action_start = datetime.datetime.now()
-            RobotStatusController.action_cooldown_ms = 0
+            RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
 
-        self.driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
+        # self.check_driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
 
-    def driving_cooldown(self, time, wait_time):
-        if time < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=wait_time):
+    def check_driving_cooldown(self):
+        if RobotStatusController.action_start < datetime.datetime.now() - datetime.timedelta(
+                milliseconds=RobotStatusController.action_cooldown_ms):
             DriveController.allow_driving = True
