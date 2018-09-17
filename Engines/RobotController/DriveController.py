@@ -4,6 +4,7 @@ from Utils.InstanceManager import InstanceManager
 
 class DriveController:
     robot = None
+    allow_driving = True
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
@@ -12,8 +13,10 @@ class DriveController:
         """
         Start driving straight
         """
-        if Settings.cozmo_enable_drive:
+        if Settings.cozmo_enable_drive and self.allow_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
+        else:
+            self.robot.drive_wheel_motors(0,0)
 
     def correct(self, correction_value):
         """
@@ -22,7 +25,7 @@ class DriveController:
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
         """
-        if Settings.cozmo_enable_drive:
+        if Settings.cozmo_enable_drive and self.allow_driving:
             if correction_value > 0:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))
@@ -31,3 +34,5 @@ class DriveController:
                                               Settings.cozmo_drive_speed)
             else:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
+        else:
+            self.robot.drive_wheel_motors(0,0)

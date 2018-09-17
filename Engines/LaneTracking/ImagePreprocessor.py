@@ -87,6 +87,9 @@ class ImagePreprocessor:
         contours = cv2.findContours(
             inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[1]
 
+        if not contours:
+            return masked_img, masked_img
+
         # Take the contour with the biggest area (the lane shape)
         biggest_contour_area = max(contours, key=cv2.contourArea)
 
@@ -185,12 +188,12 @@ class ImagePreprocessor:
         contour_allowed = False
         contour_counter = 0
         for contour in contours[1]:
-            print(cv2.contourArea(contour))
             if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
                 cv2.drawContours(cropped_image, [contour], 0, 128, 2)
                 contour_counter += 1
-
-                contour_allowed = ImagePreprocessor.contours_in_allowed_area(contour, y_line)
+                if contour[0][0][1] > y_line:
+                    contour_allowed = True
+                #contour_allowed = ImagePreprocessor.contours_in_allowed_area(contour, y_line)
 
         cv2.line(cropped_image, (0, y_line), (cropped_image.shape[1], y_line), 128, 2)
 

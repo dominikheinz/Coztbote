@@ -50,6 +50,7 @@ class LaneTrackingEngine:
             if not RobotStatusController.sign_recognition_cooldown and not Settings.disable_sign_detection:
                 RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
                 RobotStatusController.cooldown_start = datetime.datetime.now()
+                self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
             # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
