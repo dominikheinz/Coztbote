@@ -73,9 +73,10 @@ class ImagePreprocessor:
         Cuts out the lane shape from the input image.
         :param image: Input image
         :type image: Binary numpy array
-        :return: The image which contains only the lane shape
-        :rtype: Numpy array
+        :return: The image which contains only the lane shape and an image containing only the lane surroundings
+        :rtype: Numpy array, numpy array
         """
+
         # Invert the image
         inverted_img = 1 - image
 
@@ -91,7 +92,16 @@ class ImagePreprocessor:
 
         # Fill elements within area with 1's
         cv2.drawContours(masked_img, [biggest_contour_area], 0, 0, -1)
-        return masked_img
+
+        # Create a new image containing only the data surrounding the lane
+        lane_surroundings_mask = numpy.zeros(inverted_img.shape, dtype=numpy.uint8)
+        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 1, Settings.cozmo_lane_surrounding_width_px * 2)
+        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 0, cv2.FILLED)
+
+        # invert again to get the mainly white image back
+        lane_surroundings = 1 - (inverted_img * lane_surroundings_mask)
+
+        return masked_img, lane_surroundings
 
     @staticmethod
     def run_length_encoding(data_array):
@@ -109,6 +119,7 @@ class ImagePreprocessor:
         """
         Remove pixel runs, which are too short to be valid
         :param raw_pattern_data: The RLE data
+        :param min_required_length: The minimum required length of a run for it to be valid
         :return: The RLE data with the short runs removed
         :rtype: Numpy array
         """

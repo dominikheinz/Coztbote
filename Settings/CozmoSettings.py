@@ -15,8 +15,9 @@ class Settings:
     cozmo_show_cam_live_feed = True
     cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)
-    cozmo_preview_screenshot_include_points = True
+    cozmo_preview_screenshot_include_points = False
     show_contures_in_extra_window = True
+    cozmo_lane_surrounding_width_px = 80
 
     # Lane segment identifier settings
     lane_segment_horizontal_viewport_offset = 10
@@ -26,5 +27,3 @@ class Settings:
     # Measurement settings for contures
     min_pixel_sign = 150
     max_pixel_sign = 1200
-
-
