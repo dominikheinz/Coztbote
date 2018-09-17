@@ -1,6 +1,8 @@
+import numpy
 from Settings.CozmoSettings import Settings
 from Engines.LaneTracking.PixelRow import PixelRow
-
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.DebugUtils import DebugUtils
 
 class LaneSegmentIdentifier:
 
@@ -10,75 +12,147 @@ class LaneSegmentIdentifier:
         image = LaneSegmentIdentifier.crop_image(image)
 
         # Obtain pixel rows from shape
-        rows = LaneSegmentIdentifier.create_pixel_rows(image)
+        row_patterns = LaneSegmentIdentifier.create_row_patterns(image)
 
+        row_patterns = LaneSegmentIdentifier.filter_invalid_row_pattern(row_patterns)
         # Determine lane type based on pixel rows
-        return LaneSegmentIdentifier.pixel_rows_to_lane_type(rows)
-
+        return LaneSegmentIdentifier.row_patterns_to_lane_type(row_patterns)
 
     @staticmethod
-    def pixel_rows_to_lane_type(rows):
+    def row_patterns_to_lane_type(rows):
         if not rows:
             raise Exception("rows can not be null")
 
         # Determine lane type
         if LaneSegmentIdentifier.is_t_crossing(rows):
-            pass # Placeholder
+            pass  # Placeholder
         elif LaneSegmentIdentifier.is_left_t_crossing(rows):
-            pass # Placeholder
+            pass  # Placeholder
         elif LaneSegmentIdentifier.is_right_t_crossing(rows):
-            pass # Placeholder
+            pass  # Placeholder
         elif LaneSegmentIdentifier.is_crossing(rows):
-            pass # Placeholder
+            pass  # Placeholder
         else:
-            pass # Single Lane
+            pass  # Single Lane
 
     @staticmethod
-    def filter_invalid_row_pattern(rows):
-        pass
+    def filter_invalid_row_pattern(row_patterns):
+
+        tmr = DebugUtils.start_timer()
+
+        pattern_count = []
+
+        for i, pattern in enumerate(row_patterns):
+            if i == 0:
+                pattern_count.append([pattern, 1])
+            elif pattern_count[-1][0] == pattern:
+                pattern_count[-1][1] += 1
+            else:
+                pattern_count.append([pattern, 1])
+
+        # Group patterns into the 3 most common sub groups
+        def func(arg):
+            return arg[1]
+        while len(pattern_count) > 3:
+            smallest = min(pattern_count, key=func)
+            pattern_count.remove(smallest)
+
+        pattern_count = numpy.array(pattern_count)
+
+        tmr.stop_timer()
+
+        return pattern_count[:, 0]
+
 
     @staticmethod
     def is_left_t_crossing(rows):
-        pass
+        # 1 0 1
+        # 0 - 1
+        # 1 0 1
+
+        # Ensure that we only have 3 rows
+        if len(rows) != 3:
+            raise Exception("rows must be equal to 3")
+
+        # Match row pattern
+        if rows[0] == [1, 0, 1] and  rows[1] == [0, 1] and rows[2] == [1, 0, 1]:
+            return True
+        return False
 
     @staticmethod
     def is_right_t_crossing(rows):
-        pass
+        # 1 0 1
+        # 1 0 -
+        # 1 0 1
+
+        # Ensure that we only have 3 rows
+        if len(rows) != 3:
+            raise Exception("rows must be equal to 3")
+
+        # Match row pattern
+        if rows[0] == [1, 0, 1] and  rows[1] == [1, 0] and rows[2] == [1, 0, 1]:
+            return True
+        return False
 
     @staticmethod
     def is_t_crossing(rows):
-        pass
+        # 1 - -
+        # 0 - -
+        # 1 0 1
+
+        # Ensure that we only have 3 rows
+        if len(rows) != 3:
+            raise Exception("rows must be equal to 3")
+
+        # Match row pattern
+        if rows[0] == [1] and  rows[1] == [0] and rows[2] == [1, 0, 1]:
+            return True
+        return False
 
     @staticmethod
     def is_crossing(rows):
-        pass
+        # 1 0 1
+        # 0 - -
+        # 1 0 1
+
+        # Ensure that we only have 3 rows
+        if len(rows) != 3:
+            raise Exception("rows must be equal to 3")
+
+        # Match row pattern
+        if rows[0] == [1, 0, 1] and  rows[1] == [0] and rows[2] == [1, 0, 1]:
+            return True
+        return False
 
     @staticmethod
-    def create_pixel_rows(img, step=40):
+    def create_row_patterns(img, step=40):
         """
         Extracts pixel rows from the image
         :param img: Source images
         :type img: Binary numpy array
         :param step: Pixel distance between each row
-        :return: An array of PixelRow objects from top to bottom
+        :return: An array of row patterns from top to bottom
         """
         h, w = img.shape
-        pixel_rows = []
+        row_patterns = []
 
-        for i in range(int(h / 3), h - Settings.lane_segment_bottom_viewport_offset, step):
-            pixel_rows.append(PixelRow(img[i]))
-        return pixel_rows
+        for i in range(0, h, step):
+            rle_data = ImagePreprocessor.run_length_encoding(img[i])
+            detailed_pattern = ImagePreprocessor.cleanup_row_noise(rle_data)
+            row_patterns.append(detailed_pattern[:, 1])
+
+        return row_patterns
 
     @staticmethod
     def crop_image(image):
         """
-        Crops out the images sides by the specified offset as well as crops it
-        to the lower 2/3rd of the image
+        Crops out the image by the offsets specified in settings
         :param image: The input image that should be cropped
         :type image: Numpy array
         :return: Cropped image
         :rtype: Numpy array
         """
-        offset = Settings.lane_segment_horizontal_viewport_offset
+        h_offset = Settings.lane_segment_horizontal_viewport_offset
+        v_offset = Settings.lane_segment_vertical_viewport_offset
         h, w = image.shape
-        return image[h / 3:h, offset:w - offset]
+        return image[v_offset:h - v_offset, h_offset:w - h_offset]

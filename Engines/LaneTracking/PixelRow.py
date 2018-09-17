@@ -5,8 +5,11 @@ class PixelRow:
 
     pattern = numpy.array(0)  # e.g. [1, 0, 1]
     detailed_pattern = numpy.array(0)  # e.g. [[26, 1],[107, 0],[187, 1]]
+    position = None
 
-    def __init__(self, raw_row):
+    def __init__(self, raw_row, position):
+        self.position = position
+
         rle_data = ImagePreprocessor.run_length_encoding(raw_row)
         self.detailed_pattern = ImagePreprocessor.cleanup_row_noise(rle_data)
         self.pattern = self.detailed_pattern[:, 1]
