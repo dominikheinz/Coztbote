@@ -52,7 +52,7 @@ class LaneTrackingEngine:
                 self.cooldown_start = datetime.datetime.now()
 
             # Extract lane shape and remove noise
-            bin_img = ImagePreprocessor.extract_lane_shape(bin_img)
+            bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
             # Calculate lane correction based on image data
             lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
