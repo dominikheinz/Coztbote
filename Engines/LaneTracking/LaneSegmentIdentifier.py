@@ -58,12 +58,9 @@ class LaneSegmentIdentifier:
         def func(arg):
             return arg[1]
 
-
         while len(pattern_count) > 3:
             smallest = min(pattern_count, key=func)
             pattern_count.remove(smallest)
-
-
 
         pattern_count = numpy.array(pattern_count)
 
@@ -79,14 +76,11 @@ class LaneSegmentIdentifier:
     #         pattern_count[i][1] += pattern_count[i-1][1]
     #         to_delete.insert(0, i)
 
-
     @staticmethod
     def is_left_t_crossing(rows):
         # 1 0 1
         # 0 - 1
         # 1 0 1
-
-        print(rows)
 
         # Ensure that we only have 3 rows
         if len(rows) != 3:
@@ -107,10 +101,12 @@ class LaneSegmentIdentifier:
 
         # Ensure that we only have 3 rows
         if len(rows) != 3:
-            raise Exception("rows must be equal to 3")
+            return False
 
         # Match row pattern
-        if rows[0] == [1, 0, 1] and rows[1] == [1, 0] and rows[2] == [1, 0, 1]:
+        if numpy.array_equal(rows[0], [1, 0, 1]) and \
+                numpy.array_equal(rows[1], [1, 0]) and \
+                numpy.array_equal(rows[2], [1, 0, 1]):
             return True
         return False
 
@@ -122,10 +118,12 @@ class LaneSegmentIdentifier:
 
         # Ensure that we only have 3 rows
         if len(rows) != 3:
-            raise Exception("rows must be equal to 3")
+            return False
 
         # Match row pattern
-        if rows[0] == [1] and rows[1] == [0] and rows[2] == [1, 0, 1]:
+        if numpy.array_equal(rows[0], [1]) and \
+                numpy.array_equal(rows[1], [0]) and \
+                numpy.array_equal(rows[2], [1, 0, 1]):
             return True
         return False
 
@@ -137,10 +135,12 @@ class LaneSegmentIdentifier:
 
         # Ensure that we only have 3 rows
         if len(rows) != 3:
-            raise Exception("rows must be equal to 3")
+            return False
 
         # Match row pattern
-        if rows[0] == [1, 0, 1] and rows[1] == [0] and rows[2] == [1, 0, 1]:
+        if numpy.array_equal(rows[0], [1, 0, 1]) and \
+                numpy.array_equal(rows[1], [0]) and \
+                numpy.array_equal(rows[2], [1, 0, 1]):
             return True
         return False
 
