@@ -4,6 +4,7 @@ from Engines.RobotController import DriveController
 from Engines.LaneTracking import LaneTrackingEngine
 from Engines.LaneTracking import LaneAnalyzer
 from Engines.SignHandler import SignHandler
+from Engines.RobotController import NavigatorController
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 
@@ -35,7 +36,10 @@ def run(robot_obj: cozmo.robot.Robot):
     InstanceManager.add_instance("PreviewUtils", preview_obj)
 
     drive_obj = DriveController.DriveController()
-    InstanceManager.add_instance("RobotController", drive_obj)
+    InstanceManager.add_instance("DriveController", drive_obj)
+
+    navigator_obj = NavigatorController.NavigatorController()
+    InstanceManager.add_instance("NavigatorController", navigator_obj)
 
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)

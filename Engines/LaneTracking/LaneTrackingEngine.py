@@ -3,6 +3,10 @@ from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Utils.DebugUtils import DebugUtils
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Engines.RobotController.RobotStatusController import RobotStatusController
+from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.RobotController.NavigatorController import NavigatorController
+
 
 class LaneTrackingEngine:
 
@@ -17,10 +21,11 @@ class LaneTrackingEngine:
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
-        self.drive_controller = InstanceManager.get_instance("RobotController")
+        self.drive_controller = InstanceManager.get_instance("DriveController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
         self.sign_handler = InstanceManager.get_instance("SignHandler")
+        self.navigator_controller = InstanceManager.get_instance("NavigatorController")
 
         self.last_timestamp = datetime.datetime.now()
 
@@ -47,19 +52,24 @@ class LaneTrackingEngine:
             bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image.raw_image)
 
             # Counting signs and overwrite attribute in Lane Analyzer
-            if not self.lane_analyzer.sign_recognition_cooldown:
-                self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-                self.cooldown_start = datetime.datetime.now()
+            if not RobotStatusController.is_at_crossing:
+                if not self.lane_analyzer.sign_recognition_cooldown:
+                    self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
+                    self.cooldown_start = datetime.datetime.now()
 
             # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
-            # Calculate lane correction based on image data
-            lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
+            crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
+            self.navigator_controller.handle_crossing(crossing_type)
 
-            # If correction is required let Cozmo correct
-            if lane_correction is not None:
-                self.drive_controller.correct(lane_correction)
+            if not RobotStatusController.is_at_crossing:
+                # Calculate lane correction based on image data
+                lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
+
+                # If correction is required let Cozmo correct
+                if lane_correction is not None:
+                    self.drive_controller.correct(lane_correction)
 
             # Update current frame
             self.current_cam_frame = bin_img * 255
