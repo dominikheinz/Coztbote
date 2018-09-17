@@ -1,41 +1,40 @@
 import numpy
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Settings.CozmoSettings import Settings
-from Engines.LaneTracking.CrossingType import CrossingType
+from Engines.LaneTracking.PixelRow import PixelRow
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.DebugUtils import DebugUtils
 
 
-class CrossingTypeIdentifier:
-
-    last_crossing_type = None
+class LaneSegmentIdentifier:
 
     @staticmethod
-    def analyze_frame(image):
+    def analyze_lane_segment(image):
         # Crop out relevant area
-        image = CrossingTypeIdentifier.crop_image(image)
+        image = LaneSegmentIdentifier.crop_image(image)
 
         # Obtain pixel rows from shape
-        row_patterns = CrossingTypeIdentifier.create_row_patterns(image)
+        row_patterns = LaneSegmentIdentifier.create_row_patterns(image)
 
-        row_patterns = CrossingTypeIdentifier.filter_invalid_row_pattern(row_patterns)
-
+        row_patterns = LaneSegmentIdentifier.filter_invalid_row_pattern(row_patterns)
         # Determine lane type based on pixel rows
-        CrossingTypeIdentifier.last_crossing_type = CrossingTypeIdentifier.row_patterns_to_lane_type(row_patterns)
-        return CrossingTypeIdentifier.last_crossing_type
+        return LaneSegmentIdentifier.row_patterns_to_lane_type(row_patterns)
 
     @staticmethod
     def row_patterns_to_lane_type(rows):
+        if not rows:
+            raise Exception("rows can not be null")
 
         # Determine lane type
-        if CrossingTypeIdentifier.is_t_crossing(rows):
-            return CrossingType.T_Crossing
-        elif CrossingTypeIdentifier.is_left_t_crossing(rows):
-            return CrossingType.Left_T_Crossing
-        elif CrossingTypeIdentifier.is_right_t_crossing(rows):
-            return CrossingType.Right_T_Crossing
-        elif CrossingTypeIdentifier.is_crossing(rows):
-            return CrossingType.Crossing
+        if LaneSegmentIdentifier.is_t_crossing(rows):
+            pass  # Placeholder
+        elif LaneSegmentIdentifier.is_left_t_crossing(rows):
+            pass  # Placeholder
+        elif LaneSegmentIdentifier.is_right_t_crossing(rows):
+            pass  # Placeholder
+        elif LaneSegmentIdentifier.is_crossing(rows):
+            pass  # Placeholder
         else:
-            return None
+            pass  # Single Lane
 
     @staticmethod
     def filter_invalid_row_pattern(row_patterns):
@@ -63,19 +62,23 @@ class CrossingTypeIdentifier:
             smallest = min(pattern_count, key=func)
             pattern_count.remove(smallest)
 
+            # combine patterns if they are next to each other
+            to_delete = []
+            for i, pattern in enumerate(pattern_count):
+                if i == 0:
+                    continue
+
+                elif pattern_count[i][0] == pattern_count[i - 1][0]:
+                    pattern_count[i][1] += pattern_count[i - 1][1]
+                    to_delete.insert(0, i - 1)
+
+            for i in to_delete:
+                del pattern_count[i]
+
         pattern_count = numpy.array(pattern_count)
 
         return pattern_count[:, 0]
 
-    # def combine_patterns(pattern_count):
-    #     # combine patterns if they are next to each other
-    #     to_delete = []
-    #     for i, pattern in enumerate(pattern_count):
-    #         if i==0: continue
-    #
-    #     elif pattern_count[i][0] == pattern_count[i-1][0]:
-    #         pattern_count[i][1] += pattern_count[i-1][1]
-    #         to_delete.insert(0, i)
 
     @staticmethod
     def is_left_t_crossing(rows):
