@@ -12,6 +12,8 @@ class DriveController:
     def go(self):
         """
         Start driving straight
+        enable_drive is a static variable, taken from the Settings file
+        where as allow_driving is being changed constantly while running
         """
         if Settings.cozmo_enable_drive and self.allow_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
@@ -21,6 +23,8 @@ class DriveController:
     def correct(self, correction_value):
         """
         Correct path by turning left or right
+        enable_drive is a static variable, taken from the Settings file
+        where as allow_driving is being changed constantly while running
         :param correction_value: Value between [-1..1], negative values meaning correct to the left,
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
