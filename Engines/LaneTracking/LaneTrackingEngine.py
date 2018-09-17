@@ -4,8 +4,8 @@ from Utils.InstanceManager import InstanceManager
 from Utils.DebugUtils import DebugUtils
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
-
 class LaneTrackingEngine:
+
     robot = None
     drive_controller = None
     preview_utils = None
@@ -13,12 +13,14 @@ class LaneTrackingEngine:
 
     last_timestamp = None
     current_cam_frame = None
+    cooldown_start = None
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
         self.drive_controller = InstanceManager.get_instance("RobotController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
+        self.sign_handler = InstanceManager.get_instance("SignHandler")
 
         self.last_timestamp = datetime.datetime.now()
 
@@ -44,8 +46,12 @@ class LaneTrackingEngine:
             # Convert image to binary
             bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image.raw_image)
 
-            # Extract lane shape and remove noise
+            # Counting signs and overwrite attribute in Lane Analyzer
+            if not self.lane_analyzer.sign_recognition_cooldown:
+                self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
+                self.cooldown_start = datetime.datetime.now()
 
+            # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
             # Calculate lane correction based on image data
@@ -64,5 +70,8 @@ class LaneTrackingEngine:
 
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
+
+            # Check if cooldown has expired
+            self.sign_handler.check_for_cooldown(self.cooldown_start)
 
             DebugUtils.stop_timer(tmr, "extract_lane_shape")

@@ -159,3 +159,55 @@ class ImagePreprocessor:
                     new_list.append(raw_pattern_data[i])
 
         return numpy.array(new_list)
+
+    @staticmethod
+    def calculate_number_of_signs(image):
+        """
+        Tracks all contours and process them to find signs
+        :param image: image in binary form
+        :return: amount of tracked signs
+        """
+        image = numpy.array(image, dtype=numpy.uint8) - 1
+
+        start_row_1 = int(image.shape[0] / 3)
+        row_height = int((image.shape[0] - start_row_1) / 3)
+        end_row_1 = start_row_1 + row_height
+        end_row_2 = end_row_1 + row_height                      # used to start the measurement
+
+        # Get multidimensional array of conture informations
+        contours = cv2.findContours(image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+        contour_allowed = False
+        contour_counter = 0
+        for contour in contours[1]:
+            if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
+                cv2.drawContours(image, [contour], 0, 128, 2)
+                contour_counter += 1
+                contour_allowed = ImagePreprocessor.contours_in_allowed_area(contour, end_row_2)
+
+        # Option to show tracked contours in extra window
+        if Settings.show_contures_in_extra_window:
+            cv2.imshow("with contours", image)
+
+        # Refreshes the amount of found contours if they are in allowed area
+        if contour_allowed:
+            sign_count = contour_counter
+        # Sets amount of signs to zero if contours aren`t in allowed area
+        else:
+            sign_count = 0
+
+        return sign_count
+
+    @staticmethod
+    def contours_in_allowed_area(contour, end_row_2):
+        """
+        Checks if the contour is inside allowed area
+        :param contour: the contour to be checked
+        :param end_row_2: the border marking where the allowed area starts
+        :return: boolean if the contour is inside the allowed area
+        """
+        contour_allowed = False
+        if contour[0][0][1] > end_row_2:
+            contour_allowed = True
+        return contour_allowed
+

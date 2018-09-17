@@ -2,6 +2,7 @@ class Settings:
 
     # Environment settings
     image_binarization_threshold = 30
+    cooldown_time_ms = 5000
 
     # Driving settings
     cozmo_enable_drive = False
@@ -14,9 +15,14 @@ class Settings:
     cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)
     cozmo_preview_screenshot_include_points = False
+    show_contures_in_extra_window = True
     cozmo_lane_surrounding_width_px = 80
 
     # Lane segment identifier settings
     lane_segment_horizontal_viewport_offset = 10
     lane_segment_bottom_viewport_offset = 10
-    lane_pattern_min_width_threshold: int = 6
+    lane_pattern_min_width_threshold = 6
+
+    # Measurement settings for contures
+    min_pixel_sign = 150
+    max_pixel_sign = 1200
