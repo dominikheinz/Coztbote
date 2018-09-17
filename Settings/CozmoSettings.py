@@ -14,8 +14,9 @@ class Settings:
     cozmo_img_processing_ms_limit = 40
     cozmo_preview_resolution = (1080, 720)
     cozmo_preview_screenshot_include_points = False
+    cozmo_lane_surrounding_width_px = 80
 
     # Lane segment identifier settings
     lane_segment_horizontal_viewport_offset = 10
     lane_segment_bottom_viewport_offset = 10
-    lane_pattern_min_width_threshold = 6
+    lane_pattern_min_width_threshold: int = 6
