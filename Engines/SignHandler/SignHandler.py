@@ -1,5 +1,5 @@
 import datetime
-import cozmo
+import time
 from Settings.CozmoSettings import Settings
 from cozmo.util import degrees
 from Utils.InstanceManager import InstanceManager
@@ -10,9 +10,6 @@ from Engines.RobotController.DriveController import DriveController
 class SignHandler:
     RobotStatusController = None
     robot = None
-    cooldown_time = None
-    time_disable_driving = datetime.datetime.now()
-    last_timestamp = datetime.datetime.now()
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
@@ -39,22 +36,24 @@ class SignHandler:
 
     def react_to_signs(self, sign_count):
         if (sign_count % 2) is 1:
-            self.robot.say_text("kek")
             print("ungerade")
+
         elif sign_count is 2:
             print("2")
             DriveController.allow_driving = False
-            self.robot.turn_in_place(degrees(180)).wait_for_completed()
-            self.time_disable_driving = datetime.datetime.now()
+            RobotStatusController.action_start = datetime.datetime.now()
+            RobotStatusController.action_cooldown_ms = 10000
 
         elif sign_count is 4:
             print("4")
             DriveController.allow_driving = False
             self.robot.turn_in_place(degrees(180)).wait_for_completed()
-            self.time_disable_driving = datetime.datetime.now()
-        self.driving_cooldown(self.time_disable_driving)
+            RobotStatusController.action_start = datetime.datetime.now()
+            RobotStatusController.action_cooldown_ms = 0
 
-    def driving_cooldown(self, time):
+        self.driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
+
+    def driving_cooldown(self, time, wait_time):
         if time < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=1000):
+                milliseconds=wait_time):
             DriveController.allow_driving = True
