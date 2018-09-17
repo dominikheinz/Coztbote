@@ -4,6 +4,7 @@ from Engines.LaneTracking.PixelRow import PixelRow
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Utils.DebugUtils import DebugUtils
 
+
 class LaneSegmentIdentifier:
 
     @staticmethod
@@ -38,11 +39,14 @@ class LaneSegmentIdentifier:
     @staticmethod
     def filter_invalid_row_pattern(row_patterns):
 
-        tmr = DebugUtils.start_timer()
-
+        # [
+        # [pattern A, how often does A occur consecutively],
+        # [pattern B, how often does B occur consecutively]
+        # ]
         pattern_count = []
 
         for i, pattern in enumerate(row_patterns):
+            pattern = list(pattern)
             if i == 0:
                 pattern_count.append([pattern, 1])
             elif pattern_count[-1][0] == pattern:
@@ -53,15 +57,27 @@ class LaneSegmentIdentifier:
         # Group patterns into the 3 most common sub groups
         def func(arg):
             return arg[1]
+
+
         while len(pattern_count) > 3:
             smallest = min(pattern_count, key=func)
             pattern_count.remove(smallest)
 
+
+
         pattern_count = numpy.array(pattern_count)
 
-        tmr.stop_timer()
-
         return pattern_count[:, 0]
+
+    # def combine_patterns(pattern_count):
+    #     # combine patterns if they are next to each other
+    #     to_delete = []
+    #     for i, pattern in enumerate(pattern_count):
+    #         if i==0: continue
+    #
+    #     elif pattern_count[i][0] == pattern_count[i-1][0]:
+    #         pattern_count[i][1] += pattern_count[i-1][1]
+    #         to_delete.insert(0, i)
 
 
     @staticmethod
@@ -70,12 +86,16 @@ class LaneSegmentIdentifier:
         # 0 - 1
         # 1 0 1
 
+        print(rows)
+
         # Ensure that we only have 3 rows
         if len(rows) != 3:
-            raise Exception("rows must be equal to 3")
+            return False
 
         # Match row pattern
-        if rows[0] == [1, 0, 1] and  rows[1] == [0, 1] and rows[2] == [1, 0, 1]:
+        if numpy.array_equal(rows[0], [1, 0, 1]) and \
+                numpy.array_equal(rows[1], [0, 1]) and \
+                numpy.array_equal(rows[2], [1, 0, 1]):
             return True
         return False
 
@@ -90,7 +110,7 @@ class LaneSegmentIdentifier:
             raise Exception("rows must be equal to 3")
 
         # Match row pattern
-        if rows[0] == [1, 0, 1] and  rows[1] == [1, 0] and rows[2] == [1, 0, 1]:
+        if rows[0] == [1, 0, 1] and rows[1] == [1, 0] and rows[2] == [1, 0, 1]:
             return True
         return False
 
@@ -105,7 +125,7 @@ class LaneSegmentIdentifier:
             raise Exception("rows must be equal to 3")
 
         # Match row pattern
-        if rows[0] == [1] and  rows[1] == [0] and rows[2] == [1, 0, 1]:
+        if rows[0] == [1] and rows[1] == [0] and rows[2] == [1, 0, 1]:
             return True
         return False
 
@@ -120,12 +140,12 @@ class LaneSegmentIdentifier:
             raise Exception("rows must be equal to 3")
 
         # Match row pattern
-        if rows[0] == [1, 0, 1] and  rows[1] == [0] and rows[2] == [1, 0, 1]:
+        if rows[0] == [1, 0, 1] and rows[1] == [0] and rows[2] == [1, 0, 1]:
             return True
         return False
 
     @staticmethod
-    def create_row_patterns(img, step=40):
+    def create_row_patterns(img, step=10):
         """
         Extracts pixel rows from the image
         :param img: Source images
