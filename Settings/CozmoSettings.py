@@ -2,6 +2,7 @@ class Settings:
 
     # Environment settings
     image_binarization_threshold = 30
+    cooldown_time_ms = 5000
 
     # Driving settings
     cozmo_enable_drive = False  # WARNING TURNED OFF

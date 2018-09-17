@@ -7,15 +7,22 @@ from Utils.InstanceManager import InstanceManager
 class SignHandler:
     lane_analyzer = None
     robot = None
+    cooldown_time = None
     last_timestamp = datetime.datetime.now()
 
     def __init__(self):
         self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
         self.robot = InstanceManager.get_instance("Robot")
+        self.cooldown_time = Settings.cooldown_time_ms
 
-    def do_something(self, last_timestamp):
-        if last_timestamp < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=10000) and self.lane_analyzer.sign_recognition_cooldown:
+    def check_for_cooldown(self, time_sign_seen):
+        """
+        Checks last timestamp if time delta is exceeded, to block or 
+        unblock sign_recognition_cooldown boolean
+        :param time_sign_seen: time when sign is seen
+        """
+        if time_sign_seen < datetime.datetime.now() - datetime.timedelta(
+                milliseconds=self.cooldown_time) and self.lane_analyzer.sign_recognition_cooldown:
             self.lane_analyzer.sign_recognition_cooldown = False
             print("unblock")
 

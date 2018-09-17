@@ -69,4 +69,4 @@ class LaneTrackingEngine:
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
 
-            self.sign_handler.do_something(self.cooldown_start)
+            self.sign_handler.check_for_cooldown(self.cooldown_start)
