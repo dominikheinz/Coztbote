@@ -88,6 +88,10 @@ class ImagePreprocessor:
             inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[1]
 
         # Take the contour with the biggest area (the lane shape)
+        if not contours:
+            return masked_img, masked_img
+
+        # Calculate area of contour area
         biggest_contour_area = max(contours, key=cv2.contourArea)
 
         # Fill elements within area with 1's
