@@ -47,7 +47,7 @@ class LaneTrackingEngine:
             bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image.raw_image)
 
             # Counting signs and overwrite attribute in Lane Analyzer
-            if not self.lane_analyzer.sign_recognition_cooldown:
+            if not self.lane_analyzer.sign_recognition_cooldown and not Settings.disable_sign_detection:
                 self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
                 self.cooldown_start = datetime.datetime.now()
 
@@ -72,6 +72,7 @@ class LaneTrackingEngine:
             self.last_timestamp = datetime.datetime.now()
 
             # Check if cooldown has expired
-            self.sign_handler.check_for_cooldown(self.cooldown_start)
+            if not Settings.disable_sign_detection:
+                self.sign_handler.check_for_cooldown(self.cooldown_start)
 
-            DebugUtils.stop_timer(tmr, "extract_lane_shape")
+            #DebugUtils.stop_timer(tmr, "extract_lane_shape")
