@@ -64,9 +64,12 @@ class PreviewUtils(metaclass=Singleton):
         :param image: The image to apply to
         :type image: Numpy array
         """
-        correction_text = ("Left" if self.lane_analyzer_obj.last_correction < 0 else "Right")
-        correction_text += " (" + str(round(self.lane_analyzer_obj.last_correction, 2)) + ")"
+        correction_text = ("Left" if self.lane_analyzer.last_correction < 0 else "Right")
+        correction_text += " (" + str(round(self.lane_analyzer.last_correction, 2)) + ")"
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
+        overlay_text_signs = "Amount of Signs: " + str(self.lane_analyzer.sign_count)
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+

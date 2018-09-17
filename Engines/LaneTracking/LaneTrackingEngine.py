@@ -3,7 +3,7 @@ from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Utils.DebugUtils import DebugUtils
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
-
+from Engines.SignHandler import SignHandler
 
 class LaneTrackingEngine:
     robot = None
@@ -13,6 +13,7 @@ class LaneTrackingEngine:
 
     last_timestamp = None
     current_cam_frame = None
+    cooldown_start = None
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
