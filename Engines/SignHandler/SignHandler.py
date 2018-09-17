@@ -28,7 +28,7 @@ class SignHandler:
 
         if self.lane_analyzer.sign_count != 0 and self.lane_analyzer.sign_recognition_cooldown==False:
             self.lane_analyzer.sign_recognition_cooldown = True
-            self.robot.turn_in_place(degrees(180))
+            #self.robot.turn_in_place(degrees(180))
             self.lane_analyzer.sign_count = 0
             print("should be blocked")
 

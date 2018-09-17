@@ -150,7 +150,7 @@ class ImagePreprocessor:
         return numpy.array(new_list)
 
     @staticmethod
-    def calculate_number_of_signs(self, image):
+    def calculate_number_of_signs(image):
         """
         Tracks all contours and process them to find signs
         :param image: image in binary form
@@ -172,7 +172,7 @@ class ImagePreprocessor:
             if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
                 cv2.drawContours(image, [contour], 0, 128, 2)
                 contour_counter += 1
-                contour_allowed = self.contours_in_allowed_area(contour, end_row_2)
+                contour_allowed = ImagePreprocessor.contours_in_allowed_area(contour, end_row_2)
 
         # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
@@ -188,7 +188,7 @@ class ImagePreprocessor:
         return sign_count
 
     @staticmethod
-    def contours_in_allowed_area(self, contour, end_row_2):
+    def contours_in_allowed_area(contour, end_row_2):
         """
         Checks if the contour is inside allowed area
         :param contour: the contour to be checked
