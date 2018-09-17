@@ -1,6 +1,5 @@
 import numpy
 from Settings.CozmoSettings import Settings
-from Engines.LaneTracking.PixelRow import PixelRow
 from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 from Utils.DebugUtils import DebugUtils
 
@@ -62,19 +61,22 @@ class LaneSegmentIdentifier:
             smallest = min(pattern_count, key=func)
             pattern_count.remove(smallest)
 
+            # combine patterns if they are next to each other
+            to_delete = []
+            for i, pattern in enumerate(pattern_count):
+                if i == 0:
+                    continue
+
+                elif pattern_count[i][0] == pattern_count[i - 1][0]:
+                    pattern_count[i][1] += pattern_count[i - 1][1]
+                    to_delete.insert(0, i - 1)
+
+            for i in to_delete:
+                del pattern_count[i]
+
         pattern_count = numpy.array(pattern_count)
 
         return pattern_count[:, 0]
-
-    # def combine_patterns(pattern_count):
-    #     # combine patterns if they are next to each other
-    #     to_delete = []
-    #     for i, pattern in enumerate(pattern_count):
-    #         if i==0: continue
-    #
-    #     elif pattern_count[i][0] == pattern_count[i-1][0]:
-    #         pattern_count[i][1] += pattern_count[i-1][1]
-    #         to_delete.insert(0, i)
 
     @staticmethod
     def is_left_t_crossing(rows):

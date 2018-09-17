@@ -1,7 +1,6 @@
 import numpy
 import cv2
 from unittest import TestCase
-from Engines.LaneTracking.PixelRow import PixelRow
 from Engines.LaneTracking.LaneSegmentIdentifier import LaneSegmentIdentifier
 
 
