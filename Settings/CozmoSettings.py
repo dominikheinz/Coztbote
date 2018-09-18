@@ -5,7 +5,7 @@ class Settings:
     cooldown_time_ms = 5000
 
     # Driving settings
-    cozmo_enable_drive = True
+    cozmo_enable_drive = False
     cozmo_drive_speed = 70
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
