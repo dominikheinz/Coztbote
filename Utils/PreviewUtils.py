@@ -6,6 +6,7 @@ from Utils.Singleton import Singleton
 from Utils.InstanceManager import InstanceManager
 from Engines.LaneTracking.CrossingType import CrossingType
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.RobotController.RobotStatusController import RobotStatusController
 
 
 class PreviewUtils(metaclass=Singleton):
@@ -29,7 +30,7 @@ class PreviewUtils(metaclass=Singleton):
             self.last_frame = image.copy()
 
         # Draw navigation points
-        if self.lane_analyzer_obj.last_points is not None:
+        if self.lane_analyzer_obj.last_points is not None and not RobotStatusController.is_at_crossing:
             if self.lane_analyzer_obj.last_points[0] is not None:
                 cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
             if self.lane_analyzer_obj.last_points[1] is not None:

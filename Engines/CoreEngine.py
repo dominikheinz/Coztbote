@@ -38,7 +38,6 @@ class CoreEngine:
     def process_frame(self, image):
         """
         Processes the frame captured by Cozmos camera
-        :param e: Event object, which gets passed to this function by the event handler
         :param image: Current frame from Cozmos feed
         :type image: PIL image
         """
@@ -53,6 +52,9 @@ class CoreEngine:
 
         # Extract lane shape and remove noise
         bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
+
+        if RobotStatusController.is_at_crossing:
+            self.drive_controller.check_crossing_status_cooldown()
 
         if not RobotStatusController.is_at_crossing:
 
