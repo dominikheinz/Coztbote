@@ -19,7 +19,7 @@ class SignHandler:
 
     def check_for_cooldown(self, time_sign_seen, disable_cooldown):
         """
-        Checks last timestamp if time delta is exceeded, to block or 
+        Checks last timestamp if time delta is exceeded, to block or
         unblock sign_recognition_cooldown boolean
         :param time_sign_seen: time when sign is seen
         """
@@ -70,7 +70,8 @@ class SignHandler:
 
         # self.check_driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
 
-    def check_driving_cooldown(self):
+    @staticmethod
+    def check_driving_cooldown():
         """
         Checks remaining cooldown time, to allow driving
         :return:
