@@ -7,7 +7,13 @@ from Engines.SignHandler import SignHandler
 from Engines.RobotController import Navigator
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
+from Scripts import LaneFollow
+import sched, time
 
+last_frame = None
+
+def save_last_frame(e, image):
+    LaneFollow.last_frame = image
 
 def handle_hotkeys(keycode):
     """
@@ -57,10 +63,20 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.wait_for_all_actions_completed()
 
     # Setup camera event handler
-    robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, lane_tracking_obj.process_frame)
+    robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, save_last_frame)
 
     # Start driving engine
     drive_obj.start()
+
+    s = sched.scheduler(time.time, time.sleep)
+
+    def run_analysis(sc):
+        if LaneFollow.last_frame is not None:
+            lane_tracking_obj.process_frame(image=LaneFollow.last_frame)
+        s.enter(0.05, 1, run_analysis, (sc,))
+
+    s.enter(0.05, 1, run_analysis, (s,))
+    s.run()
 
     # Setup hotkey listener
     with keyboard.Listener(on_press=handle_hotkeys) as listener:

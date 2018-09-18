@@ -7,12 +7,12 @@ from Utils.InstanceManager import InstanceManager
 from Engines.LaneTracking.CrossingType import CrossingType
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
 
-class PreviewUtils(metaclass=Singleton):
 
+class PreviewUtils(metaclass=Singleton):
     last_frame = None
 
     def __init__(self):
-        self.lane_analyzer_obj = InstanceManager.get_instance("LaneAnalyzer")
+        self.lane_analyzer_obj = InstanceManager.get_instance("CorrectionCalculator")
         self.robot_obj = InstanceManager.get_instance("Robot")
 
     def show_cam_frame(self, image):
@@ -71,9 +71,9 @@ class PreviewUtils(metaclass=Singleton):
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
         overlay_text_signs = "Amount of Signs: " + str(self.lane_analyzer_obj.sign_count)
-        overlay_lane_type = "Lane Type: " + str(CrossingType.get_crossing_as_string(CrossingTypeIdentifier.last_crossing_type))
+        overlay_lane_type = "Lane Type: " + str(
+            CrossingType.get_crossing_as_string(CrossingTypeIdentifier.last_crossing_type))
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_lane_type, (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
-

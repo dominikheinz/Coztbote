@@ -35,30 +35,26 @@ class CoreEngine:
         """
         return self.current_cam_frame
 
-    def process_frame(self, e, image):
+    def process_frame(self, image):
         """
         Processes the frame captured by Cozmos camera
         :param e: Event object, which gets passed to this function by the event handler
         :param image: Current frame from Cozmos feed
         :type image: PIL image
         """
-        # "Cooldown", so a frame can only be processed each x milliseconds, other frames are discarded
-        if self.last_timestamp < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=Settings.cozmo_img_processing_ms_limit):
+        # Convert image to binary
+        bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
-            # Convert image to binary
-            bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
+        # Counting signs and overwrite attribute in Lane Analyzer
+        # if not RobotStatusController.is_at_crossing:
+        #     if not self.lane_analyzer.sign_recognition_cooldown:
+        #         self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
+        #         self.cooldown_start = datetime.datetime.now()
 
-            # Counting signs and overwrite attribute in Lane Analyzer
-            # if not RobotStatusController.is_at_crossing:
-            #     if not self.lane_analyzer.sign_recognition_cooldown:
-            #         self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-            #         self.cooldown_start = datetime.datetime.now()
+        # Extract lane shape and remove noise
+        bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
-            # Extract lane shape and remove noise
-            bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
-
-            if not RobotStatusController.is_at_crossing:
+        if not RobotStatusController.is_at_crossing:
 
                 crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
                 self.navigator.handle_crossing(crossing_type)
@@ -70,16 +66,12 @@ class CoreEngine:
                 if lane_correction is not None:
                     self.drive_controller.correct(lane_correction)
 
+        # Update current frame
+        self.current_cam_frame = bin_img * 255
 
-            # Update current frame
-            self.current_cam_frame = bin_img * 255
+        # Show cam live preview if enabled
+        if Settings.cozmo_show_cam_live_feed:
+            self.preview_utils.show_cam_frame(bin_img)
 
-            # Show cam live preview if enabled
-            if Settings.cozmo_show_cam_live_feed:
-                self.preview_utils.show_cam_frame(bin_img)
-
-            # Update timestamp
-            self.last_timestamp = datetime.datetime.now()
-
-            # Check if cooldown has expired
-            # self.sign_handler.check_for_cooldown(self.cooldown_start)
+        # Check if cooldown has expired
+        # self.sign_handler.check_for_cooldown(self.cooldown_start)
