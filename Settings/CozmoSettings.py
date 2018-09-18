@@ -10,7 +10,7 @@ class Settings:
 
     # Driving settings
     cozmo_enable_drive = True
-    cozmo_drive_speed = 70
+    cozmo_drive_speed = 30
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
 

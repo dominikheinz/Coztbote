@@ -33,7 +33,7 @@ class SignHandler:
                 print("unblock")
 
             # Sets the cooldown for sign recognition if signs were seen, to prevent action looping
-            if RobotStatusController.sign_count != 0 and RobotStatusController.sign_recognition_cooldown is not False:
+            if RobotStatusController.sign_count != 0 and RobotStatusController.sign_recognition_cooldown is False:
                 RobotStatusController.sign_recognition_cooldown = True
                 RobotStatusController.sign_count = 0    # Setting sign count to zero to prevent action looping
                 print("should be blocked")
@@ -60,9 +60,8 @@ class SignHandler:
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
 
-        # self.check_driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
-
-    def check_driving_cooldown(self):
+    @staticmethod
+    def check_driving_cooldown():
         """
         Checks remaining cooldown time, to allow driving
         :return:
