@@ -1,11 +1,9 @@
 import datetime
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
-from Utils.DebugUtils import DebugUtils
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.RobotController.RobotStatusController import RobotStatusController
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
-from Engines.RobotController.NavigatorController import NavigatorController
 
 
 class LaneTrackingEngine:
@@ -49,13 +47,13 @@ class LaneTrackingEngine:
                 milliseconds=Settings.cozmo_img_processing_ms_limit):
 
             # Convert image to binary
-            bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image.raw_image)
+            bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
             # Counting signs and overwrite attribute in Lane Analyzer
-            if not RobotStatusController.is_at_crossing:
-                if not self.lane_analyzer.sign_recognition_cooldown:
-                    self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-                    self.cooldown_start = datetime.datetime.now()
+            # if not RobotStatusController.is_at_crossing:
+            #     if not self.lane_analyzer.sign_recognition_cooldown:
+            #         self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
+            #         self.cooldown_start = datetime.datetime.now()
 
             # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
@@ -84,4 +82,4 @@ class LaneTrackingEngine:
             self.last_timestamp = datetime.datetime.now()
 
             # Check if cooldown has expired
-            self.sign_handler.check_for_cooldown(self.cooldown_start)
+            # self.sign_handler.check_for_cooldown(self.cooldown_start)

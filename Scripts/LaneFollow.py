@@ -1,8 +1,8 @@
 import cozmo
 from pynput import keyboard
 from Engines.RobotController import DriveController
-from Engines.LaneTracking import LaneTrackingEngine
-from Engines.LaneTracking import LaneAnalyzer
+from Engines import CoreEngine
+from Engines.LaneTracking import CorrectionCalculator
 from Engines.SignHandler import SignHandler
 from Engines.RobotController import NavigatorController
 from Utils.InstanceManager import InstanceManager
@@ -29,7 +29,7 @@ def run(robot_obj: cozmo.robot.Robot):
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
 
-    lane_analyzer_obj = LaneAnalyzer.LaneAnalyzer()
+    lane_analyzer_obj = CorrectionCalculator.LaneAnalyzer()
     InstanceManager.add_instance("LaneAnalyzer", lane_analyzer_obj)
 
     preview_obj = PreviewUtils()
@@ -44,7 +44,7 @@ def run(robot_obj: cozmo.robot.Robot):
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    lane_tracking_obj = LaneTrackingEngine.LaneTrackingEngine()
+    lane_tracking_obj = CoreEngine.LaneTrackingEngine()
     InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
 
     # Setup robot with presets
@@ -56,12 +56,11 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.set_lift_height(1.0, in_parallel=True)
     robot_obj.wait_for_all_actions_completed()
 
-
     # Setup camera event handler
-    robot_obj.add_event_handler(cozmo.world.EvtNewCameraImage, lane_tracking_obj.process_frame)
+    robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, lane_tracking_obj.process_frame)
 
     # Start driving engine
-    drive_obj.go()
+    drive_obj.start()
 
     # Setup hotkey listener
     with keyboard.Listener(on_press=handle_hotkeys) as listener:

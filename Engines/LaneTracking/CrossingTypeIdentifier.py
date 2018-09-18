@@ -1,21 +1,23 @@
 import numpy
 from Settings.CozmoSettings import Settings
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.LaneTracking.CrossingType import CrossingType
 
-class CrossingTypeIdentifier:
 
+class CrossingTypeIdentifier:
     last_crossing_type = None
     last_confirmed_crossing_type = None
 
     @staticmethod
     def analyze_frame(image):
+
         # Crop out relevant area
-        image = CrossingTypeIdentifier.crop_image(image)
+        image = ImagePreprocessor.crop_image(image, Settings.crossing_vertical_crop, Settings.crossing_horizontal_crop)
 
         # Obtain pixel rows from shape
         row_patterns = CrossingTypeIdentifier.create_row_patterns(image)
 
+        # Filter out invalid patterns
         row_patterns = CrossingTypeIdentifier.filter_invalid_row_pattern(row_patterns)
 
         # Set last crossing type for preview window
@@ -41,11 +43,11 @@ class CrossingTypeIdentifier:
 
     @staticmethod
     def filter_invalid_row_pattern(row_patterns):
-
-        # [
-        # [pattern A, how often does A occur consecutively],
-        # [pattern B, how often does B occur consecutively]
-        # ]
+        """
+        Filters out invalid row patterns based on how often they occur.
+        :param row_patterns: Raw row patterns
+        :return: Filtered row patterns
+        """
         pattern_count = []
 
         for i, pattern in enumerate(row_patterns):
@@ -82,72 +84,79 @@ class CrossingTypeIdentifier:
 
         return pattern_count[:, 0]
 
-
     @staticmethod
-    def is_left_t_crossing(rows):
-        # 1 0 1
-        # 0 - 1
-        # 1 0 1
+    def is_left_t_crossing(row_patterns):
+        """
+        Checks if pattern matches left T-crossing
+        :param row_patterns: Filtered row patterns
+        :return: True if pattern matched, false otherwise
+        """
 
         # Ensure that we only have 3 rows
-        if len(rows) != 3:
+        if len(row_patterns) != 3:
             return False
 
         # Match row pattern
-        if numpy.array_equal(rows[0], [1, 0, 1]) and \
-                numpy.array_equal(rows[1], [0, 1]) and \
-                numpy.array_equal(rows[2], [1, 0, 1]):
+        if numpy.array_equal(row_patterns[0], [1, 0, 1]) and \
+                numpy.array_equal(row_patterns[1], [0, 1]) and \
+                numpy.array_equal(row_patterns[2], [1, 0, 1]):
             return True
         return False
 
     @staticmethod
-    def is_right_t_crossing(rows):
-        # 1 0 1
-        # 1 0 -
-        # 1 0 1
+    def is_right_t_crossing(row_patterns):
+        """
+        Checks if pattern matches right T-crossing
+        :param row_patterns: Filtered row patterns
+        :return: True if pattern matched, false otherwise
+        """
 
         # Ensure that we only have 3 rows
-        if len(rows) != 3:
+        if len(row_patterns) != 3:
             return False
 
         # Match row pattern
-        if numpy.array_equal(rows[0], [1, 0, 1]) and \
-                numpy.array_equal(rows[1], [1, 0]) and \
-                numpy.array_equal(rows[2], [1, 0, 1]):
+        if numpy.array_equal(row_patterns[0], [1, 0, 1]) and \
+                numpy.array_equal(row_patterns[1], [1, 0]) and \
+                numpy.array_equal(row_patterns[2], [1, 0, 1]):
             return True
         return False
 
     @staticmethod
-    def is_t_crossing(rows):
-        # 1 - -
-        # 0 - -
-        # 1 0 1
+    def is_t_crossing(row_patterns):
+        """
+        Checks if pattern matches T-crossing
+        :param row_patterns: Filtered row patterns
+        :return: True if pattern matched, false otherwise
+        """
 
         # Ensure that we only have 3 rows
-        if len(rows) != 3:
+        if len(row_patterns) != 3:
             return False
 
         # Match row pattern
-        if numpy.array_equal(rows[0], [1]) and \
-                numpy.array_equal(rows[1], [0]) and \
-                numpy.array_equal(rows[2], [1, 0, 1]):
+        if numpy.array_equal(row_patterns[0], [1]) and \
+                numpy.array_equal(row_patterns[1], [0]) and \
+                numpy.array_equal(row_patterns[2], [1, 0, 1]):
             return True
         return False
 
     @staticmethod
-    def is_crossing(rows):
-        # 1 0 1
-        # 0 - -
-        # 1 0 1
+    def is_crossing(row_patterns):
+        """
+        Checks if pattern matches crossing
+        :param row_patterns: Filtered row patterns
+        :return: True if pattern matched, false otherwise
+        """
 
         # Ensure that we only have 3 rows
-        if len(rows) != 3:
+        if len(row_patterns) != 3:
             return False
 
         # Match row pattern
-        if numpy.array_equal(rows[0], [1, 0, 1]) and \
-                numpy.array_equal(rows[1], [0]) and \
-                numpy.array_equal(rows[2], [1, 0, 1]):
+        if numpy.array_equal(row_patterns[0], [1, 0, 1]) and \
+                numpy.array_equal(row_patterns[1], [0]) and \
+                numpy.array_equal(row_patterns[2], [1, 0, 1]):
             return True
         return False
 
@@ -179,7 +188,7 @@ class CrossingTypeIdentifier:
         :return: Cropped image
         :rtype: Numpy array
         """
-        h_offset = Settings.lane_segment_horizontal_viewport_offset
-        v_offset = Settings.lane_segment_vertical_viewport_offset
+        h_offset = Settings.crossing_horizontal_crop
+        v_offset = Settings.crossing_vertical_crop
         h, w = image.shape
         return image[v_offset:h - v_offset, h_offset:w - h_offset]

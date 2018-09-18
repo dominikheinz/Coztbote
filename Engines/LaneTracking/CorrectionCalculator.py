@@ -19,7 +19,7 @@ class LaneAnalyzer:
         :return:
         """
 
-        x_row_1, x_row_2, x_row_3 = self.calculate_lane_points(image)
+        x_row_1, x_row_2, x_row_3 = self.calculate_lane_correction_points(image)
 
         # Calculate center of image
         x_center = int(image.shape[1] / 2)
@@ -38,7 +38,7 @@ class LaneAnalyzer:
 
         return lane_correction
 
-    def calculate_lane_points(self, image):
+    def calculate_lane_correction_points(self, image):
         """
         Calculates three points which are on the lane
         :param image: Frame from Cozmos feed as numpy array
