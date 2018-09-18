@@ -2,7 +2,7 @@ import numpy
 import math
 
 
-class LaneAnalyzer:
+class CorrectionCalculator:
     last_correction = 0
     last_points = None
     sign_count = 0

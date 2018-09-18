@@ -6,12 +6,12 @@ from Engines.RobotController.RobotStatusController import RobotStatusController
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
 
 
-class LaneTrackingEngine:
+class CoreEngine:
 
     robot = None
     drive_controller = None
     preview_utils = None
-    lane_analyzer = None
+    corr_calculator = None
 
     last_timestamp = None
     current_cam_frame = None
@@ -21,9 +21,9 @@ class LaneTrackingEngine:
         self.robot = InstanceManager.get_instance("Robot")
         self.drive_controller = InstanceManager.get_instance("DriveController")
         self.preview_utils = InstanceManager.get_instance("PreviewUtils")
-        self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
+        self.corr_calculator = InstanceManager.get_instance("CorrectionCalculator")
         self.sign_handler = InstanceManager.get_instance("SignHandler")
-        self.navigator_controller = InstanceManager.get_instance("NavigatorController")
+        self.navigator = InstanceManager.get_instance("Navigator")
 
         self.last_timestamp = datetime.datetime.now()
 
@@ -61,10 +61,10 @@ class LaneTrackingEngine:
             if not RobotStatusController.is_at_crossing:
 
                 crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
-                self.navigator_controller.handle_crossing(crossing_type)
+                self.navigator.handle_crossing(crossing_type)
 
                 # Calculate lane correction based on image data
-                lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
+                lane_correction = self.corr_calculator.calculate_lane_correction(bin_img)
 
                 # If correction is required let Cozmo correct
                 if lane_correction is not None:

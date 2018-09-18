@@ -4,7 +4,7 @@ from Engines.RobotController import DriveController
 from Engines import CoreEngine
 from Engines.LaneTracking import CorrectionCalculator
 from Engines.SignHandler import SignHandler
-from Engines.RobotController import NavigatorController
+from Engines.RobotController import Navigator
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 
@@ -29,8 +29,8 @@ def run(robot_obj: cozmo.robot.Robot):
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
 
-    lane_analyzer_obj = CorrectionCalculator.LaneAnalyzer()
-    InstanceManager.add_instance("LaneAnalyzer", lane_analyzer_obj)
+    corr_calculator_obj = CorrectionCalculator.CorrectionCalculator()
+    InstanceManager.add_instance("CorrectionCalculator", corr_calculator_obj)
 
     preview_obj = PreviewUtils()
     InstanceManager.add_instance("PreviewUtils", preview_obj)
@@ -38,13 +38,13 @@ def run(robot_obj: cozmo.robot.Robot):
     drive_obj = DriveController.DriveController()
     InstanceManager.add_instance("DriveController", drive_obj)
 
-    navigator_obj = NavigatorController.NavigatorController()
-    InstanceManager.add_instance("NavigatorController", navigator_obj)
+    navigator_obj = Navigator.Navigator()
+    InstanceManager.add_instance("Navigator", navigator_obj)
 
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    lane_tracking_obj = CoreEngine.LaneTrackingEngine()
+    lane_tracking_obj = CoreEngine.CoreEngine()
     InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
 
     # Setup robot with presets

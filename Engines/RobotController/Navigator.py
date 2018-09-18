@@ -3,7 +3,7 @@ from Utils.InstanceManager import InstanceManager
 from Engines.RobotController import RobotStatusController
 
 
-class NavigatorController:
+class Navigator:
 
     def __init__(self):
         self.drive_controller = InstanceManager.get_instance("DriveController")
