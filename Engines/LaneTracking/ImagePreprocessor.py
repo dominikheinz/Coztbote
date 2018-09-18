@@ -167,23 +167,30 @@ class ImagePreprocessor:
     def calculate_number_of_signs(image):
         """
         Tracks all contours and process them to find signs
-        :param cropped_image: image in binary form
+        Converts given image to a numpy array, crops it, then finds contours and evaluates them.
+        :param image: image in binary form
         :return: amount of tracked signs
         """
-        image = numpy.array(image, dtype=numpy.uint8) -1
 
+        # Converting the image to a numpy array to allow slicing it
+        image = numpy.array(image, dtype=numpy.uint8) - 1
+
+        # Signals one third of the image
         start_row_1 = int(image.shape[0] / 3)
-        row_height = int((image.shape[0] - start_row_1) / 3)
-        end_row_1 = start_row_1 + row_height
-        end_row_2 = end_row_1 + row_height                      # used to start the measurement
 
+        # Cropping image so that only contours in the lower part of the image are being taken into consideration
         cropped_image = image[start_row_1:, :]
+
+        # Adding a line at 1/6th of the image, so that contours are only measured
+        # when one contour reaches below the line
         y_line = (cropped_image.shape[0] / 6) * 5
         y_line = int(y_line) - Settings.pixel_offset
 
         # Get multidimensional array of conture informations
         contours = cv2.findContours(cropped_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
+        # Only contours are important that have a certain size. Also checks if the contour
+        # is below the line of measurement
         contour_allowed = False
         contour_counter = 0
         for contour in contours[1]:
@@ -192,15 +199,15 @@ class ImagePreprocessor:
                 contour_counter += 1
                 if contour[0][0][1] > y_line:
                     contour_allowed = True
-                #contour_allowed = ImagePreprocessor.contours_in_allowed_area(contour, y_line)
 
+        # draws the line for visual purposes
         cv2.line(cropped_image, (0, y_line), (cropped_image.shape[1], y_line), 128, 2)
 
         # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
             cv2.imshow("with contours", cropped_image)
 
-        # Refreshes the amount of found contours if they are in allowed area
+        # Updates the amount of found contours if they are in allowed area
         if contour_allowed:
             sign_count = contour_counter
         # Sets amount of signs to zero if contours aren`t in allowed area
@@ -208,17 +215,3 @@ class ImagePreprocessor:
             sign_count = 0
 
         return sign_count
-
-    @staticmethod
-    def contours_in_allowed_area(contour, end_row_2):
-        """
-        Checks if the contour is inside allowed area
-        :param contour: the contour to be checked
-        :param end_row_2: the border marking where the allowed area starts
-        :return: boolean if the contour is inside the allowed area
-        """
-        contour_allowed = False
-        if contour[0][0][1] > end_row_2:
-            contour_allowed = True
-        return contour_allowed
-
