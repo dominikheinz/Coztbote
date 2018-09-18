@@ -60,16 +60,18 @@ class LaneTrackingEngine:
             # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
-            crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
-            self.navigator_controller.handle_crossing(crossing_type)
-
             if not RobotStatusController.is_at_crossing:
+
+                crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
+                self.navigator_controller.handle_crossing(crossing_type)
+
                 # Calculate lane correction based on image data
                 lane_correction = self.lane_analyzer.calculate_lane_correction(bin_img)
 
                 # If correction is required let Cozmo correct
                 if lane_correction is not None:
                     self.drive_controller.correct(lane_correction)
+
 
             # Update current frame
             self.current_cam_frame = bin_img * 255

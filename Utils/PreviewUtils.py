@@ -29,12 +29,13 @@ class PreviewUtils(metaclass=Singleton):
             self.last_frame = image.copy()
 
         # Draw navigation points
-        if self.lane_analyzer_obj.last_points[0] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
-        if self.lane_analyzer_obj.last_points[1] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
-        if self.lane_analyzer_obj.last_points[2] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
+        if self.lane_analyzer_obj.last_points is not None:
+            if self.lane_analyzer_obj.last_points[0] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
+            if self.lane_analyzer_obj.last_points[1] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
+            if self.lane_analyzer_obj.last_points[2] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
 
         # Update last frame with points
         if Settings.cozmo_preview_screenshot_include_points:

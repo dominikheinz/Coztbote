@@ -1,3 +1,4 @@
+import time
 from cozmo import util
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
@@ -19,9 +20,11 @@ class DriveController:
 
     def turn_next_left(self):
         RobotStatusController.is_at_crossing = True
+        print("turn_next_left")
         #self.robot.stop_all_motors()
         #self.robot.drive_straight(util.distance_mm(80), util.speed_mmps(Settings.cozmo_drive_speed)).wait_for_completed()
-        #self.robot.turn_in_place(util.degrees(-90)).wait_for_completed()
+
+        #self.robot.turn_in_place(util.degrees(90)).wait_for_completed()
         RobotStatusController.is_at_crossing = False
 
     def turn_next_right(self):
