@@ -39,15 +39,13 @@ class SignHandler:
             print("ungerade")
 
         elif sign_count is 2:
-            print("2")
             DriveController.allow_driving = False
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign1
 
         elif sign_count is 4:
-            print("4")
             DriveController.allow_driving = False
-            self.robot.turn_in_place(degrees(180)).wait_for_completed()
+            #self.robot.turn_in_place(degrees(180)).wait_for_completed()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
 

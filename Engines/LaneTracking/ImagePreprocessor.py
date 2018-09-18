@@ -170,7 +170,7 @@ class ImagePreprocessor:
         :param cropped_image: image in binary form
         :return: amount of tracked signs
         """
-        image = numpy.array(image, dtype=numpy.uint8) - 1
+        image = numpy.array(image, dtype=numpy.uint8) -1
 
         start_row_1 = int(image.shape[0] / 3)
         row_height = int((image.shape[0] - start_row_1) / 3)
@@ -180,7 +180,6 @@ class ImagePreprocessor:
         cropped_image = image[start_row_1:, :]
         y_line = (cropped_image.shape[0] / 6) * 5
         y_line = int(y_line) - Settings.pixel_offset
-
 
         # Get multidimensional array of conture informations
         contours = cv2.findContours(cropped_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)

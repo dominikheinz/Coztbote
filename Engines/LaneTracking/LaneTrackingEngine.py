@@ -1,3 +1,4 @@
+import copy
 import datetime
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
@@ -53,6 +54,8 @@ class LaneTrackingEngine:
                 RobotStatusController.cooldown_start = datetime.datetime.now()
                 self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
+            backup_bin_img = copy.copy(bin_img)
+
             # Extract lane shape and remove noise
             bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
 
@@ -68,7 +71,8 @@ class LaneTrackingEngine:
 
             # Show cam live preview if enabled
             if Settings.cozmo_show_cam_live_feed:
-                self.preview_utils.show_cam_frame(bin_img)
+            #    self.preview_utils.show_cam_frame(bin_img)
+                self.preview_utils.show_cam_frame(backup_bin_img)
 
             # Update timestamp
             self.last_timestamp = datetime.datetime.now()
