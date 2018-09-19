@@ -22,17 +22,22 @@ class DriveController:
         if Settings.cozmo_enable_drive and self.allow_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
         else:
-            self.robot.drive_wheel_motors(0,0)
+            self.robot.drive_wheel_motors(0, 0)
 
     def crossing_turn_left(self):
         RobotStatusController.is_at_crossing = True
+        RobotStatusController.disable_autonomous_behavior = True
+
         self.robot.stop_all_motors()
-        self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+        self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
+                                  should_play_anim=False)
         RobotStatusController.crossing_turn_degrees = 90
         self.set_crossing_status(1)
 
     def crossing_turn_right(self):
         RobotStatusController.is_at_crossing = True
+        RobotStatusController.disable_autonomous_behavior = True
+
         self.robot.stop_all_motors()
         self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
                                   should_play_anim=False)
@@ -41,6 +46,8 @@ class DriveController:
 
     def crossing_go_straight(self):
         RobotStatusController.is_at_crossing = True
+        RobotStatusController.disable_autonomous_behavior = True
+
         self.robot.stop_all_motors()
         self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
                                   should_play_anim=False)
@@ -66,8 +73,7 @@ class DriveController:
             else:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
         else:
-            self.robot.drive_wheel_motors(0,0)
-
+            self.robot.drive_wheel_motors(0, 0)
 
     def check_crossing_status_cooldown(self):
         """
@@ -86,11 +92,15 @@ class DriveController:
                     self.set_crossing_status(2)
                 else:
                     RobotStatusController.is_at_crossing = False
+                    RobotStatusController.disable_autonomous_behavior = False
+
                     self.set_crossing_status(0)
         elif RobotStatusController.crossing_status == 2:
             if RobotStatusController.crossing_status_change_timestamp < datetime.datetime.now() - datetime.timedelta(
                     milliseconds=1000):
                 RobotStatusController.is_at_crossing = False
+                RobotStatusController.disable_autonomous_behavior = False
+
                 self.set_crossing_status(0)
 
     def set_crossing_status(self, new_status):

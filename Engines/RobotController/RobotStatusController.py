@@ -16,8 +16,8 @@ class RobotStatusController:
     crossing_status_change_timestamp = None
     crossing_turn_degrees = 0
 
+    disable_autonomous_behavior = False
 
-    scan_for_signs = True
     cooldown_start = None
     sign_count = 0
     sign_recognition_cooldown = False

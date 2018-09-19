@@ -45,10 +45,10 @@ class CoreEngine:
         bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
         # Counting signs and overwrite attribute in Lane Analyzer
-        # if not RobotStatusController.is_at_crossing:
-        #     if not self.lane_analyzer.sign_recognition_cooldown:
-        #         self.lane_analyzer.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-        #         self.cooldown_start = datetime.datetime.now()
+        if not RobotStatusController.sign_recognition_cooldown and not Settings.disable_sign_detection and not RobotStatusController.disable_autonomous_behavior:
+            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
+            RobotStatusController.cooldown_start = datetime.datetime.now()
+            self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
         # Extract lane shape and remove noise
         bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
@@ -56,17 +56,17 @@ class CoreEngine:
         if RobotStatusController.is_at_crossing:
             self.drive_controller.check_crossing_status_cooldown()
 
-        if not RobotStatusController.is_at_crossing:
+        if not RobotStatusController.disable_autonomous_behavior:
 
-                crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
-                self.navigator.handle_crossing(crossing_type)
+            crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
+            self.navigator.handle_crossing(crossing_type)
 
-                # Calculate lane correction based on image data
-                lane_correction = self.corr_calculator.calculate_lane_correction(bin_img)
+            # Calculate lane correction based on image data
+            lane_correction = self.corr_calculator.calculate_lane_correction(bin_img)
 
-                # If correction is required let Cozmo correct
-                if lane_correction is not None:
-                    self.drive_controller.correct(lane_correction)
+            # If correction is required let Cozmo correct
+            if lane_correction is not None:
+                self.drive_controller.correct(lane_correction)
 
         # Update current frame
         self.current_cam_frame = bin_img * 255
@@ -76,4 +76,8 @@ class CoreEngine:
             self.preview_utils.show_cam_frame(bin_img)
 
         # Check if cooldown has expired
-        # self.sign_handler.check_for_cooldown(self.cooldown_start)
+        if not Settings.disable_sign_detection:
+            self.sign_handler.check_for_cooldown(RobotStatusController.cooldown_start, Settings.disable_cooldown)
+
+        self.sign_handler.check_driving_cooldown()
+        #DebugUtils.stop_timer(tmr, "extract_lane_shape")

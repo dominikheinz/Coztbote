@@ -44,19 +44,22 @@ class SignHandler:
         Tells Cozmo what to do for every sign(amount of signs)
         :param sign_count: amount of spotted signs
         """
+        print(sign_count)
         if (sign_count % 2) is 1:
             # Handling for wrong identified signs, cause there als only even amount of signs
             print("ungerade")
 
         elif sign_count is 2:
             # Handling for two spotted signs
-            DriveController.allow_driving = False
+            RobotStatusController.disable_autonomous_behavior = True
+            self.robot.stop_all_motors()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign1
 
         elif sign_count is 4:
             # Handling for four spotted signs
-            DriveController.allow_driving = False
+            RobotStatusController.disable_autonomous_behavior = True
+            self.robot.stop_all_motors()
             self.robot.turn_in_place(degrees(180)).wait_for_completed()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
@@ -69,4 +72,4 @@ class SignHandler:
         """
         if RobotStatusController.action_start < datetime.datetime.now() - datetime.timedelta(
                 milliseconds=RobotStatusController.action_cooldown_ms):
-            DriveController.allow_driving = True
+            RobotStatusController.disable_autonomous_behavior = False
