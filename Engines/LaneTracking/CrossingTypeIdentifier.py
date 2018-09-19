@@ -21,10 +21,18 @@ class CrossingTypeIdentifier:
         row_patterns = CrossingTypeIdentifier.filter_invalid_row_pattern(row_patterns)
 
         # Set last crossing type for preview window
-        CrossingTypeIdentifier.last_crossing_type = CrossingTypeIdentifier.row_patterns_to_lane_type(row_patterns)
+        crossing_type = CrossingTypeIdentifier.row_patterns_to_lane_type(row_patterns)
+
+        # Confirm crossing type if at least on two frames
+        if crossing_type == CrossingTypeIdentifier.last_crossing_type:
+            CrossingTypeIdentifier.last_confirmed_crossing_type = crossing_type
+        else:
+            CrossingTypeIdentifier.last_confirmed_crossing_type = None
+
+        CrossingTypeIdentifier.last_crossing_type = crossing_type
 
         # Determine lane type based on pixel rows
-        return CrossingTypeIdentifier.last_crossing_type
+        return CrossingTypeIdentifier.last_confirmed_crossing_type
 
     @staticmethod
     def row_patterns_to_lane_type(rows):
