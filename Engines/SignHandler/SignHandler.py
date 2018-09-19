@@ -19,7 +19,7 @@ class SignHandler:
 
     def check_for_cooldown(self, time_sign_seen, disable_cooldown):
         """
-        Checks last timestamp if time delta is exceeded, to block or
+        Checks last timestamp if time delta is exceeded, to block or 
         unblock sign_recognition_cooldown boolean
         :param time_sign_seen: time when sign is seen
         :param disable_cooldown: bool to disable cooldown functionality
@@ -33,7 +33,7 @@ class SignHandler:
                 print("unblock")
 
             # Sets the cooldown for sign recognition if signs were seen, to prevent action looping
-            if RobotStatusController.sign_count != 0 and RobotStatusController.sign_recognition_cooldown is not False:
+            if RobotStatusController.sign_count != 0 and RobotStatusController.sign_recognition_cooldown is False:
                 RobotStatusController.sign_recognition_cooldown = True
                 RobotStatusController.sign_count = 0    # Setting sign count to zero to prevent action looping
                 print("should be blocked")
@@ -59,8 +59,6 @@ class SignHandler:
             self.robot.turn_in_place(degrees(180)).wait_for_completed()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
-
-        # self.check_driving_cooldown(RobotStatusController.action_start, RobotStatusController.action_cooldown_ms)
 
     @staticmethod
     def check_driving_cooldown():
