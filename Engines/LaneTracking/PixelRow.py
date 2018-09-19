@@ -1,5 +1,5 @@
 import numpy
-from Utils.ImagePreprocessor import ImagePreprocessor
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 class PixelRow:
 

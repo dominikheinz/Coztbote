@@ -1,8 +1,8 @@
 import cozmo
 from pynput import keyboard
 from Engines.RobotController import DriveController, RobotStatusController
-from Engines import CoreEngine
-from Engines.LaneTracking import CorrectionCalculator
+from Engines.LaneTracking import LaneTrackingEngine
+from Engines.LaneTracking import LaneAnalyzer
 from Engines.SignHandler import SignHandler
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
@@ -28,7 +28,7 @@ def run(robot_obj: cozmo.robot.Robot):
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
 
-    lane_analyzer_obj = CorrectionCalculator.LaneAnalyzer()
+    lane_analyzer_obj = LaneAnalyzer.LaneAnalyzer()
     InstanceManager.add_instance("LaneAnalyzer", lane_analyzer_obj)
 
     preview_obj = PreviewUtils()
@@ -40,7 +40,7 @@ def run(robot_obj: cozmo.robot.Robot):
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    lane_tracking_obj = CoreEngine.LaneTrackingEngine()
+    lane_tracking_obj = LaneTrackingEngine.LaneTrackingEngine()
     InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
 
     # Setup robot with presets

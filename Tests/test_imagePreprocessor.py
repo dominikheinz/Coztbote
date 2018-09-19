@@ -1,7 +1,7 @@
 import numpy
 import cv2
 from unittest import TestCase
-from Utils.ImagePreprocessor import ImagePreprocessor
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 
 class TestImagePreprocessor(TestCase):
