@@ -7,7 +7,6 @@ from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
 
 
 class CoreEngine:
-
     robot = None
     drive_controller = None
     preview_utils = None
@@ -44,14 +43,15 @@ class CoreEngine:
         # Convert image to binary
         bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
-        # Counting signs and overwrite attribute in Lane Analyzer
-        # if not RobotStatusController.sign_recognition_cooldown and not Settings.disable_sign_detection and not RobotStatusController.disable_autonomous_behavior:
-            # RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-            # RobotStatusController.cooldown_start = datetime.datetime.now()
-            # self.sign_handler.react_to_signs(RobotStatusController.sign_count)
-
         # Extract lane shape and remove noise
         bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
+
+        # Counting signs and overwrite attribute in Lane Analyzer
+        if RobotStatusController.enable_sign_recognition and \
+                not Settings.disable_sign_detection and \
+                not RobotStatusController.disable_autonomous_behavior:
+            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_surroundings)
+            self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
         if not RobotStatusController.disable_autonomous_behavior:
             crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
@@ -71,10 +71,3 @@ class CoreEngine:
         # Show cam live preview if enabled
         if Settings.cozmo_show_cam_live_feed:
             self.preview_utils.show_cam_frame(bin_img)
-
-        # Check if cooldown has expired
-        # if not Settings.disable_sign_detection:
-            # self.sign_handler.check_for_cooldown(RobotStatusController.cooldown_start, Settings.disable_cooldown)
-
-        # self.sign_handler.check_driving_cooldown()
-        #DebugUtils.stop_timer(tmr, "extract_lane_shape")

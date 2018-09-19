@@ -20,7 +20,7 @@ class RobotStatusController:
 
     cooldown_start = None
     sign_count = 0
-    sign_recognition_cooldown = False
+    enable_sign_recognition = True
     action_cooldown_ms = 0
     action_start = datetime.datetime.now()
     current_state = BehaviorState.PACKET_FINDING

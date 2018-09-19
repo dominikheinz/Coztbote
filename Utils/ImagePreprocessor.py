@@ -124,7 +124,7 @@ class ImagePreprocessor:
         cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 0, cv2.FILLED)
 
         # invert again to get the mainly white image back
-        lane_surroundings = 1 - (inverted_img * lane_surroundings_mask)
+        lane_surroundings = inverted_img * lane_surroundings_mask
 
         return masked_img, lane_surroundings
 
@@ -196,9 +196,6 @@ class ImagePreprocessor:
         :return: amount of tracked signs
         """
 
-        # Converting the image to a numpy array to allow slicing it
-        image = numpy.array(image, dtype=numpy.uint8) - 1
-
         # Signals one third of the image
         start_row_1 = int(image.shape[0] / 3)
 
@@ -224,17 +221,19 @@ class ImagePreprocessor:
                 if contour[0][0][1] > y_line:
                     contour_allowed = True
 
-        # draws the line for visual purposes
-        cv2.line(cropped_image, (0, y_line), (cropped_image.shape[1], y_line), 128, 2)
-
         # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
-            cv2.imshow("with contours", cropped_image)
+            display_image = cropped_image.copy() * 255
+
+            # draws the line for visual purposes
+            cv2.line(display_image, (0, y_line), (display_image.shape[1], y_line), 128, 2)
+
+            cv2.imshow("with contours", display_image)
 
         # Updates the amount of found contours if they are in allowed area
         if contour_allowed:
             sign_count = contour_counter
-        # Sets amount of signs to zero if contours aren`t in allowed area
+        # Sets amount of signs to zero if contours aren't in allowed area
         else:
             sign_count = 0
 
