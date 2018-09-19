@@ -7,13 +7,16 @@ from Engines.SignHandler import SignHandler
 from Engines.RobotController import Navigator
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
+from Utils import TimingUtils
 from Scripts import LaneFollow
 import sched, time
 
 last_frame = None
 
+
 def save_last_frame(e, image):
     LaneFollow.last_frame = image
+
 
 def handle_hotkeys(keycode):
     """
@@ -72,6 +75,7 @@ def run(robot_obj: cozmo.robot.Robot):
 
     def run_analysis(sc):
         if LaneFollow.last_frame is not None:
+            TimingUtils.run_all_elapsed()
             lane_tracking_obj.process_frame(image=LaneFollow.last_frame)
         s.enter(0.05, 1, run_analysis, (sc,))
 

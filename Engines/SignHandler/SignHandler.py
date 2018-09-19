@@ -3,19 +3,20 @@ from Settings.CozmoSettings import Settings
 from cozmo.util import degrees
 from Utils.InstanceManager import InstanceManager
 from Engines.RobotController.RobotStatusController import RobotStatusController
-from Engines.RobotController.DriveController import DriveController
 
 
 class SignHandler:
     RobotStatusController = None
     robot = None
+    drive_controller = None
 
     def __init__(self):
-        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
         """
         Creating an instance of robot and getting the cooldown_time_ms from Settings.py
         """
         self.robot = InstanceManager.get_instance("Robot")
+        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
+        self.drive_controller = InstanceManager.get_instance("DriveController")
         self.cooldown_time = Settings.cooldown_time_ms
 
     def check_for_cooldown(self, time_sign_seen, disable_cooldown):
@@ -44,22 +45,19 @@ class SignHandler:
         Tells Cozmo what to do for every sign(amount of signs)
         :param sign_count: amount of spotted signs
         """
-        print(sign_count)
         if (sign_count % 2) is 1:
             # Handling for wrong identified signs, cause there als only even amount of signs
             print("ungerade")
 
         elif sign_count is 2:
             # Handling for two spotted signs
-            RobotStatusController.disable_autonomous_behavior = True
-            self.robot.stop_all_motors()
+            self.drive_controller.stop_autonomous_behaviour()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign1
 
         elif sign_count is 4:
             # Handling for four spotted signs
-            RobotStatusController.disable_autonomous_behavior = True
-            self.robot.stop_all_motors()
+            self.drive_controller.stop_autonomous_behaviour()
             self.robot.turn_in_place(degrees(180)).wait_for_completed()
             RobotStatusController.action_start = datetime.datetime.now()
             RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2

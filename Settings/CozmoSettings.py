@@ -22,6 +22,8 @@ class Settings:
     show_contures_in_extra_window = True
     cozmo_lane_surrounding_width_px = 80
 
+    cozmo_crossing_approach_distance = 170
+
     # Lane segment identifier settings
     crossing_horizontal_crop = 10
     crossing_vertical_crop = 60
