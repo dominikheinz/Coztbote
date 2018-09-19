@@ -1,7 +1,7 @@
 import numpy
 import cv2
 from unittest import TestCase
-from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
+from Utils.ImagePreprocessor import ImagePreprocessor
 
 
 class TestImagePreprocessor(TestCase):
@@ -43,7 +43,7 @@ class TestImagePreprocessor(TestCase):
         numpy.testing.assert_array_equal(data_out, expected)
 
     def test_extract_lane_shape(self):
-        data_in = numpy.clip(cv2.imread("Resources/ExtractLaneShape.png", cv2.IMREAD_GRAYSCALE), 0, 1)
-        data_out = ImagePreprocessor.extract_lane_shape(data_in)
-        expected = numpy.clip(cv2.imread("Resources/ExtractLaneShapeExpected.png", cv2.IMREAD_GRAYSCALE), 0, 1)
+        data_in = numpy.clip(cv2.imread("Resources/Lane_Fork_Noise.png", cv2.IMREAD_GRAYSCALE), 0, 1)
+        data_out = ImagePreprocessor.extract_lane_shape(data_in)[0]
+        expected = numpy.clip(cv2.imread("Resources/Lane_Fork_Clean.png", cv2.IMREAD_GRAYSCALE), 0, 1)
         numpy.testing.assert_array_equal(data_out, expected)

@@ -7,6 +7,26 @@ from itertools import groupby
 class ImagePreprocessor:
 
     @staticmethod
+    def crop_image(image, top, right, bottom=None, left=None):
+        """
+        Crops the image by the given offsets
+        :param image: The input image that should be cropped
+        :type image: Numpy array
+        :param top: Amount of pixels cropped from the top
+        :param right: Amount of pixels cropped from the right
+        :param bottom: Amount of pixels cropped from the bottom
+        :param left: Amount of pixels cropped from the left
+        :return: Cropped image
+        :rtype: Numpy array
+        """
+        h, w = image.shape
+        if bottom is None:
+            bottom = top
+        if left is None:
+            left = right
+        return image[top:h - bottom, left:w - right]
+
+    @staticmethod
     def pil_rgb_to_numpy_binary(pil_img):
         """
         Convert an rgb pil image to binary numpy array
@@ -88,6 +108,10 @@ class ImagePreprocessor:
             inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[1]
 
         # Take the contour with the biggest area (the lane shape)
+        if not contours:
+            return masked_img, masked_img
+
+        # Calculate area of contour area
         biggest_contour_area = max(contours, key=cv2.contourArea)
 
         # Fill elements within area with 1's
@@ -95,7 +119,8 @@ class ImagePreprocessor:
 
         # Create a new image containing only the data surrounding the lane
         lane_surroundings_mask = numpy.zeros(inverted_img.shape, dtype=numpy.uint8)
-        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 1, Settings.cozmo_lane_surrounding_width_px * 2)
+        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 1,
+                         Settings.cozmo_lane_surrounding_width_px * 2)
         cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 0, cv2.FILLED)
 
         # invert again to get the mainly white image back
@@ -131,7 +156,9 @@ class ImagePreprocessor:
             run_length = raw_pattern_data[i, 0]
             run_color = raw_pattern_data[i, 1]
 
-            def run_too_small(x): return x < min_required_length
+            def run_too_small(x):
+                return x < min_required_length
+
             list_is_empty = new_list[0][1] == -1
 
             # Run is too small -> run is added to previous run
@@ -172,7 +199,7 @@ class ImagePreprocessor:
         start_row_1 = int(image.shape[0] / 3)
         row_height = int((image.shape[0] - start_row_1) / 3)
         end_row_1 = start_row_1 + row_height
-        end_row_2 = end_row_1 + row_height                      # used to start the measurement
+        end_row_2 = end_row_1 + row_height  # used to start the measurement
 
         # Get multidimensional array of conture informations
         contours = cv2.findContours(image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -210,4 +237,3 @@ class ImagePreprocessor:
         if contour[0][0][1] > end_row_2:
             contour_allowed = True
         return contour_allowed
-

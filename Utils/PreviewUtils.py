@@ -4,14 +4,16 @@ import os
 from Settings.CozmoSettings import Settings
 from Utils.Singleton import Singleton
 from Utils.InstanceManager import InstanceManager
+from Engines.LaneTracking.CrossingType import CrossingType
+from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.RobotController.RobotStatusController import RobotStatusController
 
 
 class PreviewUtils(metaclass=Singleton):
-
     last_frame = None
 
     def __init__(self):
-        self.lane_analyzer_obj = InstanceManager.get_instance("LaneAnalyzer")
+        self.lane_analyzer_obj = InstanceManager.get_instance("CorrectionCalculator")
         self.robot_obj = InstanceManager.get_instance("Robot")
 
     def show_cam_frame(self, image):
@@ -28,12 +30,13 @@ class PreviewUtils(metaclass=Singleton):
             self.last_frame = image.copy()
 
         # Draw navigation points
-        if self.lane_analyzer_obj.last_points[0] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
-        if self.lane_analyzer_obj.last_points[1] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
-        if self.lane_analyzer_obj.last_points[2] is not None:
-            cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
+        if self.lane_analyzer_obj.last_points is not None and not RobotStatusController.is_at_crossing:
+            if self.lane_analyzer_obj.last_points[0] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
+            if self.lane_analyzer_obj.last_points[1] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
+            if self.lane_analyzer_obj.last_points[2] is not None:
+                cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
 
         # Update last frame with points
         if Settings.cozmo_preview_screenshot_include_points:
@@ -69,7 +72,9 @@ class PreviewUtils(metaclass=Singleton):
         overlay_text_correction = "Correction: " + correction_text
         overlay_text_voltage = "Battery Voltage: " + str(round(self.robot_obj.battery_voltage, 1)) + "V"
         overlay_text_signs = "Amount of Signs: " + str(self.lane_analyzer_obj.sign_count)
+        overlay_lane_type = "Lane Type: " + str(
+            CrossingType.get_crossing_as_string(CrossingTypeIdentifier.last_crossing_type))
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
-
+        cv2.putText(image, overlay_lane_type, (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)

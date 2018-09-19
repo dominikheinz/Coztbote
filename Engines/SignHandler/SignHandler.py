@@ -11,7 +11,7 @@ class SignHandler:
     last_timestamp = datetime.datetime.now()
 
     def __init__(self):
-        self.lane_analyzer = InstanceManager.get_instance("LaneAnalyzer")
+        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
         self.robot = InstanceManager.get_instance("Robot")
         self.cooldown_time = Settings.cooldown_time_ms
 
