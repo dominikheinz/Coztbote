@@ -8,6 +8,7 @@ from Engines.SignHandler import SignHandler
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 
+from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 from Engines.ImageRecognition.CubeFacePairing import CubeFacePairing
 
 def handle_hotkeys(keycode):
@@ -21,20 +22,7 @@ def handle_hotkeys(keycode):
         preview_obj.save_cam_screenshot()
 
 def packet_station(robot: cozmo.robot.Robot):
-    CubeFacePairing.initialize(robot)
-    perceived_cubes = []
-    try:
-        cube = CubeFacePairing.search_for_cube(robot, 10)
-        print("Cube found")
-        perceived_cubes.append(cube)
-        print("Cube observed: " + cube.descriptive_name)
-        robot.pickup_object(perceived_cubes[0], False, False, 10).wait_for_completed()
-        robot.turn_in_place(degrees(180),False,1).wait_for_completed()
-
-    except IndexError:
-        print("No cube found in array!")
-
-    #robot.turn_in_place().wait_for_completed()
+    packet_station_behavior(robot)
 
     """
     Main script for the lane following algorithm. Starts all necessary components.
@@ -78,5 +66,21 @@ def packet_station(robot: cozmo.robot.Robot):
     # Setup hotkey listener
     with keyboard.Listener(on_press=handle_hotkeys) as listener:
         listener.join()
+
+
+def packet_station_behavior(robot):
+    CubeFacePairing.initialize(robot)
+    perceived_cubes = []
+    try:
+        cube = CubeFacePairing.search_for_cube(robot, 10)
+        print("Cube found")
+        perceived_cubes.append(cube)
+        print("Cube observed: " + cube.descriptive_name)
+        robot.pickup_object(perceived_cubes[0], False, False, 10).wait_for_completed()
+        robot.turn_in_place(degrees(180), False, 1).wait_for_completed()
+
+    except IndexError:
+        print("No cube found in array!")
+
 
 cozmo.run_program(packet_station)
