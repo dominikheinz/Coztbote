@@ -5,7 +5,7 @@ from enum import Enum
 class RobotStatusController:
     class BehaviorState(Enum):
         PACKET_FINDING = 1
-        LANE_TRACING = 2
+        LANE_TRACING = 2    
         FACE_PAIRING = 3
 
     scan_for_signs = True

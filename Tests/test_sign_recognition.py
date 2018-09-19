@@ -1,7 +1,8 @@
 import unittest
 import cv2, numpy
 from unittest import TestCase
-from Utils.ImagePreprocessor import ImagePreprocessor
+from Engines.SignHandler.SignHandler import SignHandler
+from Engines.LaneTracking.ImagePreprocessor import ImagePreprocessor
 
 
 class TestSignRecognition(TestCase):
