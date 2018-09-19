@@ -13,6 +13,7 @@ class Settings:
     cozmo_drive_speed = 50
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
+    cozmo_turn_speed_degrees_per_second = 180
 
     # Live preview settings
     cozmo_show_cam_live_feed = True
@@ -22,7 +23,7 @@ class Settings:
     show_contures_in_extra_window = True
     cozmo_lane_surrounding_width_px = 80
 
-    cozmo_crossing_approach_distance = 170
+    cozmo_crossing_approach_distance = 160
 
     # Lane segment identifier settings
     crossing_horizontal_crop = 10
