@@ -54,8 +54,10 @@ def run(robot_obj: cozmo.robot.Robot):
     # Setup camera event handler
     robot_obj.add_event_handler(cozmo.world.EvtNewCameraImage, lane_tracking_obj.process_frame)
 
-    # Start driving engine
-    drive_obj.go()
+    # Start driving engine if Robot state is in LaneTracing mode
+    if RobotStatusController.RobotStatusController.current_state is \
+            RobotStatusController.RobotStatusController.current_state.LANE_TRACING:
+        drive_obj.go()
 
     # Setup hotkey listener
     with keyboard.Listener(on_press=handle_hotkeys) as listener:

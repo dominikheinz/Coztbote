@@ -3,7 +3,7 @@ class Settings:
     # Environment settings
     image_binarization_threshold = 30
     cooldown_time_ms = 5000
-    disable_sign_detection = False
+    disable_sign_detection = True
     disable_cooldown = False
     wait_time_sign1 = 4000  # wait time for stop sign
     wait_time_sign2 = 0     # wait time for turn around sign
