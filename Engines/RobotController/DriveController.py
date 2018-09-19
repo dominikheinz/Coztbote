@@ -7,6 +7,7 @@ from Engines.RobotController.RobotStatusController import RobotStatusController
 
 class DriveController:
     robot = None
+    allow_driving = True
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
@@ -15,9 +16,13 @@ class DriveController:
     def start(self):
         """
         Start driving straight
+        enable_drive is a static variable, taken from the Settings file
+        where as allow_driving is being changed constantly while running
         """
-        if Settings.cozmo_enable_drive:
+        if Settings.cozmo_enable_drive and self.allow_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
+        else:
+            self.robot.drive_wheel_motors(0,0)
 
     def crossing_turn_left(self):
         RobotStatusController.is_at_crossing = True
@@ -44,13 +49,14 @@ class DriveController:
 
     def correct(self, correction_value):
         """
-            Correct path by turning left or right
-            :param correction_value: Value between [-1..1], negative values meaning correct to the left,
-            positive values to the right. The closer the value is to 0, the slighter it corrects.
-            :type correction_value: float
-            """
-        print()
-        if Settings.cozmo_enable_drive:
+        Correct path by turning left or right
+        enable_drive is a static variable, taken from the Settings file
+        where as allow_driving is being changed constantly while running
+        :param correction_value: Value between [-1..1], negative values meaning correct to the left,
+        positive values to the right. The closer the value is to 0, the slighter it corrects.
+        :type correction_value: float
+        """
+        if Settings.cozmo_enable_drive and self.allow_driving:
             if correction_value > 0:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))
@@ -59,6 +65,9 @@ class DriveController:
                                               Settings.cozmo_drive_speed)
             else:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
+        else:
+            self.robot.drive_wheel_motors(0,0)
+
 
     def check_crossing_status_cooldown(self):
         """

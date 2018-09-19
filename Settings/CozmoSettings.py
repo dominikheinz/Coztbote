@@ -3,9 +3,13 @@ class Settings:
     # Environment settings
     image_binarization_threshold = 30
     cooldown_time_ms = 5000
+    disable_sign_detection = True
+    disable_cooldown = False
+    wait_time_sign1 = 4000  # wait time for stop sign
+    wait_time_sign2 = 0     # wait time for turn around sign
 
     # Driving settings
-    cozmo_enable_drive = True
+    cozmo_enable_drive = False
     cozmo_drive_speed = 70
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
@@ -25,4 +29,5 @@ class Settings:
 
     # Measurement settings for contures
     min_pixel_sign = 150
-    max_pixel_sign = 1200
+    max_pixel_sign = 1400
+    pixel_offset = 15

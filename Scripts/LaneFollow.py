@@ -1,6 +1,6 @@
 import cozmo
 from pynput import keyboard
-from Engines.RobotController import DriveController
+from Engines.RobotController import DriveController, RobotStatusController
 from Engines import CoreEngine
 from Engines.LaneTracking import CorrectionCalculator
 from Engines.SignHandler import SignHandler
