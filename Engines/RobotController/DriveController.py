@@ -119,18 +119,37 @@ class DriveController:
     def correct(self, correction_value):
         """
         Correct path by turning left or right
-        enable_drive is a static variable, taken from the Settings file
-        where as allow_driving is being changed constantly while running
         :param correction_value: Value between [-1..1], negative values meaning correct to the left,
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
         """
         if not Settings.disable_driving:
             if correction_value > 0:
+                # Correct to the right
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))
             elif correction_value < 0:
+                # Correct to the left
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed * (1 - abs(correction_value)),
                                               Settings.cozmo_drive_speed)
             else:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
+
+    def correct_in_place(self, correction_value):
+        """
+        Correct facing direction by rotating left or right in place
+        :param correction_value: Value between [-1..1], negative values meaning correct to the left,
+        positive values to the right. The closer the value is to 0, the slighter it corrects.
+        :type correction_value: float
+        """
+        if not Settings.disable_driving:
+            if correction_value > 0:
+                # Rotate to the right
+                self.robot.drive_wheel_motors((Settings.cozmo_drive_speed * abs(correction_value)),
+                                              -(Settings.cozmo_drive_speed * abs(correction_value)))
+            elif correction_value < 0:
+                # Rotate to the left
+                self.robot.drive_wheel_motors(-(Settings.cozmo_drive_speed * abs(correction_value)),
+                                              (Settings.cozmo_drive_speed * abs(correction_value)))
+            else:
+                self.robot.drive_wheel_motors(0, 0)
