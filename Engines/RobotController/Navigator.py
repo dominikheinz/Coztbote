@@ -64,8 +64,6 @@ class Navigator:
         if Navigator.current_track is None:
             raise Exception("Route not set")
 
-        print(Navigator.route_turn_index)
-
         # Execute next turn
         if Navigator.current_track[Navigator.route_turn_index] == "L":
             drive_controller.crossing_turn_left()
@@ -84,7 +82,6 @@ class Navigator:
         if (Navigator.route_turn_index >= len(Navigator.current_track) and not Navigator.route_is_reversed) or \
                 (Navigator.route_turn_index < 0 and Navigator.route_is_reversed):
             Navigator.reverse_route()
-            print("Route reversed")
 
         # Return false if route was not yet completed
         return False
