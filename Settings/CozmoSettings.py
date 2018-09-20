@@ -6,7 +6,7 @@ class Settings:
 
     # Behavior
     disable_sign_detection = False
-    disable_driving = True
+    disable_driving = False
 
     # Sign detection
     sign_detection_cooldown_time = 6000
