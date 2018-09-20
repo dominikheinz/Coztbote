@@ -40,6 +40,12 @@ class PreviewUtils(metaclass=Singleton):
         if Settings.live_preview_screenshot_include_points:
             self.last_frame = image.copy()
 
+        if Settings.live_preview_show_crossing_detection_region:
+            cv2.rectangle(image, (Settings.crossing_top_crop, Settings.crossing_left_crop),
+                          (image.shape[0] - Settings.crossing_bottom_crop,
+                           image.shape[1] - Settings.crossing_right_crop),
+                          color=(113, 204, 46), thickness=1)
+
         # Resize preview window
         image = cv2.resize(image, Settings.live_preview_resolution, interpolation=cv2.INTER_NEAREST)
 

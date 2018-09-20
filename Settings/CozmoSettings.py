@@ -24,6 +24,7 @@ class Settings:
     live_preview_resolution = (1080, 720)
     live_preview_screenshot_include_points = False
     live_preview_show_signs = True
+    live_preview_show_crossing_detection_region = True
 
     # Crossing settings
     crossing_top_crop = 90
