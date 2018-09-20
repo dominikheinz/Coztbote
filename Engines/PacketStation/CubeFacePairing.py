@@ -49,13 +49,13 @@ class CubeFacePairing:
             if idFace == idCube:
                 print("MATCH")
                 action_lift = robot.set_lift_height(0, 5, 10, 1, True, 0)
-                action_speak = robot.say_text("JUHUUU DER WÜRFEL PASST ZU DIR!" + name, in_parallel=True,
+                action_speak = robot.say_text("Paket Zugestellt, schönen Tag noch" + name, in_parallel=True,
                                               use_cozmo_voice=False)
                 action_lift.wait_for_completed()  # Raising Forks if correct
                 action_speak.wait_for_completed()
                 face_matching = True
             else:
-                robot.say_text("ES PASST NICHT!!",
+                robot.say_text("Oh falsches Haus, auf wiedersehen!!",
                                use_cozmo_voice=False).wait_for_completed()  # Saying Line if no Match
                 # robot.turn_in_place(degrees(45), False, 1).wait_for_completed()
         else:

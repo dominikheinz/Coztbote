@@ -80,7 +80,7 @@ class SignHandler:
     def reinitialize_for_lanetracking(self):
         RobotStatusController.disable_autonomous_behavior = True
         self.robot.stop_all_motors()
-        self.robot.drive_straight(distance_mm(-100), Speed(20), True, False, 3).wait_for_completed()
+        self.robot.drive_straight(distance_mm(-30), Speed(20), True, False, 3).wait_for_completed()
         self.robot.turn_in_place(degrees(180)).wait_for_completed()
         self.robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=True)
         self.robot.set_lift_height(1.0, in_parallel=True)
@@ -90,14 +90,17 @@ class SignHandler:
 
     def do_packet_station_program(self):
         if not RobotStatusController.is_in_packetstation:
+            print("Enter packetstation")
             RobotStatusController.is_in_packetstation = True
+            Settings.cozmo_drive_speed = 20
             RobotStatusController.disable_autonomous_behavior = True
             self.robot.stop_all_motors()
             PacketStation.packet_station_behavior(self.robot)
             RobotStatusController.disable_autonomous_behavior = False
-            print("Enter packetstation")
+
         else:
             RobotStatusController.is_in_packetstation = False
+            Settings.cozmo_drive_speed = 50
             print("Leaving packetstation")
 
     def search_for_faces_until_matching(self, is_matching):
