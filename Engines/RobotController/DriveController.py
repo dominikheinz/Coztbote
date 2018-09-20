@@ -88,7 +88,6 @@ class DriveController:
                     milliseconds=2500):
                 self.robot.stop_all_motors()
                 if RobotStatusController.crossing_turn_degrees != 0:
-                    self.robot.turn_in_place(util.degrees(RobotStatusController.crossing_turn_degrees))
                     self.set_crossing_status(2)
                 else:
                     RobotStatusController.is_at_crossing = False

@@ -1,13 +1,10 @@
 import datetime
-from enum import Enum
+import cozmo
+from cozmo.objects import LightCube3Id
 
 
 class RobotStatusController:
-
-    class BehaviorState(Enum):
-        PACKET_FINDING = 1
-        LANE_TRACING = 2
-        FACE_PAIRING = 3
+    is_in_packetstation = False
 
     scan_for_signs = False
 
@@ -23,4 +20,6 @@ class RobotStatusController:
     sign_recognition_cooldown = False
     action_cooldown_ms = 0
     action_start = datetime.datetime.now()
-    current_state = BehaviorState.PACKET_FINDING
+
+    perceived_cubes = []
+    perceived_faces = []

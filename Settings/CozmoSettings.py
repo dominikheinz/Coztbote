@@ -1,6 +1,7 @@
 class Settings:
 
     # Environment settings
+    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
     image_binarization_threshold = 30
     cooldown_time_ms = 5000
     disable_sign_detection = False
@@ -29,5 +30,5 @@ class Settings:
 
     # Measurement settings for contures
     min_pixel_sign = 150
-    max_pixel_sign = 1400
+    max_pixel_sign = 2000
     pixel_offset = 15

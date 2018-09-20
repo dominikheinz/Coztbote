@@ -9,7 +9,9 @@ from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 from Scripts import LaneFollow
 from cozmo.util import degrees, distance_mm, speed_mmps, Angle
-from Engines.ImageRecognition.CubeFacePairing import CubeFacePairing
+
+from cozmo.camera import CameraConfig
+
 import sched, time
 
 last_frame = None
@@ -83,17 +85,3 @@ def run(robot_obj: cozmo.robot.Robot):
     # Setup hotkey listener
     with keyboard.Listener(on_press=handle_hotkeys) as listener:
         listener.join()
-
-    def packet_station_behavior(robot):
-        CubeFacePairing.initialize(robot)
-        perceived_cubes = []
-        try:
-            cube = CubeFacePairing.search_for_cube(robot, 10)
-            print("Cube found")
-            perceived_cubes.append(cube)
-            print("Cube observed: " + cube.descriptive_name)
-            robot.pickup_object(perceived_cubes[0], False, False, 10).wait_for_completed()
-            robot.turn_in_place(degrees(180), False, 1).wait_for_completed()
-
-        except IndexError:
-            print("No cube found in array!")
