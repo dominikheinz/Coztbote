@@ -33,7 +33,7 @@ class Settings:
     crossing_right_crop = 10
 
     lane_pattern_min_width_threshold = 6
-    crossing_approach_distance = 160
+    crossing_approach_distance = 100
 
     # Sign detection settings
     sign_min_pixel_count = 150
