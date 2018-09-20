@@ -11,6 +11,10 @@ from Utils.PreviewUtils import PreviewUtils
 from Engines.RobotController.Navigator import Navigator
 from Utils import TimingUtils
 from Scripts import LaneFollow
+from cozmo.util import degrees, distance_mm, speed_mmps, Angle
+
+from cozmo.camera import CameraConfig
+
 import sched, time
 
 last_frame = None

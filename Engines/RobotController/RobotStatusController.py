@@ -1,15 +1,10 @@
-from enum import Enum
-
-
 class RobotStatusController:
 
-    class BehaviorState(Enum):
-        PACKET_FINDING = 1
-        LANE_TRACKING = 2
-        FACE_PAIRING = 3
+    # Set to true if Cozmo is in the paketstation, false otherwise
+    is_in_packetstation = False
 
-    # Behavior states
-    current_state = BehaviorState.PACKET_FINDING
+    # If true sign detection is enabled, false otherwise
+    scan_for_signs = False
 
     # Autonomous driving behavior
     disable_autonomous_behavior = False
@@ -20,3 +15,7 @@ class RobotStatusController:
     # Sign detection
     enable_sign_recognition = True
     sign_count = 0
+
+    # Current face and cube
+    perceived_cubes = []
+    perceived_faces = []
