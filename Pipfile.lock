@@ -139,6 +139,14 @@
             "index": "pypi",
             "version": "==1.4"
         },
+        "python-xlib": {
+            "hashes": [
+                "sha256:2ffa01fa51bdf53842fa4e3f9e2501f8147d4abf546a83e9c2b091982da2e1a8",
+                "sha256:c3deb8329038620d07b21be05673fa5a495dd8b04a2d9f4dca37a3811d192ae4"
+            ],
+            "markers": "'linux' in sys_platform",
+            "version": "==0.23"
+        },
         "six": {
             "hashes": [
                 "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",

@@ -5,15 +5,20 @@ from Engines import CoreEngine
 from Engines.LaneTracking import CorrectionCalculator
 from Engines.SignHandler import SignHandler
 from Engines.RobotController import Navigator
+from Engines.RobotController.TrackLoader import TrackLoader
 from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
+from Engines.RobotController.Navigator import Navigator
+from Utils import TimingUtils
 from Scripts import LaneFollow
 import sched, time
 
 last_frame = None
 
+
 def save_last_frame(e, image):
     LaneFollow.last_frame = image
+
 
 def handle_hotkeys(keycode):
     """
@@ -32,6 +37,7 @@ def run(robot_obj: cozmo.robot.Robot):
     :param robot_obj: Reference to the robot
     :type robot_obj: cozmo.robot.Robot
     """
+
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
 
@@ -44,14 +50,17 @@ def run(robot_obj: cozmo.robot.Robot):
     drive_obj = DriveController.DriveController()
     InstanceManager.add_instance("DriveController", drive_obj)
 
-    navigator_obj = Navigator.Navigator()
+    trackloader_obj = TrackLoader()
+    InstanceManager.add_instance("TrackLoader", trackloader_obj)
+
+    navigator_obj = Navigator()
     InstanceManager.add_instance("Navigator", navigator_obj)
 
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    lane_tracking_obj = CoreEngine.CoreEngine()
-    InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
+    core_engine_obj = CoreEngine.CoreEngine()
+    InstanceManager.add_instance("CoreEngine", core_engine_obj)
 
     # Setup robot with presets
     robot_obj.enable_stop_on_cliff(False)
@@ -61,6 +70,9 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=True)
     robot_obj.set_lift_height(1.0, in_parallel=True)
     robot_obj.wait_for_all_actions_completed()
+
+    # ToDo change position of set route
+    Navigator.set_route(0, 1)
 
     # Setup camera event handler
     robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, save_last_frame)
@@ -72,7 +84,8 @@ def run(robot_obj: cozmo.robot.Robot):
 
     def run_analysis(sc):
         if LaneFollow.last_frame is not None:
-            lane_tracking_obj.process_frame(image=LaneFollow.last_frame)
+            TimingUtils.run_all_elapsed()
+            core_engine_obj.process_frame(image=LaneFollow.last_frame)
         s.enter(0.05, 1, run_analysis, (sc,))
 
     s.enter(0.05, 1, run_analysis, (s,))

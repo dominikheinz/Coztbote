@@ -1,75 +1,54 @@
-import datetime
 from Settings.CozmoSettings import Settings
 from cozmo.util import degrees
 from Utils.InstanceManager import InstanceManager
 from Engines.RobotController.RobotStatusController import RobotStatusController
-from Engines.RobotController.DriveController import DriveController
+from Utils import TimingUtils
 
 
 class SignHandler:
     RobotStatusController = None
     robot = None
+    drive_controller = None
 
     def __init__(self):
-        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
         """
         Creating an instance of robot and getting the cooldown_time_ms from Settings.py
         """
         self.robot = InstanceManager.get_instance("Robot")
-        self.cooldown_time = Settings.cooldown_time_ms
+        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
+        self.drive_controller = InstanceManager.get_instance("DriveController")
 
-    def check_for_cooldown(self, time_sign_seen, disable_cooldown):
-        """
-        Checks last timestamp if time delta is exceeded, to block or 
-        unblock sign_recognition_cooldown boolean
-        :param time_sign_seen: time when sign is seen
-        :param disable_cooldown: bool to disable cooldown functionality
-        """
+    @staticmethod
+    def finish_reaction_to_sign():
+        RobotStatusController.disable_autonomous_behavior = False
 
-        if not disable_cooldown:
-            # Checks if time interval is big enough to unlock the sign_recognition_cooldown
-            if time_sign_seen < datetime.datetime.now() - datetime.timedelta(
-                    milliseconds=self.cooldown_time) and RobotStatusController.sign_recognition_cooldown:
-                RobotStatusController.sign_recognition_cooldown = False
-                print("unblock")
+    @staticmethod
+    def trigger_sign_detection_cooldown():
+        RobotStatusController.enable_sign_recognition = False
 
-            # Sets the cooldown for sign recognition if signs were seen, to prevent action looping
-            if RobotStatusController.sign_count != 0 and RobotStatusController.sign_recognition_cooldown is False:
-                RobotStatusController.sign_recognition_cooldown = True
-                RobotStatusController.sign_count = 0    # Setting sign count to zero to prevent action looping
-                print("should be blocked")
+        def restart_detection():
+            RobotStatusController.enable_sign_recognition = True
+
+        TimingUtils.run_function_after(Settings.sign_detection_cooldown_time, restart_detection)
 
     def react_to_signs(self, sign_count):
         """
         Tells Cozmo what to do for every sign(amount of signs)
         :param sign_count: amount of spotted signs
         """
-        print(sign_count)
-        if (sign_count % 2) is 1:
+        if (sign_count % 2) == 1:
             # Handling for wrong identified signs, cause there als only even amount of signs
             print("ungerade")
 
-        elif sign_count is 2:
+        elif sign_count == 2:
             # Handling for two spotted signs
-            RobotStatusController.disable_autonomous_behavior = True
-            self.robot.stop_all_motors()
-            RobotStatusController.action_start = datetime.datetime.now()
-            RobotStatusController.action_cooldown_ms = Settings.wait_time_sign1
+            SignHandler.trigger_sign_detection_cooldown()
+            self.drive_controller.stop_autonomous_behaviour()
+            TimingUtils.run_function_after(Settings.wait_time_sign1, SignHandler.finish_reaction_to_sign)
 
-        elif sign_count is 4:
+        elif sign_count == 4:
             # Handling for four spotted signs
-            RobotStatusController.disable_autonomous_behavior = True
-            self.robot.stop_all_motors()
-            self.robot.turn_in_place(degrees(180)).wait_for_completed()
-            RobotStatusController.action_start = datetime.datetime.now()
-            RobotStatusController.action_cooldown_ms = Settings.wait_time_sign2
-
-    @staticmethod
-    def check_driving_cooldown():
-        """
-        Checks remaining cooldown time, to allow driving
-        :return:
-        """
-        if RobotStatusController.action_start < datetime.datetime.now() - datetime.timedelta(
-                milliseconds=RobotStatusController.action_cooldown_ms):
-            RobotStatusController.disable_autonomous_behavior = False
+            SignHandler.trigger_sign_detection_cooldown()
+            self.drive_controller.stop_autonomous_behaviour()
+            self.robot.turn_in_place(degrees(180), degrees(180))
+            TimingUtils.run_function_after(1000 + 100, SignHandler.finish_reaction_to_sign)
