@@ -76,5 +76,5 @@ class CoreEngine:
         self.current_cam_frame = display_img * 255
 
         # Show cam live preview if enabled
-        if Settings.cozmo_show_cam_live_feed:
+        if Settings.show_live_preview:
             self.preview_utils.show_cam_frame(display_img)

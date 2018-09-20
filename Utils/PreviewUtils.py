@@ -23,7 +23,7 @@ class PreviewUtils(metaclass=Singleton):
         :type image: Numpy array
         """
         # Update last frame without points
-        if not Settings.cozmo_preview_screenshot_include_points:
+        if not Settings.live_preview_screenshot_include_points:
             self.last_frame = image.copy()
 
         # Draw navigation points
@@ -37,11 +37,11 @@ class PreviewUtils(metaclass=Singleton):
                 cv2.circle(image, self.lane_analyzer_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
 
         # Update last frame with points
-        if Settings.cozmo_preview_screenshot_include_points:
+        if Settings.live_preview_screenshot_include_points:
             self.last_frame = image.copy()
 
         # Resize preview window
-        image = cv2.resize(image, Settings.cozmo_preview_resolution, interpolation=cv2.INTER_NEAREST)
+        image = cv2.resize(image, Settings.live_preview_resolution, interpolation=cv2.INTER_NEAREST)
 
         # Display overlay text in preview window
         self.apply_info_overlay(image)

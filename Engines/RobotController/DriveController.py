@@ -17,65 +17,68 @@ class DriveController:
         enable_drive is a static variable, taken from the Settings file
         where as allow_driving is being changed constantly while running
         """
-        if Settings.cozmo_enable_drive:
+        if Settings.disable_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
 
     def crossing_turn_right(self):
         """
         Run all behaviour associated with turning right at a crossing
         """
-        RobotStatusController.is_at_crossing = True
+        if Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
 
-        # Stop all driving behavior
-        self.stop_autonomous_behaviour()
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
 
-        # Approach the crossing
-        drive_action = self.robot.drive_straight(util.distance_mm(Settings.cozmo_crossing_approach_distance),
-                                                 util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
 
-        # Calculate how long the approaching will take
-        drive_duration = ((Settings.cozmo_crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
 
-        # Run the previously defined turn method in drive_duration milliseconds
-        TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, -90)
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, -90)
 
     def crossing_turn_left(self):
         """
         Run all behaviour associated with turning left at a crossing
         """
-        RobotStatusController.is_at_crossing = True
+        if Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
 
-        # Stop all driving behavior
-        self.stop_autonomous_behaviour()
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
 
-        # Approach the crossing
-        drive_action = self.robot.drive_straight(util.distance_mm(Settings.cozmo_crossing_approach_distance),
-                                                 util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
 
-        # Calculate how long the approaching will take
-        drive_duration = ((Settings.cozmo_crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
 
-        # Run the previously defined turn method in drive_duration milliseconds
-        TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, 90)
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, 90)
 
     def crossing_go_straight(self):
         """
         Run all behaviour associated with going straight at a crossing
         """
-        RobotStatusController.is_at_crossing = True
+        if Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
 
-        # Stop all driving behavior
-        self.stop_autonomous_behaviour()
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
 
-        # Approach the crossing
-        drive_action = self.robot.drive_straight(util.distance_mm(Settings.cozmo_crossing_approach_distance),
-                                                 util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
 
-        # Calculate how long the approaching will take
-        drive_duration = ((Settings.cozmo_crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
 
-        # Run the previously defined turn method in drive_duration milliseconds
-        TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._continue_after_crossing)
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._continue_after_crossing)
 
     def _turn_at_crossing(self, degrees):
         """
@@ -122,7 +125,7 @@ class DriveController:
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
         """
-        if Settings.cozmo_enable_drive:
+        if Settings.disable_driving:
             if correction_value > 0:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))

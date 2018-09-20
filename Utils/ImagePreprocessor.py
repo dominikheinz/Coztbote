@@ -54,7 +54,7 @@ class ImagePreprocessor:
         """
 
         # Convert image values to binary mask
-        img_mask = image > Settings.image_binarization_threshold
+        img_mask = image > Settings.preprocessor_binarization_threshold
 
         # Convert mask to int array
         bin_img = numpy.array(img_mask, dtype=numpy.uint8)
@@ -202,10 +202,8 @@ class ImagePreprocessor:
         # Gets the y coordinate of one third of the image
         top_offset = int(display_img.shape[0] / 3)
 
-        # Adding a line at 1/6th of the image, so that contours are only measured
-        # when one contour reaches below the line
-        y_trigger_line = (display_img.shape[0] / 6) * 5
-        y_trigger_line = int(y_trigger_line) - Settings.pixel_offset
+        # Set the position of the trigger line
+        y_trigger_line = Settings.trigger_line_position
 
         # Only contours are important that have a certain size. Also checks if the contour
         # is below the line of measurement
@@ -217,9 +215,9 @@ class ImagePreprocessor:
             if (contour[:, 0, 1] < top_offset).any():
                 continue
 
-            if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
+            if Settings.sign_min_pixel_count < cv2.contourArea(contour) < Settings.sign_max_pixel_count:
                 # Draw contour for display
-                if Settings.show_contures_in_extra_window:
+                if Settings.live_preview_show_signs:
                     cv2.drawContours(display_img, [contour], 0, color=(34, 126, 230), thickness=cv2.FILLED)
 
                 contour_counter += 1
@@ -229,7 +227,7 @@ class ImagePreprocessor:
                     contour_below_trigger = True
 
         # Option to show tracked contours in extra window
-        if Settings.show_contures_in_extra_window:
+        if Settings.live_preview_show_signs:
             # draws the line for visual purposes
             cv2.line(display_img, (0, y_trigger_line), (display_img.shape[1], y_trigger_line),
                      color=(43, 57, 192), thickness=1)
