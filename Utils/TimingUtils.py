@@ -65,7 +65,6 @@ class DelayedFunctionCall:
         """
         if self.after_action is None or self.after_action.is_completed:
             if self.run_at_time <= datetime.datetime.now():
-                print(self.after_action)
                 self.func(*self.args)
                 return True
         return False

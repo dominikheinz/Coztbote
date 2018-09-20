@@ -1,5 +1,4 @@
 from cozmo import util
-import datetime
 from Utils import TimingUtils
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager

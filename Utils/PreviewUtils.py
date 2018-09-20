@@ -22,15 +22,13 @@ class PreviewUtils(metaclass=Singleton):
         :param image: Image to show
         :type image: Numpy array
         """
-        # Convert image from 0..1 to 0..255 and tri-channel
-        image = cv2.cvtColor(image * 255, cv2.COLOR_GRAY2BGR)
-
         # Update last frame without points
         if not Settings.cozmo_preview_screenshot_include_points:
             self.last_frame = image.copy()
 
         # Draw navigation points
-        if self.lane_analyzer_obj.last_points is not None and not RobotStatusController.is_at_crossing:
+        if self.lane_analyzer_obj.last_points is not None and \
+                not RobotStatusController.disable_autonomous_behavior:
             if self.lane_analyzer_obj.last_points[0] is not None:
                 cv2.circle(image, self.lane_analyzer_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
             if self.lane_analyzer_obj.last_points[1] is not None:
@@ -74,7 +72,8 @@ class PreviewUtils(metaclass=Singleton):
         overlay_lane_type = "Lane Type: " + str(
             CrossingType.get_crossing_as_string(CrossingTypeIdentifier.last_crossing_type))
         overlay_text_signs = "Amount of Signs: " + str(RobotStatusController.sign_count)
+        overlay_color_signs = 128 if RobotStatusController.enable_sign_recognition else (220, 220, 220)
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
-        cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, overlay_color_signs, 2)
         cv2.putText(image, overlay_lane_type, (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)

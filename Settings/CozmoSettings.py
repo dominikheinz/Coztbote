@@ -15,6 +15,8 @@ class Settings:
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
     cozmo_turn_speed_degrees_per_second = 180
 
+    image_preprocessor_contours_min_size = 100
+
     # Live preview settings
     cozmo_show_cam_live_feed = True
     cozmo_img_processing_ms_limit = 40
@@ -32,5 +34,5 @@ class Settings:
 
     # Measurement settings for contures
     min_pixel_sign = 150
-    max_pixel_sign = 1400
+    max_pixel_sign = 1800
     pixel_offset = 15

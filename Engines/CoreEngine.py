@@ -1,4 +1,5 @@
 import datetime
+import cv2
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Utils.ImagePreprocessor import ImagePreprocessor
@@ -43,31 +44,37 @@ class CoreEngine:
         # Convert image to binary
         bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
+        # Find contoures on image
+        contours = ImagePreprocessor.find_contours(bin_img)
+
         # Extract lane shape and remove noise
-        bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
+        lane_img = ImagePreprocessor.extract_lane_shape(bin_img, contours)
+
+        # Create image for later display
+        display_img = cv2.cvtColor(lane_img * 255, cv2.COLOR_GRAY2BGR)
 
         # Counting signs and overwrite attribute in Lane Analyzer
         if RobotStatusController.enable_sign_recognition and \
                 not Settings.disable_sign_detection and \
                 not RobotStatusController.disable_autonomous_behavior:
-            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_surroundings)
+            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(display_img, contours)
             self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
         if not RobotStatusController.disable_autonomous_behavior:
-            crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
+            crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
             self.navigator.handle_crossing(crossing_type)
 
         if not RobotStatusController.disable_autonomous_behavior:
             # Calculate lane correction based on image data
-            lane_correction = self.corr_calculator.calculate_lane_correction(bin_img)
+            lane_correction = self.corr_calculator.calculate_lane_correction(lane_img)
 
             # If correction is required let Cozmo correct
             if lane_correction is not None:
                 self.drive_controller.correct(lane_correction)
 
         # Update current frame
-        self.current_cam_frame = bin_img * 255
+        self.current_cam_frame = display_img * 255
 
         # Show cam live preview if enabled
         if Settings.cozmo_show_cam_live_feed:
-            self.preview_utils.show_cam_frame(bin_img)
+            self.preview_utils.show_cam_frame(display_img)

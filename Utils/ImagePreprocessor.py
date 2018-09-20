@@ -88,45 +88,48 @@ class ImagePreprocessor:
         return arr
 
     @staticmethod
-    def extract_lane_shape(image):
+    def find_contours(image):
+        """
+        Gets an array of contours, each as a vector of points.
+        :param image: Image containing the contures to find
+        :return:
+        """
+        # Invert the image
+        inverted_img = 1 - image
+
+        # Calculate all detected contours
+        contours_raw = cv2.findContours(inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Use array of contures only
+        contours = contours_raw[1]
+
+        return contours
+
+    @staticmethod
+    def extract_lane_shape(image, contours):
         """
         Cuts out the lane shape from the input image.
         :param image: Input image
         :type image: Binary numpy array
-        :return: The image which contains only the lane shape and an image containing only the lane surroundings
-        :rtype: Numpy array, numpy array
+        :param contours: An array of vectors of points representing the contours found
+        :return: The image which contains only the lane shape
+        :rtype: Numpy array
         """
 
-        # Invert the image
-        inverted_img = 1 - image
-
         # Create new array with the input image size and fills it with 1's
-        masked_img = numpy.full(inverted_img.shape, 1, dtype=numpy.uint8)
-
-        # Grab all detected contours
-        contours = cv2.findContours(
-            inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[1]
+        masked_img = numpy.full(image.shape, 1, dtype=numpy.uint8)
 
         # Take the contour with the biggest area (the lane shape)
         if not contours:
-            return masked_img, masked_img
+            return masked_img
 
         # Calculate area of contour area
         biggest_contour_area = max(contours, key=cv2.contourArea)
 
-        # Fill elements within area with 1's
-        cv2.drawContours(masked_img, [biggest_contour_area], 0, 0, -1)
+        # Fill elements within biggest area with 1's
+        cv2.drawContours(masked_img, [biggest_contour_area], 0, color=0, thickness=cv2.FILLED)
 
-        # Create a new image containing only the data surrounding the lane
-        lane_surroundings_mask = numpy.zeros(inverted_img.shape, dtype=numpy.uint8)
-        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 1,
-                         Settings.cozmo_lane_surrounding_width_px * 2)
-        cv2.drawContours(lane_surroundings_mask, [biggest_contour_area], 0, 0, cv2.FILLED)
-
-        # invert again to get the mainly white image back
-        lane_surroundings = inverted_img * lane_surroundings_mask
-
-        return masked_img, lane_surroundings
+        return masked_img
 
     @staticmethod
     def run_length_encoding(data_array):
@@ -188,50 +191,51 @@ class ImagePreprocessor:
         return numpy.array(new_list)
 
     @staticmethod
-    def calculate_number_of_signs(image):
+    def calculate_number_of_signs(display_img, contours):
         """
-        Tracks all contours and process them to find signs
-        Converts given image to a numpy array, crops it, then finds contours and evaluates them.
-        :param image: image in binary form
+        Extracts signs from contours
+        :param display_img: Image for display purposes
+        :param contours: An array of vectors of points representing the contours found
         :return: amount of tracked signs
         """
 
-        # Signals one third of the image
-        start_row_1 = int(image.shape[0] / 3)
-
-        # Cropping image so that only contours in the lower part of the image are being taken into consideration
-        cropped_image = image[start_row_1:, :]
+        # Gets the y coordinate of one third of the image
+        top_offset = int(display_img.shape[0] / 3)
 
         # Adding a line at 1/6th of the image, so that contours are only measured
         # when one contour reaches below the line
-        y_line = (cropped_image.shape[0] / 6) * 5
-        y_line = int(y_line) - Settings.pixel_offset
-
-        # Get multidimensional array of conture informations
-        contours = cv2.findContours(cropped_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        y_trigger_line = (display_img.shape[0] / 6) * 5
+        y_trigger_line = int(y_trigger_line) - Settings.pixel_offset
 
         # Only contours are important that have a certain size. Also checks if the contour
         # is below the line of measurement
-        contour_allowed = False
+        contour_below_trigger = False
         contour_counter = 0
-        for contour in contours[1]:
+        for contour in contours:
+
+            # If any point of the contour is above the lower third of the frame ignore it
+            if (contour[:, 0, 1] < top_offset).any():
+                continue
+
             if Settings.min_pixel_sign < cv2.contourArea(contour) < Settings.max_pixel_sign:
-                cv2.drawContours(cropped_image, [contour], 0, 128, 2)
+                # Draw contour for display
+                if Settings.show_contures_in_extra_window:
+                    cv2.drawContours(display_img, [contour], 0, color=(34, 126, 230), thickness=cv2.FILLED)
+
                 contour_counter += 1
-                if contour[0][0][1] > y_line:
-                    contour_allowed = True
+
+                # if any point of the contour is below the trigger line
+                if (contour[:, 0, 1] > y_trigger_line).any():
+                    contour_below_trigger = True
 
         # Option to show tracked contours in extra window
         if Settings.show_contures_in_extra_window:
-            display_image = cropped_image.copy() * 255
-
             # draws the line for visual purposes
-            cv2.line(display_image, (0, y_line), (display_image.shape[1], y_line), 128, 2)
-
-            cv2.imshow("with contours", display_image)
+            cv2.line(display_img, (0, y_trigger_line), (display_img.shape[1], y_trigger_line),
+                     color=(43, 57, 192), thickness=1)
 
         # Updates the amount of found contours if they are in allowed area
-        if contour_allowed:
+        if contour_below_trigger:
             sign_count = contour_counter
         # Sets amount of signs to zero if contours aren't in allowed area
         else:
