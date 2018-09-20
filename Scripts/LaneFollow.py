@@ -53,8 +53,8 @@ def run(robot_obj: cozmo.robot.Robot):
     sign_handler_obj = SignHandler.SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    lane_tracking_obj = CoreEngine.CoreEngine()
-    InstanceManager.add_instance("LaneTrackingEngine", lane_tracking_obj)
+    core_engine_obj = CoreEngine.CoreEngine()
+    InstanceManager.add_instance("CoreEngine", core_engine_obj)
 
     # Setup robot with presets
     robot_obj.enable_stop_on_cliff(False)
@@ -76,7 +76,7 @@ def run(robot_obj: cozmo.robot.Robot):
     def run_analysis(sc):
         if LaneFollow.last_frame is not None:
             TimingUtils.run_all_elapsed()
-            lane_tracking_obj.process_frame(image=LaneFollow.last_frame)
+            core_engine_obj.process_frame(image=LaneFollow.last_frame)
         s.enter(0.05, 1, run_analysis, (sc,))
 
     s.enter(0.05, 1, run_analysis, (s,))
