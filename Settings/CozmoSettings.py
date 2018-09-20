@@ -6,7 +6,7 @@ class Settings:
 
     # Behavior
     disable_sign_detection = False
-    disable_driving = False
+    disable_driving = True
 
     # Sign detection
     sign_detection_cooldown_time = 6000
@@ -26,8 +26,11 @@ class Settings:
     live_preview_show_signs = True
 
     # Crossing settings
-    crossing_horizontal_crop = 10
-    crossing_vertical_crop = 60
+    crossing_top_crop = 90
+    crossing_bottom_crop = 30
+    crossing_left_crop = 10
+    crossing_right_crop = 10
+
     lane_pattern_min_width_threshold = 6
     crossing_approach_distance = 160
 

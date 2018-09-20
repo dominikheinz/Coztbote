@@ -12,7 +12,8 @@ class CrossingTypeIdentifier:
     def analyze_frame(image):
 
         # Crop out relevant area
-        image = ImagePreprocessor.crop_image(image, Settings.crossing_vertical_crop, Settings.crossing_horizontal_crop)
+        image = ImagePreprocessor.crop_image(image, Settings.crossing_top_crop, Settings.crossing_right_crop,
+                                             Settings.crossing_bottom_crop, Settings.crossing_left_crop)
 
         # Obtain pixel rows from shape
         row_patterns = CrossingTypeIdentifier.create_row_patterns(image)

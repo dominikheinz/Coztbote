@@ -17,14 +17,14 @@ class DriveController:
         enable_drive is a static variable, taken from the Settings file
         where as allow_driving is being changed constantly while running
         """
-        if Settings.disable_driving:
+        if not Settings.disable_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
 
     def crossing_turn_right(self):
         """
         Run all behaviour associated with turning right at a crossing
         """
-        if Settings.disable_driving:
+        if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
@@ -44,7 +44,7 @@ class DriveController:
         """
         Run all behaviour associated with turning left at a crossing
         """
-        if Settings.disable_driving:
+        if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
@@ -64,7 +64,7 @@ class DriveController:
         """
         Run all behaviour associated with going straight at a crossing
         """
-        if Settings.disable_driving:
+        if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
@@ -125,7 +125,7 @@ class DriveController:
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
         """
-        if Settings.disable_driving:
+        if not Settings.disable_driving:
             if correction_value > 0:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))
