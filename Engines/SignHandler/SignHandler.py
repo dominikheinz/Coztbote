@@ -108,7 +108,7 @@ class SignHandler:
             RobotStatusController.perceived_faces = []
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
             is_matching = self.check_if_matching()
-        action_speak = self.robot.say_text("Hier ist dein Würfel " + RobotStatusController.perceived_faces[0].name,
+        action_speak = self.robot.say_text(Settings.tts_packet_deliverd + RobotStatusController.perceived_faces[0].name,
                                            in_parallel=True, use_cozmo_voice=False)
         action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
                                                              in_parallel=True)

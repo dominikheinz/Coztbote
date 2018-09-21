@@ -32,3 +32,8 @@ class Settings:
     min_pixel_sign = 120
     max_pixel_sign = 2000
     pixel_offset = 15
+
+    # All TTS
+    tts_packet_deliverd = "Paket zugestellt, schönen Tag noch "
+    tts_wrong_house = "Verzeihung, bin hier wohl falsch"
+
