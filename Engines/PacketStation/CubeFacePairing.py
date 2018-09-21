@@ -53,6 +53,7 @@ class CubeFacePairing:
                 action_lift.wait_for_completed()  # Raising Forks if correct
                 action_speak.wait_for_completed()
                 face_matching = True
+                RobotStatusController.is_holding_cube = True
             else:
                 print("NO Match but recognized")
                 RobotStatusController.face_recognized_but_not_matching = True

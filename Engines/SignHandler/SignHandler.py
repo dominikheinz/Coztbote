@@ -55,17 +55,24 @@ class SignHandler:
 
         elif sign_count is 4:
             # Handling for two spotted signs
-            RobotStatusController.disable_autonomous_behavior = True
-            self.robot.stop_all_motors()
-            self.robot.set_lift_height(0.4).wait_for_completed()
-            RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
-            is_matching = self.check_if_matching()
-            self.retry_cube_face_pairing(is_matching)
+            if not RobotStatusController.is_holding_cube:
+                RobotStatusController.disable_autonomous_behavior = True
+                self.robot.stop_all_motors()
+                self.robot.turn_in_place(degrees(180)).wait_for_completed()
+                RobotStatusController.action_start = datetime.datetime.now()
+                RobotStatusController.disable_autonomous_behavior = False
+            else:
+                RobotStatusController.disable_autonomous_behavior = True
+                self.robot.stop_all_motors()
+                self.robot.set_lift_height(0.4).wait_for_completed()
+                RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
+                is_matching = self.check_if_matching()
+                self.retry_cube_face_pairing(is_matching)
 
-            self.reinitialize_for_lanetracking()
+                self.reinitialize_for_lanetracking()
 
-            self.robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=False)
-            RobotStatusController.disable_autonomous_behavior = False
+                self.robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=False)
+                RobotStatusController.disable_autonomous_behavior = False
 
         elif sign_count is 6:
             # Handling for four spotted signs
@@ -103,6 +110,7 @@ class SignHandler:
             RobotStatusController.is_in_packetstation = False
             Settings.cozmo_drive_speed = 50
             print("Leaving packetstation")
+            RobotStatusController.is_holding_cube = True
 
     def retry_cube_face_pairing(self, cube_is_matching_face):
         matching_counter = 0
