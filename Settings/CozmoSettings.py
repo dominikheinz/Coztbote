@@ -3,7 +3,6 @@ class Settings:
     # Environment settings
     owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
     image_binarization_threshold = 30
-    cooldown_time_ms = 5000 # Todo rename to sign detection
 
     # Image Preprocessor
     processing_frequency_ms = 40
@@ -14,12 +13,11 @@ class Settings:
     disable_driving = False
 
     # Sign detection
-    sign_detection_cooldown_time = 6000
+    sign_detection_cooldown_ms = 5000
     wait_time_sign1 = 4000  # wait time for stop sign
     wait_time_sign2 = 0     # wait time for turn around sign
 
     # Driving settings
-    # Todo check enable drive switch
     cozmo_drive_speed = 50
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
@@ -46,8 +44,6 @@ class Settings:
     sign_min_pixel_count = 120
     sign_max_pixel_count = 2000
     trigger_line_position = 185
-    # Todo check vars min_pixel_sign, max_pixel_sign, pixel_offset
-
 
     # All TTS
     tts_packet_deliverd = "Paket zugestellt, schönen Tag noch "

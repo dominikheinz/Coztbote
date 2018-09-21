@@ -14,8 +14,6 @@ class DriveController:
     def start(self):
         """
         Start driving straight
-        enable_drive is a static variable, taken from the Settings file
-        where as allow_driving is being changed constantly while running
         """
         if not Settings.disable_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)

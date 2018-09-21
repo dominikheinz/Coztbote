@@ -19,8 +19,7 @@ class SignHandler:
         Creating an instance of robot and getting the cooldown_time_ms from Settings.py
         """
         self.robot = InstanceManager.get_instance("Robot")
-        # Todo rename
-        self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
+        self.correction_calculator = InstanceManager.get_instance("CorrectionCalculator")
         self.drive_controller = InstanceManager.get_instance("DriveController")
 
     @staticmethod
@@ -30,7 +29,7 @@ class SignHandler:
         def restart_detection():
             RobotStatusController.enable_sign_recognition = True
 
-        TimingUtils.run_function_after(Settings.sign_detection_cooldown_time, restart_detection)
+        TimingUtils.run_function_after(Settings.sign_detection_cooldown_ms, restart_detection)
 
     def react_to_signs(self, sign_count):
         """
