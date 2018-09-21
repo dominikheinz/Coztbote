@@ -1,12 +1,12 @@
-from Settings.CozmoSettings import Settings
 import cozmo
-import datetime
-from cozmo.util import degrees, distance_mm, Speed
+from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Engines.RobotController.RobotStatusController import RobotStatusController
 from Utils import TimingUtils
 from Engines.PacketStation import PacketStation
 from Engines.PacketStation.CubeFacePairing import CubeFacePairing
+from cozmo.util import degrees, distance_mm, Speed
+
 
 class SignHandler:
 
@@ -19,6 +19,7 @@ class SignHandler:
         Creating an instance of robot and getting the cooldown_time_ms from Settings.py
         """
         self.robot = InstanceManager.get_instance("Robot")
+        # Todo rename
         self.lane_analyzer = InstanceManager.get_instance("CorrectionCalculator")
         self.drive_controller = InstanceManager.get_instance("DriveController")
 
@@ -41,7 +42,7 @@ class SignHandler:
             print("Odd_Sign_Count_Error")
 
         elif sign_count == 4:
-            # Handling four spotted signs
+            # Handling for four spotted signs
 
             self.drive_controller.stop_autonomous_behaviour()
 
@@ -49,7 +50,7 @@ class SignHandler:
             self.robot.set_lift_height(0.4).wait_for_completed()
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
             is_matching = self.check_if_matching()
-            self.search_for_faces_until_matching(is_matching)
+            self.retry_cube_face_pairing(is_matching)
 
             self.reinitialize_for_lanetracking()
 
@@ -92,17 +93,23 @@ class SignHandler:
             Settings.cozmo_drive_speed = 50
             print("Leaving packetstation")
 
-    def search_for_faces_until_matching(self, is_matching):
-        while not is_matching:
+    def retry_cube_face_pairing(self, is_matching):
+        matching_counter = 0
+        while matching_counter < 5 and not is_matching:
             RobotStatusController.perceived_faces = []
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
             is_matching = self.check_if_matching()
-        action_speak = self.robot.say_text("Hier ist dein Würfel " + RobotStatusController.perceived_faces[0].name,
-                                           in_parallel=True, use_cozmo_voice=False)
-        action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
-                                                             in_parallel=True)
-        action_speak.wait_for_completed()
-        action_drop.wait_for_completed()
+            matching_counter += 1
+        if is_matching:
+
+            action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
+                                                                 in_parallel=False)
+            action_drop.wait_for_completed()
+        else:
+            action_speak = self.robot.say_text(
+                Settings.tts_wrong_house + RobotStatusController.perceived_faces[0].name,
+                in_parallel=False, use_cozmo_voice=False)
+            action_speak.wait_for_completed()
 
     def check_if_matching(self):
         return CubeFacePairing.compare_cube_and_face(self.robot, RobotStatusController.perceived_faces[0].name,
