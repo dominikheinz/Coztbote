@@ -1,26 +1,22 @@
-import datetime
-import cozmo
-from cozmo.objects import LightCube3Id
-
-
 class RobotStatusController:
+
+    # Set to true if Cozmo is in the paketstation, false otherwise
     is_in_packetstation = False
 
+    # If true sign detection is enabled, false otherwise
     scan_for_signs = False
 
-    is_at_crossing = False
-    crossing_status = 0
-    crossing_status_change_timestamp = None
-    crossing_turn_degrees = 0
-
+    # Autonomous driving behavior
     disable_autonomous_behavior = False
 
-    cooldown_start = None
-    sign_count = 0
-    sign_recognition_cooldown = False
-    action_cooldown_ms = 0
-    action_start = datetime.datetime.now()
+    # Crossing detection
+    is_at_crossing = False
 
+    # Sign detection
+    enable_sign_recognition = True
+    sign_count = 0
+
+    # Current face and cube
     perceived_cubes = []
     perceived_faces = []
     face_recognized_but_not_matching = False

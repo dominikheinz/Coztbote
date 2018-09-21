@@ -1,13 +1,14 @@
 import datetime
+import cv2
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.RobotController.RobotStatusController import RobotStatusController
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.RobotController.Navigator import Navigator
 
 
 class CoreEngine:
-
     robot = None
     drive_controller = None
     preview_utils = None
@@ -44,41 +45,40 @@ class CoreEngine:
         # Convert image to binary
         bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
-        # Counting signs and overwrite attribute in Lane Analyzer
-        if not RobotStatusController.sign_recognition_cooldown and not Settings.disable_sign_detection and not RobotStatusController.disable_autonomous_behavior:
-            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-            if RobotStatusController.sign_count % 2 == 0:
-                RobotStatusController.cooldown_start = datetime.datetime.now()
-            self.sign_handler.react_to_signs(RobotStatusController.sign_count)
+        # Find contoures on image
+        contours = ImagePreprocessor.find_contours(bin_img)
 
         # Extract lane shape and remove noise
-        bin_img, bin_surroundings = ImagePreprocessor.extract_lane_shape(bin_img)
+        lane_img = ImagePreprocessor.extract_lane_shape(bin_img, contours)
 
-        if RobotStatusController.is_at_crossing:
-            self.drive_controller.check_crossing_status_cooldown()
+        # Create image for later display
+        display_img = cv2.cvtColor(lane_img * 255, cv2.COLOR_GRAY2BGR)
+
+        # Counting signs and overwrite attribute in Lane Analyzer
+        if RobotStatusController.enable_sign_recognition and \
+                not Settings.disable_sign_detection and \
+                not RobotStatusController.disable_autonomous_behavior:
+            RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(display_img, contours)
+            self.sign_handler.react_to_signs(RobotStatusController.sign_count)
+
+        lane_correction = 0
+        if not RobotStatusController.disable_autonomous_behavior:
+            # Calculate lane correction based on image data
+            lane_correction = self.corr_calculator.calculate_lane_correction(lane_img)
+
+            crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
+            if crossing_type is not None:
+                # Todo check if robot can turn this way at the crossing
+                Navigator.navigate()
 
         if not RobotStatusController.disable_autonomous_behavior:
-
-            crossing_type = CrossingTypeIdentifier.analyze_frame(bin_img)
-            self.navigator.handle_crossing(crossing_type)
-
-            # Calculate lane correction based on image data
-            lane_correction = self.corr_calculator.calculate_lane_correction(bin_img)
-
             # If correction is required let Cozmo correct
             if lane_correction is not None:
                 self.drive_controller.correct(lane_correction)
 
         # Update current frame
-        self.current_cam_frame = bin_img * 255
+        self.current_cam_frame = display_img * 255
 
         # Show cam live preview if enabled
-        if Settings.cozmo_show_cam_live_feed:
-            self.preview_utils.show_cam_frame(bin_img)
-
-        # Check if cooldown has expired
-        if not Settings.disable_sign_detection:
-            self.sign_handler.check_for_cooldown(RobotStatusController.cooldown_start, Settings.disable_cooldown)
-
-        self.sign_handler.check_driving_cooldown()
-        #DebugUtils.stop_timer(tmr, "extract_lane_shape")
+        if Settings.show_live_preview:
+            self.preview_utils.show_cam_frame(display_img)

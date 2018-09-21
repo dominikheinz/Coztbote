@@ -2,17 +2,30 @@ import numpy
 from Settings.CozmoSettings import Settings
 from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.LaneTracking.CrossingType import CrossingType
+from Utils.InstanceManager import InstanceManager
 
 
 class CrossingTypeIdentifier:
     last_crossing_type = None
     last_confirmed_crossing_type = None
+    correction_calculator_obj = None
 
     @staticmethod
     def analyze_frame(image):
 
+        correction_calculator_obj = InstanceManager.get_instance("CorrectionCalculator")
+
+        # If lane correction is too much the crossing may be invalid and should be discarded
+        correction_points = correction_calculator_obj.last_points
+        if correction_points is None or correction_points[0] is None or \
+                correction_points[0][0] < Settings.crossing_correction_min_dist_to_edge or \
+                correction_points[0][0] > image.shape[1] - Settings.crossing_correction_min_dist_to_edge:
+            CrossingTypeIdentifier.last_confirmed_crossing_type = None
+            return CrossingTypeIdentifier.last_confirmed_crossing_type
+
         # Crop out relevant area
-        image = ImagePreprocessor.crop_image(image, Settings.crossing_vertical_crop, Settings.crossing_horizontal_crop)
+        image = ImagePreprocessor.crop_image(image, Settings.crossing_top_crop, Settings.crossing_right_crop,
+                                             Settings.crossing_bottom_crop, Settings.crossing_left_crop)
 
         # Obtain pixel rows from shape
         row_patterns = CrossingTypeIdentifier.create_row_patterns(image)
@@ -186,17 +199,3 @@ class CrossingTypeIdentifier:
             row_patterns.append(detailed_pattern[:, 1])
 
         return row_patterns
-
-    @staticmethod
-    def crop_image(image):
-        """
-        Crops out the image by the offsets specified in settings
-        :param image: The input image that should be cropped
-        :type image: Numpy array
-        :return: Cropped image
-        :rtype: Numpy array
-        """
-        h_offset = Settings.crossing_horizontal_crop
-        v_offset = Settings.crossing_vertical_crop
-        h, w = image.shape
-        return image[v_offset:h - v_offset, h_offset:w - h_offset]

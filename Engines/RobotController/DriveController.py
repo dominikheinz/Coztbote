@@ -1,107 +1,154 @@
 from cozmo import util
-import datetime, cozmo
+from Utils import TimingUtils
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Engines.RobotController.RobotStatusController import RobotStatusController
 
 
+# noinspection PyPep8
 class DriveController:
     robot = None
-    allow_driving = True
 
     def __init__(self):
         self.robot = InstanceManager.get_instance("Robot")
 
-    # ToDo add stop method
     def start(self):
         """
         Start driving straight
-        enable_drive is a static variable, taken from the Settings file
-        where as allow_driving is being changed constantly while running
         """
-        if Settings.cozmo_enable_drive and self.allow_driving:
+        if not Settings.disable_driving:
             self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
-        else:
-            self.robot.drive_wheel_motors(0, 0)
-
-    def crossing_turn_left(self):
-        RobotStatusController.is_at_crossing = True
-        RobotStatusController.disable_autonomous_behavior = True
-
-        self.robot.stop_all_motors()
-        self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
-                                  should_play_anim=False)
-        RobotStatusController.crossing_turn_degrees = 90
-        self.set_crossing_status(1)
 
     def crossing_turn_right(self):
-        RobotStatusController.is_at_crossing = True
-        RobotStatusController.disable_autonomous_behavior = True
+        """
+        Run all behaviour associated with turning right at a crossing
+        """
+        if not Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
 
-        self.robot.stop_all_motors()
-        self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
-                                  should_play_anim=False)
-        RobotStatusController.crossing_turn_degrees = -90
-        self.set_crossing_status(1)
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
+
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, -90)
+
+    def crossing_turn_left(self):
+        """
+        Run all behaviour associated with turning left at a crossing
+        """
+        if not Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
+
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
+
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._turn_at_crossing, 90)
 
     def crossing_go_straight(self):
-        RobotStatusController.is_at_crossing = True
-        RobotStatusController.disable_autonomous_behavior = True
+        """
+        Run all behaviour associated with going straight at a crossing
+        """
+        if not Settings.disable_driving:
+            RobotStatusController.is_at_crossing = True
 
+            # Stop all driving behavior
+            self.stop_autonomous_behaviour()
+
+            # Approach the crossing
+            drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
+                                                     util.speed_mmps(Settings.cozmo_drive_speed), should_play_anim=False)
+
+            # Calculate how long the approaching will take
+            drive_duration = ((Settings.crossing_approach_distance / Settings.cozmo_drive_speed) * 1000)
+
+            # Run the previously defined turn method in drive_duration milliseconds
+            TimingUtils.run_function_after_if_action_finished(drive_duration, drive_action, self._continue_after_crossing)
+
+    def _turn_at_crossing(self, degrees):
+        """
+        Turn in place when directly on top of a crossing
+        :param degrees: How many degrees to turn
+        """
+        turn_action = self.robot.turn_in_place(util.degrees(degrees),
+                                               speed=util.degrees(Settings.cozmo_turn_speed_degrees_per_second))
+
+        turn_duration = (degrees / Settings.cozmo_turn_speed_degrees_per_second) * 1000
+        TimingUtils.run_function_after_if_action_finished(turn_duration, turn_action, self._continue_after_crossing)
+
+    def _continue_after_crossing(self):
+        """
+        Restart normal behaviour after crossing has been passed
+        """
+        RobotStatusController.is_at_crossing = False
+        self.continue_autonomous_behaviour()
+
+    def stop_autonomous_behaviour(self):
+        """
+        Stop all autonomous behaviour like lane correction, crossing detection and sign detection.
+        Cozmo will stop driving.
+        """
+        RobotStatusController.disable_autonomous_behavior = True
+        self.robot.drive_wheel_motors(0, 0)
         self.robot.stop_all_motors()
-        self.robot.drive_straight(util.distance_mm(170), util.speed_mmps(Settings.cozmo_drive_speed),
-                                  should_play_anim=False)
-        RobotStatusController.crossing_turn_degrees = 0
-        self.set_crossing_status(1)
+
+    def continue_autonomous_behaviour(self):
+        """
+        Continue all autonomous behaviour like lane correction, crossing detection and sign detection.
+        Cozmo will start driving.
+        """
+        RobotStatusController.disable_autonomous_behavior = False
+        self.robot.stop_all_motors()
+        self.start()
 
     def correct(self, correction_value):
         """
         Correct path by turning left or right
-        enable_drive is a static variable, taken from the Settings file
-        where as allow_driving is being changed constantly while running
         :param correction_value: Value between [-1..1], negative values meaning correct to the left,
         positive values to the right. The closer the value is to 0, the slighter it corrects.
         :type correction_value: float
         """
-        if Settings.cozmo_enable_drive and self.allow_driving:
+        if not Settings.disable_driving:
             if correction_value > 0:
+                # Correct to the right
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed,
                                               Settings.cozmo_drive_speed * (1 - abs(correction_value)))
             elif correction_value < 0:
+                # Correct to the left
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed * (1 - abs(correction_value)),
                                               Settings.cozmo_drive_speed)
             else:
                 self.robot.drive_wheel_motors(Settings.cozmo_drive_speed, Settings.cozmo_drive_speed)
-        else:
-            self.robot.drive_wheel_motors(0, 0)
 
-    def check_crossing_status_cooldown(self):
+    def correct_in_place(self, correction_value):
         """
-        Checks last timestamp if time delta is exceeded, to block or
-        unblock sign_recognition_cooldown boolean
-        :param time_sign_seen: time when sign is seen
-        :param disable_cooldown: bool to disable cooldown functionality
+        Correct facing direction by rotating left or right in place
+        :param correction_value: Value between [-1..1], negative values meaning correct to the left,
+        positive values to the right. The closer the value is to 0, the slighter it corrects.
+        :type correction_value: float
         """
-        # Checks if time interval is big enough to unlock the sign_recognition_cooldown
-        if RobotStatusController.crossing_status == 1:
-            if RobotStatusController.crossing_status_change_timestamp < datetime.datetime.now() - datetime.timedelta(
-                    milliseconds=2500):
-                self.robot.stop_all_motors()
-                if RobotStatusController.crossing_turn_degrees != 0:
-                    self.set_crossing_status(2)
-                else:
-                    RobotStatusController.is_at_crossing = False
-                    RobotStatusController.disable_autonomous_behavior = False
-
-                    self.set_crossing_status(0)
-        elif RobotStatusController.crossing_status == 2:
-            if RobotStatusController.crossing_status_change_timestamp < datetime.datetime.now() - datetime.timedelta(
-                    milliseconds=1000):
-                RobotStatusController.is_at_crossing = False
-                RobotStatusController.disable_autonomous_behavior = False
-
-                self.set_crossing_status(0)
-
-    def set_crossing_status(self, new_status):
-        RobotStatusController.crossing_status = new_status
-        RobotStatusController.crossing_status_change_timestamp = datetime.datetime.now()
+        if not Settings.disable_driving:
+            if correction_value > 0:
+                # Rotate to the right
+                self.robot.drive_wheel_motors((Settings.cozmo_drive_speed * abs(correction_value)),
+                                              -(Settings.cozmo_drive_speed * abs(correction_value)))
+            elif correction_value < 0:
+                # Rotate to the left
+                self.robot.drive_wheel_motors(-(Settings.cozmo_drive_speed * abs(correction_value)),
+                                              (Settings.cozmo_drive_speed * abs(correction_value)))
+            else:
+                self.robot.drive_wheel_motors(0, 0)
