@@ -19,3 +19,5 @@ class RobotStatusController:
     # Current face and cube
     perceived_cubes = []
     perceived_faces = []
+    face_recognized_but_not_matching = False
+    is_holding_cube = False

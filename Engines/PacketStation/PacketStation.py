@@ -21,6 +21,9 @@ def packet_station_behavior(robot):
                                                 3)
             pickup_action.wait_for_completed()
         robot.turn_in_place(degrees(-90), False, 1).wait_for_completed()
+        robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE, in_parallel=False).wait_for_completed()
+        robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=False).wait_for_completed()
+        robot.drive_straight(distance_mm(50), Speed(20), False, False, 3).wait_for_completed()
 
     except IndexError:
         print("No cube found in array!")

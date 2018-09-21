@@ -3,6 +3,7 @@ import asyncio
 import cozmo
 from cozmo.util import degrees, Angle
 from Settings.CozmoSettings import Settings
+from Engines.RobotController.RobotStatusController import RobotStatusController
 
 """
 Used for observing cubes and facing and comparing pairs of faces and 
@@ -53,9 +54,11 @@ class CubeFacePairing:
                 action_lift.wait_for_completed()  # Raising Forks if correct
                 action_speak.wait_for_completed()
                 face_matching = True
+                RobotStatusController.is_holding_cube = False
+
             else:
-                robot.say_text(Settings.tts_wrong_house,
-                               use_cozmo_voice=False).wait_for_completed()  # Saying Line if no Match
+                print("NO MATCH, but recognized")
+                RobotStatusController.face_recognized_but_not_matching = True
                 # robot.turn_in_place(degrees(45), False, 1).wait_for_completed()
         else:
             print("Face not recognized")
@@ -71,4 +74,6 @@ class CubeFacePairing:
                 face = robot.world.wait_for_observed_face(timeout=5)
             except asyncio.TimeoutError:
                 print(asyncio.TimeoutError)
+                face = []
+                break
         return face

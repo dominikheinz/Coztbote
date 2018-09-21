@@ -81,4 +81,5 @@ class CoreEngine:
 
         # Show cam live preview if enabled
         if Settings.show_live_preview:
+            # self.preview_utils.show_cam_frame(bin_img*255)
             self.preview_utils.show_cam_frame(display_img)

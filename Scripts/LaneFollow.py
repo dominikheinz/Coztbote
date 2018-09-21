@@ -77,7 +77,7 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.wait_for_all_actions_completed()
 
     # ToDo change position of set route
-    Navigator.set_route(0, 5)
+    Navigator.set_route(0, 2)
 
     # Setup camera event handler
     # noinspection PyTypeChecker
