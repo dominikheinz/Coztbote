@@ -7,24 +7,6 @@ class Navigator:
     route_turn_index = 0
     route_is_reversed = False
 
-    def handle_crossing(self, crossing_type):
-        if crossing_type is not None:
-            Navigator.navigate()
-
-        """
-        if crossing_type == CrossingType.Crossing:
-            self.drive_controller.crossing_go_straight()  # ToDo Change Direction
-        elif crossing_type == CrossingType.T_Crossing:
-            self.drive_controller.crossing_turn_left()  # ToDo Change Direction
-        elif crossing_type == CrossingType.Right_T_Crossing:
-            self.drive_controller.crossing_turn_right()  # ToDo Change Direction
-        elif crossing_type == CrossingType.Left_T_Crossing:
-            self.drive_controller.crossing_turn_left()  # ToDo Change Direction
-        else:
-            RobotStatusController.is_at_crossing = False
-            self.drive_controller.start()
-        """
-
     @staticmethod
     def set_route(start_point, end_point):
         """

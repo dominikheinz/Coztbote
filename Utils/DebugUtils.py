@@ -3,7 +3,6 @@ import numpy
 
 
 class DebugUtils:
-
     # Value format: [[elapsed time sum, number of times called], [max elapsed time]]
     timed_functions = {}
 
@@ -44,6 +43,7 @@ class DebugUtils:
                     # Save max value
                     DebugUtils.timed_functions[function_name][1] = elapsed_time
 
+                # noinspection PyPep8
                 avg_value = DebugUtils.timed_functions[function_name][0][0] / DebugUtils.timed_functions[function_name][0][1]
                 max_value = DebugUtils.timed_functions[function_name][1]
                 print('{:s} function took {:.3f} ms (Avg: {:.3f}, Max: {:.3f})'

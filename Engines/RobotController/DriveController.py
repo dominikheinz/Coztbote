@@ -5,6 +5,7 @@ from Utils.InstanceManager import InstanceManager
 from Engines.RobotController.RobotStatusController import RobotStatusController
 
 
+# noinspection PyPep8
 class DriveController:
     robot = None
 

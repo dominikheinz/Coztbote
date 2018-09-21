@@ -223,7 +223,7 @@ class ImagePreprocessor:
                 contour_counter += 1
 
                 # if any point of the contour is below the trigger line
-                if (contour[:, 0, 1] > y_trigger_line).any():
+                if numpy.array(contour[:, 0, 1] > y_trigger_line).any():
                     contour_below_trigger = True
 
         # Option to show tracked contours in extra window

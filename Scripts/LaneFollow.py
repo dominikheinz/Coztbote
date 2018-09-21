@@ -18,6 +18,7 @@ from cozmo.camera import CameraConfig
 last_frame = None
 
 
+# noinspection PyUnusedLocal
 def save_last_frame(e, image):
     global last_frame
     last_frame = image
@@ -79,6 +80,7 @@ def run(robot_obj: cozmo.robot.Robot):
     Navigator.set_route(4, 0)
 
     # Setup camera event handler
+    # noinspection PyTypeChecker
     robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, save_last_frame)
 
     # Start driving engine

@@ -1,7 +1,5 @@
 from unittest import TestCase
-from Engines.RobotController.TrackLoader import TrackLoader
 from Engines.RobotController.Navigator import Navigator
-from Utils.InstanceManager import InstanceManager
 
 
 class TestNavigator(TestCase):

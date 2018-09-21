@@ -5,7 +5,8 @@ from cozmo.util import degrees, Angle
 from Settings.CozmoSettings import Settings
 
 """
-Used for observing cubes and facing and comparing pairs of faces and cubes that have been defined as matching by dictionary
+Used for observing cubes and facing and comparing pairs of faces and 
+cubes that have been defined as matching by dictionary
 """
 
 
@@ -26,7 +27,7 @@ class CubeFacePairing:
     @staticmethod
     def wait_for_face(robot: cozmo.robot.Robot, perceivedFaces):
         perceivedFaces.append(robot.wait_for(
-            cozmo.faces.EvtFaceAppeared).face)    # Saves an Instance of Face contained by the face appeared Event
+            cozmo.faces.EvtFaceAppeared).face)  # Saves an Instance of Face contained by the face appeared Event
         print("Name of the person: " + perceivedFaces[0].name)
         return perceivedFaces
 
@@ -47,7 +48,7 @@ class CubeFacePairing:
             if idFace == idCube:
                 print("MATCH")
                 action_lift = robot.set_lift_height(0, 5, 10, 1, True, 0)
-                action_speak = robot.say_text( Settings.tts_packet_deliverd + name, in_parallel=True,
+                action_speak = robot.say_text(Settings.tts_packet_deliverd + name, in_parallel=True,
                                               use_cozmo_voice=False)
                 action_lift.wait_for_completed()  # Raising Forks if correct
                 action_speak.wait_for_completed()
@@ -60,6 +61,7 @@ class CubeFacePairing:
             print("Face not recognized")
         return face_matching
 
+    @staticmethod
     def look_for_faces(robot: cozmo.robot.Robot):
         print("Setting Head angle for face detection..")
         robot.set_head_angle(Angle(0.9), 100).wait_for_completed()
