@@ -35,6 +35,7 @@ class Settings:
     crossing_bottom_crop = 30
     crossing_left_crop = 10
     crossing_right_crop = 10
+    crossing_correction_min_dist_to_edge = 50  # Minimum distance the correction point has to have from the frame edge to be a valid crossing
 
     lane_pattern_min_width_threshold = 6
     crossing_approach_distance = 100

@@ -2,6 +2,7 @@ from Engines.LaneTracking.CrossingType import CrossingType
 from Utils.InstanceManager import InstanceManager
 from Engines.RobotController import RobotStatusController
 from Engines.RobotController.TrackLoader import TrackLoader
+from Utils.PreviewUtils import PreviewUtils
 
 
 class Navigator:
