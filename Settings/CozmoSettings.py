@@ -19,7 +19,7 @@ class Settings:
     """ Driving settings """
     cozmo_drive_speed = 50
     cozmo_turn_speed_slow_wheel = 0
-    cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.7
+    cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.8
     cozmo_turn_speed_degrees_per_second = 180
 
     """ Live preview settings """

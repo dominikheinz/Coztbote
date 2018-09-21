@@ -90,6 +90,7 @@ class SignHandler:
         else:
             RobotStatusController.is_in_packetstation = False
             Settings.cozmo_drive_speed = 50
+            self.trigger_sign_detection_cooldown()
             print("Leaving packetstation")
 
     def retry_cube_face_pairing(self, is_matching):
