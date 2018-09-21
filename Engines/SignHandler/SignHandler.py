@@ -84,6 +84,7 @@ class SignHandler:
         self.trigger_sign_detection_cooldown()
 
     def do_packet_station_program(self):
+        
         if not RobotStatusController.is_in_packetstation:
             print("Enter packetstation")
             RobotStatusController.is_in_packetstation = True
