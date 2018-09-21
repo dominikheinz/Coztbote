@@ -60,14 +60,15 @@ class CoreEngine:
             RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(display_img, contours)
             self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
-        if not RobotStatusController.disable_autonomous_behavior:
-            crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
-            self.navigator.handle_crossing(crossing_type)
-
+        lane_correction = 0
         if not RobotStatusController.disable_autonomous_behavior:
             # Calculate lane correction based on image data
             lane_correction = self.corr_calculator.calculate_lane_correction(lane_img)
 
+            crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
+            self.navigator.handle_crossing(crossing_type)
+
+        if not RobotStatusController.disable_autonomous_behavior:
             # If correction is required let Cozmo correct
             if lane_correction is not None:
                 self.drive_controller.correct(lane_correction)

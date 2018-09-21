@@ -1,5 +1,9 @@
 class Settings:
 
+    # Environment settings
+    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
+    image_binarization_threshold = 30
+    cooldown_time_ms = 5000
     # Image Preprocessor
     processing_frequency_ms = 40
     preprocessor_binarization_threshold = 30
@@ -31,11 +35,12 @@ class Settings:
     crossing_bottom_crop = 30
     crossing_left_crop = 10
     crossing_right_crop = 10
+    crossing_correction_min_dist_to_edge = 50  # Minimum distance the correction point has to have from the frame edge to be a valid crossing
 
     lane_pattern_min_width_threshold = 6
     crossing_approach_distance = 100
 
     # Sign detection settings
-    sign_min_pixel_count = 150
-    sign_max_pixel_count = 1800
+    sign_min_pixel_count = 120
+    sign_max_pixel_count = 2000
     trigger_line_position = 185

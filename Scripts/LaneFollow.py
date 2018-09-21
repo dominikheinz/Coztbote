@@ -11,6 +11,10 @@ from Utils.PreviewUtils import PreviewUtils
 from Engines.RobotController.Navigator import Navigator
 from Utils import TimingUtils
 from Scripts import LaneFollow
+from cozmo.util import degrees, distance_mm, speed_mmps, Angle
+
+from cozmo.camera import CameraConfig
+
 import sched, time
 
 last_frame = None
@@ -72,7 +76,7 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.wait_for_all_actions_completed()
 
     # ToDo change position of set route
-    Navigator.set_route(0, 1)
+    Navigator.set_route(4, 0)
 
     # Setup camera event handler
     robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, save_last_frame)
