@@ -37,11 +37,14 @@ class PreviewUtils(metaclass=Singleton):
         if self.correction_calculator_obj.last_points is not None and \
                 not RobotStatusController.disable_autonomous_behavior:
             if self.correction_calculator_obj.last_points[0] is not None:
-                cv2.circle(image, self.correction_calculator_obj.last_points[0], radius=3, color=(255, 0, 0), thickness=5)
+                cv2.circle(image, self.correction_calculator_obj.last_points[0],
+                           radius=3, color=(255, 0, 0), thickness=5)
             if self.correction_calculator_obj.last_points[1] is not None:
-                cv2.circle(image, self.correction_calculator_obj.last_points[1], radius=3, color=(0, 255, 0), thickness=5)
+                cv2.circle(image, self.correction_calculator_obj.last_points[1],
+                           radius=3, color=(0, 255, 0), thickness=5)
             if self.correction_calculator_obj.last_points[2] is not None:
-                cv2.circle(image, self.correction_calculator_obj.last_points[2], radius=3, color=(0, 0, 255), thickness=5)
+                cv2.circle(image, self.correction_calculator_obj.last_points[2],
+                           radius=3, color=(0, 0, 255), thickness=5)
 
         # Update last frame with points
         if Settings.live_preview_screenshot_include_points:

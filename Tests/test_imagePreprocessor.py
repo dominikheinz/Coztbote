@@ -44,6 +44,7 @@ class TestImagePreprocessor(TestCase):
 
     def test_extract_lane_shape(self):
         data_in = numpy.clip(cv2.imread("Resources/Lane_Fork_Noise.png", cv2.IMREAD_GRAYSCALE), 0, 1)
-        data_out = ImagePreprocessor.extract_lane_shape(data_in)[0]
+        contours = ImagePreprocessor.find_contours(data_in)
+        data_out = ImagePreprocessor.extract_lane_shape(data_in, contours)
         expected = numpy.clip(cv2.imread("Resources/Lane_Fork_Clean.png", cv2.IMREAD_GRAYSCALE), 0, 1)
         numpy.testing.assert_array_equal(data_out, expected)

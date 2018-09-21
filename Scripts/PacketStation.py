@@ -1,7 +1,7 @@
 import cozmo
-
-from cozmo.util import degrees, distance_mm, speed_mmps, Angle
+from cozmo.util import degrees
 from Engines.ImageRecognition.CubeFacePairing import CubeFacePairing
+
 
 def packet_station(robot: cozmo.robot.Robot):
     packet_station_behavior(robot)

@@ -8,7 +8,7 @@ def packet_station_behavior(robot):
     CubeFacePairing.initialize(robot)
 
     try:
-        cube = search_for_cube(robot, 5)
+        cube = search_for_cube(robot, 30)
         print("Cube found")
         RobotStatusController.perceived_cubes.append(cube)
         print("Cube observed: " + cube.descriptive_name)
@@ -20,7 +20,6 @@ def packet_station_behavior(robot):
             pickup_action = robot.pickup_object(RobotStatusController.perceived_cubes[0], False, False,
                                                 3)
             pickup_action.wait_for_completed()
-        #robot.drive_straight(distance_mm(-100), Speed(20), True, False, 3).wait_for_completed()
         robot.turn_in_place(degrees(-90), False, 1).wait_for_completed()
 
     except IndexError:

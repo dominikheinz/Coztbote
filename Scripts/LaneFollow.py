@@ -1,6 +1,8 @@
 import cozmo
+import sched
+import time
 from pynput import keyboard
-from Engines.RobotController import DriveController, RobotStatusController
+from Engines.RobotController import DriveController
 from Engines import CoreEngine
 from Engines.LaneTracking import CorrectionCalculator
 from Engines.SignHandler import SignHandler
@@ -10,18 +12,16 @@ from Utils.InstanceManager import InstanceManager
 from Utils.PreviewUtils import PreviewUtils
 from Engines.RobotController.Navigator import Navigator
 from Utils import TimingUtils
-from Scripts import LaneFollow
-from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 
 from cozmo.camera import CameraConfig
-
-import sched, time
 
 last_frame = None
 
 
+# noinspection PyUnusedLocal
 def save_last_frame(e, image):
-    LaneFollow.last_frame = image
+    global last_frame
+    last_frame = image
 
 
 def handle_hotkeys(keycode):
@@ -41,6 +41,7 @@ def run(robot_obj: cozmo.robot.Robot):
     :param robot_obj: Reference to the robot
     :type robot_obj: cozmo.robot.Robot
     """
+    global last_frame
 
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
@@ -79,6 +80,7 @@ def run(robot_obj: cozmo.robot.Robot):
     Navigator.set_route(4, 0)
 
     # Setup camera event handler
+    # noinspection PyTypeChecker
     robot_obj.add_event_handler(cozmo.camera.EvtNewRawCameraImage, save_last_frame)
 
     # Start driving engine
@@ -87,9 +89,9 @@ def run(robot_obj: cozmo.robot.Robot):
     s = sched.scheduler(time.time, time.sleep)
 
     def run_analysis(sc):
-        if LaneFollow.last_frame is not None:
+        if last_frame is not None:
             TimingUtils.run_all_elapsed()
-            core_engine_obj.process_frame(image=LaneFollow.last_frame)
+            core_engine_obj.process_frame(image=last_frame)
         s.enter(0.05, 1, run_analysis, (sc,))
 
     s.enter(0.05, 1, run_analysis, (s,))

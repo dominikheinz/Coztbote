@@ -5,6 +5,7 @@ from Utils.InstanceManager import InstanceManager
 from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.RobotController.RobotStatusController import RobotStatusController
 from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.RobotController.Navigator import Navigator
 
 
 class CoreEngine:
@@ -66,7 +67,9 @@ class CoreEngine:
             lane_correction = self.corr_calculator.calculate_lane_correction(lane_img)
 
             crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
-            self.navigator.handle_crossing(crossing_type)
+            if crossing_type is not None:
+                # Todo check if robot can turn this way at the crossing
+                Navigator.navigate()
 
         if not RobotStatusController.disable_autonomous_behavior:
             # If correction is required let Cozmo correct
