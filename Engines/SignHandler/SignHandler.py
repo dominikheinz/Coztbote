@@ -30,7 +30,7 @@ class SignHandler:
         """
 
         if not disable_cooldown:
-            # Checks if time interval is big enough to unlock the sign_recognition_cooldown
+            # Checks if time interval is long enough to unlock the sign_recognition_cooldown
             if time_sign_seen < datetime.datetime.now() - datetime.timedelta(
                     milliseconds=self.cooldown_time) and RobotStatusController.sign_recognition_cooldown:
                 RobotStatusController.sign_recognition_cooldown = False
@@ -59,7 +59,7 @@ class SignHandler:
             self.robot.set_lift_height(0.4).wait_for_completed()
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
             is_matching = self.check_if_matching()
-            self.search_for_faces_until_matching(is_matching)
+            self.retry_cube_face_pairing(is_matching)
 
             self.reinitialize_for_lanetracking()
 
@@ -103,17 +103,23 @@ class SignHandler:
             Settings.cozmo_drive_speed = 50
             print("Leaving packetstation")
 
-    def search_for_faces_until_matching(self, is_matching):
-        while not is_matching:
+    def retry_cube_face_pairing(self, is_matching):
+        matching_counter = 0
+        while matching_counter < 5 and not is_matching:
             RobotStatusController.perceived_faces = []
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
             is_matching = self.check_if_matching()
-        action_speak = self.robot.say_text(Settings.tts_packet_deliverd + RobotStatusController.perceived_faces[0].name,
-                                           in_parallel=True, use_cozmo_voice=False)
-        action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
-                                                             in_parallel=True)
-        action_speak.wait_for_completed()
-        action_drop.wait_for_completed()
+            matching_counter += 1
+        if is_matching:
+
+            action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
+                                                                 in_parallel=False)
+            action_drop.wait_for_completed()
+        else:
+            action_speak = self.robot.say_text(
+                Settings.tts_wrong_house + RobotStatusController.perceived_faces[0].name,
+                in_parallel=False, use_cozmo_voice=False)
+            action_speak.wait_for_completed()
 
     def check_if_matching(self):
         return CubeFacePairing.compare_cube_and_face(self.robot, RobotStatusController.perceived_faces[0].name,
