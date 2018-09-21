@@ -14,12 +14,18 @@ def packet_station_behavior(robot):
         print("Cube observed: " + cube.descriptive_name)
         pickup_action = robot.pickup_object(RobotStatusController.perceived_cubes[0], False, False, 3)
         pickup_action.wait_for_completed()
+        pickup_failed_counter = 0
         while pickup_action.has_failed:
             print("picking up failed")
             robot.drive_straight(distance_mm(-50), Speed(20), True, False, 3).wait_for_completed()
+            if pickup_failed_counter % 6 == 5:
+                robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube,
+                                                           timeout=30)
+            search_for_cube(robot, 30)
             pickup_action = robot.pickup_object(RobotStatusController.perceived_cubes[0], False, False,
                                                 3)
             pickup_action.wait_for_completed()
+            pickup_failed_counter += 1
         robot.turn_in_place(degrees(-90), False, 1).wait_for_completed()
         robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE, in_parallel=False).wait_for_completed()
         robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=False).wait_for_completed()

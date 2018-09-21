@@ -42,7 +42,10 @@ class SignHandler:
 
         elif sign_count == 2:
             # Handling for two spotted signs
-            self.do_packet_station_program()
+            if RobotStatusController.is_holding_cube:
+                print("Noise detected")
+            else:
+                self.do_packet_station_program()
 
         elif sign_count == 4:
             # Handling for four spotted signs
@@ -84,8 +87,10 @@ class SignHandler:
         self.trigger_sign_detection_cooldown()
 
     def do_packet_station_program(self):
-        
+
         if not RobotStatusController.is_in_packetstation:
+            RobotStatusController.perceived_faces = []
+            RobotStatusController.perceived_cubes = []
             print("Enter packetstation")
             RobotStatusController.is_in_packetstation = True
             Settings.cozmo_drive_speed = 35
@@ -107,6 +112,7 @@ class SignHandler:
         while matching_counter < 10 and not cube_is_matching_face:
             RobotStatusController.perceived_faces = []
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
+            print(RobotStatusController.perceived_faces[0])
             cube_is_matching_face = self.check_if_matching()
             if RobotStatusController.face_recognized_but_not_matching:
                 print("recognized but not correct")
