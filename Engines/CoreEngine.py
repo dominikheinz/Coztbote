@@ -47,7 +47,8 @@ class CoreEngine:
         # Counting signs and overwrite attribute in Lane Analyzer
         if not RobotStatusController.sign_recognition_cooldown and not Settings.disable_sign_detection and not RobotStatusController.disable_autonomous_behavior:
             RobotStatusController.sign_count = ImagePreprocessor.calculate_number_of_signs(bin_img)
-            RobotStatusController.cooldown_start = datetime.datetime.now()
+            if RobotStatusController.sign_count % 2 == 0:
+                RobotStatusController.cooldown_start = datetime.datetime.now()
             self.sign_handler.react_to_signs(RobotStatusController.sign_count)
 
         # Extract lane shape and remove noise

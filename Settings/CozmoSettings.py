@@ -29,7 +29,7 @@ class Settings:
     lane_pattern_min_width_threshold = 6
 
     # Measurement settings for contures
-    min_pixel_sign = 120
+    min_pixel_sign = 150
     max_pixel_sign = 2000
     pixel_offset = 15
 

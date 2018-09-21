@@ -20,6 +20,7 @@ def packet_station_behavior(robot):
             pickup_action = robot.pickup_object(RobotStatusController.perceived_cubes[0], False, False,
                                                 3)
             pickup_action.wait_for_completed()
+        robot.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=False).wait_for_completed()
         robot.turn_in_place(degrees(-90), False, 1).wait_for_completed()
 
     except IndexError:

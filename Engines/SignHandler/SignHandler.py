@@ -51,6 +51,7 @@ class SignHandler:
         if (sign_count % 2) is 1:
             # Handling for wrong identified signs, cause there als only even amount of signs
             print("Odd_Sign_Count_Error")
+            RobotStatusController.sign_recognition_cooldown = False
 
         elif sign_count is 4:
             # Handling for two spotted signs
@@ -92,7 +93,7 @@ class SignHandler:
         if not RobotStatusController.is_in_packetstation:
             print("Enter packetstation")
             RobotStatusController.is_in_packetstation = True
-            Settings.cozmo_drive_speed = 20
+            Settings.cozmo_drive_speed = 35
             RobotStatusController.disable_autonomous_behavior = True
             self.robot.stop_all_motors()
             PacketStation.packet_station_behavior(self.robot)
@@ -103,14 +104,19 @@ class SignHandler:
             Settings.cozmo_drive_speed = 50
             print("Leaving packetstation")
 
-    def retry_cube_face_pairing(self, is_matching):
+    def retry_cube_face_pairing(self, cube_is_matching_face):
         matching_counter = 0
-        while matching_counter < 5 and not is_matching:
+        RobotStatusController.face_recognized_but_not_matching = False
+        while matching_counter < 10 and not cube_is_matching_face:
             RobotStatusController.perceived_faces = []
             RobotStatusController.perceived_faces.append(CubeFacePairing.look_for_faces(self.robot))
-            is_matching = self.check_if_matching()
+            print(RobotStatusController.perceived_faces[0].name)
+            cube_is_matching_face = self.check_if_matching()
+            if RobotStatusController.face_recognized_but_not_matching:
+                print("Recognized but not correct")
+                break
             matching_counter += 1
-        if is_matching:
+        if cube_is_matching_face:
 
             action_drop = self.robot.place_object_on_ground_here(RobotStatusController.perceived_cubes[0],
                                                                  in_parallel=False)
@@ -120,6 +126,7 @@ class SignHandler:
                 Settings.tts_wrong_house + RobotStatusController.perceived_faces[0].name,
                 in_parallel=False, use_cozmo_voice=False)
             action_speak.wait_for_completed()
+        RobotStatusController.perceived_faces = []      # Resetting faces List
 
     def check_if_matching(self):
         return CubeFacePairing.compare_cube_and_face(self.robot, RobotStatusController.perceived_faces[0].name,
