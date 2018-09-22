@@ -1,6 +1,6 @@
 import cv2
 import numpy
-from Engines.LaneTracking.CorrectionCalculator import CorrectionCalculator
+from Engines.LaneAnalyzer.CorrectionCalculator import CorrectionCalculator
 from unittest import TestCase
 
 

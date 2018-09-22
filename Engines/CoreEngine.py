@@ -3,9 +3,9 @@ import cv2
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
 from Utils.ImagePreprocessor import ImagePreprocessor
-from Engines.RobotController.RobotStatusController import RobotStatusController
-from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
-from Engines.RobotController.Navigator import Navigator
+from Controller.RobotStatusController import RobotStatusController
+from Engines.LaneAnalyzer.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.Navigation.Navigator import Navigator
 
 
 class CoreEngine:

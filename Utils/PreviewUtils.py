@@ -1,12 +1,13 @@
 import cv2
 import datetime
 import os
+import numpy
 from Settings.CozmoSettings import Settings
 from Utils.Singleton import Singleton
 from Utils.InstanceManager import InstanceManager
-from Engines.LaneTracking.CrossingType import CrossingType
-from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
-from Engines.RobotController.RobotStatusController import RobotStatusController
+from Engines.LaneAnalyzer.CrossingType import CrossingType
+from Engines.LaneAnalyzer.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Controller.RobotStatusController import RobotStatusController
 
 
 class PreviewUtils(metaclass=Singleton):
@@ -68,6 +69,29 @@ class PreviewUtils(metaclass=Singleton):
         date_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         cv2.imwrite(desktop_path + "Cozmo_" + date_string + ".png", self.last_frame)
         print("Screenshot", date_string, "saved")
+
+    @staticmethod
+    def show_preview_text(text):
+        img = numpy.zeros((240, 320), dtype=numpy.uint8)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        # get boundary of this text
+        text_size = cv2.getTextSize(text, font, 1, 2)[0]
+
+        # get coords based on boundary
+        text_x = int((img.shape[1] - text_size[0]) / 2)
+        text_y = int((img.shape[0] + text_size[1]) / 2)
+
+        # add text centered on image
+        cv2.putText(img, text, (text_x, text_y), font, 1, (255, 255, 255), 2)
+
+        # Resize
+        img = cv2.resize(img, Settings.live_preview_resolution, interpolation=cv2.INTER_NEAREST)
+
+        cv2.imshow("Live Cam", img)
+        cv2.waitKey(1)
+
 
     def apply_info_overlay(self, image):
         """

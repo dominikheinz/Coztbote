@@ -1,5 +1,5 @@
 from Utils.InstanceManager import InstanceManager
-from Engines.RobotController.TrackLoader import TrackLoader
+from Engines.Navigation.TrackLoader import TrackLoader
 
 
 class Navigator:

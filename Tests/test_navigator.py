@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Engines.RobotController.Navigator import Navigator
+from Engines.Navigation.Navigator import Navigator
 
 
 class TestNavigator(TestCase):

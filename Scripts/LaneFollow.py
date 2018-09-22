@@ -1,19 +1,23 @@
 import cozmo
 import sched
 import time
+
 from pynput import keyboard
-from Engines.RobotController import DriveController
-from Engines import CoreEngine
-from Engines.LaneTracking import CorrectionCalculator
-from Engines.SignHandler import SignHandler
-from Engines.RobotController import Navigator
-from Engines.RobotController.TrackLoader import TrackLoader
-from Utils.InstanceManager import InstanceManager
-from Utils.PreviewUtils import PreviewUtils
-from Engines.RobotController.Navigator import Navigator
-from Utils import TimingUtils
 
 from cozmo.camera import CameraConfig
+
+from Controller.DriveController import DriveController
+from Controller.BehaviorController import BehaviorController
+
+from Engines.CoreEngine import CoreEngine
+from Engines.LaneAnalyzer.CorrectionCalculator import CorrectionCalculator
+from Engines.SignHandler.SignHandler import SignHandler
+from Engines.Navigation.TrackLoader import TrackLoader
+from Engines.Navigation.Navigator import Navigator
+
+from Utils.InstanceManager import InstanceManager
+from Utils.PreviewUtils import PreviewUtils
+from Utils import TimingUtils
 
 last_frame = None
 
@@ -46,14 +50,17 @@ def run(robot_obj: cozmo.robot.Robot):
     # Create necessary instances and add them to instance manager
     InstanceManager.add_instance("Robot", robot_obj)
 
-    corr_calculator_obj = CorrectionCalculator.CorrectionCalculator()
+    corr_calculator_obj = CorrectionCalculator()
     InstanceManager.add_instance("CorrectionCalculator", corr_calculator_obj)
 
     preview_obj = PreviewUtils()
     InstanceManager.add_instance("PreviewUtils", preview_obj)
 
-    drive_obj = DriveController.DriveController()
+    drive_obj = DriveController()
     InstanceManager.add_instance("DriveController", drive_obj)
+
+    behavior_obj = BehaviorController()
+    InstanceManager.add_instance("BehaviorController", behavior_obj)
 
     trackloader_obj = TrackLoader()
     InstanceManager.add_instance("TrackLoader", trackloader_obj)
@@ -61,10 +68,10 @@ def run(robot_obj: cozmo.robot.Robot):
     navigator_obj = Navigator()
     InstanceManager.add_instance("Navigator", navigator_obj)
 
-    sign_handler_obj = SignHandler.SignHandler()
+    sign_handler_obj = SignHandler()
     InstanceManager.add_instance("SignHandler", sign_handler_obj)
 
-    core_engine_obj = CoreEngine.CoreEngine()
+    core_engine_obj = CoreEngine()
     InstanceManager.add_instance("CoreEngine", core_engine_obj)
 
     # Setup robot with presets

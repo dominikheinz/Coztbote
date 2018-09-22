@@ -1,7 +1,7 @@
 import numpy
 from Settings.CozmoSettings import Settings
 from Utils.ImagePreprocessor import ImagePreprocessor
-from Engines.LaneTracking.CrossingType import CrossingType
+from Engines.LaneAnalyzer.CrossingType import CrossingType
 from Utils.InstanceManager import InstanceManager
 
 

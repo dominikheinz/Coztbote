@@ -2,7 +2,7 @@ from cozmo import util
 from Utils import TimingUtils
 from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
-from Engines.RobotController.RobotStatusController import RobotStatusController
+from Controller.RobotStatusController import RobotStatusController
 
 
 # noinspection PyPep8
@@ -114,6 +114,13 @@ class DriveController:
         RobotStatusController.disable_autonomous_behavior = False
         self.robot.stop_all_motors()
         self.start()
+
+    def turn_around(self):
+        self.stop_autonomous_behaviour()
+        turn_action = self.robot.turn_in_place(util.degrees(180), speed=util.degrees(180))
+        turn_duration = (180 / Settings.cozmo_turn_speed_degrees_per_second) * 1000
+        TimingUtils.run_function_after_if_action_finished(turn_duration, turn_action,
+                                                          self.continue_autonomous_behaviour)
 
     def correct(self, correction_value):
         """

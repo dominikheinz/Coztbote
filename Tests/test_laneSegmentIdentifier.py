@@ -1,7 +1,7 @@
 import numpy
 import cv2
 from unittest import TestCase
-from Engines.LaneTracking.CrossingTypeIdentifier import CrossingTypeIdentifier
+from Engines.LaneAnalyzer.CrossingTypeIdentifier import CrossingTypeIdentifier
 from Utils.ImagePreprocessor import ImagePreprocessor
 
 
