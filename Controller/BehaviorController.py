@@ -1,5 +1,6 @@
 import asyncio
 
+from Engines.Navigation.Navigator import Navigator
 from Engines.SignHandler.SignHandler import SignHandler
 from Utils.InstanceManager import InstanceManager
 import cozmo
@@ -103,14 +104,15 @@ class BehaviorController:
             self.drive_controller.turn_around()
 
     def _pickup_cube_until_successful(self, perceived_cube):
-        pickup_action = self.robot.pickup_object(perceived_cube, False, False, 3)
+        pickup_action = self.robot.pickup_object(perceived_cube, use_pre_dock_pose=False, in_parallel=False, num_retries=3)
         pickup_action.wait_for_completed()
 
         while pickup_action.has_failed:
-            print("picking up failed")
+            print("Picking up failed")
             self.robot.drive_straight(distance_mm(-50), speed_mmps(20), True, False, 3).wait_for_completed()
             pickup_action = self.robot.pickup_object(perceived_cube, False, False, 3)
             pickup_action.wait_for_completed()
+            print(pickup_action)
 
     def _search_for_cube(self, timeout):
         """
@@ -211,14 +213,16 @@ class BehaviorController:
         if cube_is_matching_face:
             self.robot.place_object_on_ground_here(self.perceived_cubes[0],
                                                    in_parallel=False).wait_for_completed()
+            Navigator.set_route(Navigator.current_end, 0)
         else:
             self.say_text(Settings.tts_wrong_house + self.perceived_faces[0].name)
+            Navigator.set_route(Navigator.current_end, 1 if Navigator.current_end == 4 else 0)
         self.perceived_faces = []
 
     def _reinitialize_for_lanetracking(self):
         self.drive_controller.stop_autonomous_behaviour()
         self.go_to_lane_tracking_pose()
-        self.robot.drive_straight(distance_mm(-30), speed_mmps(20), True, False, 3).wait_for_completed()
+        self.robot.drive_straight(distance_mm(-30), speed_mmps(20), False, False, 3).wait_for_completed()
         self.robot.turn_in_place(degrees(180)).wait_for_completed()
         SignHandler.trigger_sign_detection_cooldown()
 

@@ -1,6 +1,6 @@
 class Settings:
     """ Environment settings """
-    owner_dict = {"Eric": 3, "Fabian hehe": 1, "Fabian": 1, "Gero": 2, '': -1}  # -1 as error code for unknown access
+    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Julian": 2, "Dominik": 2, '': -1}  # -1 as error code for unknown access
     image_binarization_threshold = 30
 
     """ Image Preprocessor """

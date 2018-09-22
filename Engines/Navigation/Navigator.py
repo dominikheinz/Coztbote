@@ -6,6 +6,8 @@ class Navigator:
     current_track = None
     route_turn_index = 0
     route_is_reversed = False
+    current_start = 0
+    current_end = 2
 
     @staticmethod
     def set_route(start_point, end_point):
@@ -14,6 +16,8 @@ class Navigator:
         :param end_point: The end_point of the route
         """
         Navigator.route_turn_index = 0
+        Navigator.current_start = start_point
+        Navigator.current_end = end_point
         Navigator.current_track = TrackLoader.load_track(start_point, end_point)
 
     @staticmethod

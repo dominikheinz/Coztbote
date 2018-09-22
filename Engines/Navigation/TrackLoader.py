@@ -51,7 +51,7 @@ class TrackLoader:
 
         # If route was not found throw an exception
         if route is None:
-            raise Exception("Track not found")
+            raise Exception("Track not found:", start, "to", end)
 
         # If route was found, return
         return route
