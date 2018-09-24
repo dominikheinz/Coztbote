@@ -5,7 +5,6 @@ from Utils import TimingUtils
 
 
 class SignHandler:
-
     RobotStatusController = None
     robot = None
     drive_controller = None
@@ -31,11 +30,11 @@ class SignHandler:
 
     def react_to_signs(self, sign_count):
         """
-        Tells Cozmo what to do for every sign(amount of signs)
+        Tells Cozmo what to do for every sign (amount of signs)
         :param sign_count: amount of spotted signs
         """
         if (sign_count % 2) == 1:
-            # Handling for wrong identified signs, cause there als only even amount of signs
+            # Handling for falsely identified signs, because only even amounts of signs are valid
             print("Odd_Sign_Count_Error")
 
         elif sign_count == 2:

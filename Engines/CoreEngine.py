@@ -45,7 +45,7 @@ class CoreEngine:
         # Convert image to binary
         bin_img = ImagePreprocessor.pil_rgb_to_numpy_binary(image)
 
-        # Find contoures on image
+        # Find contours on image
         contours = ImagePreprocessor.find_contours(bin_img)
 
         # Extract lane shape and remove noise

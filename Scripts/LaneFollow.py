@@ -79,8 +79,11 @@ def run(robot_obj: cozmo.robot.Robot):
     robot_obj.camera.image_stream_enabled = True
     robot_obj.camera.color_image_enabled = False
     robot_obj.set_head_light(False)
+
+    # ToDo refactor so it uses BehaviorController
     robot_obj.set_head_angle(cozmo.robot.MIN_HEAD_ANGLE + cozmo.util.degrees(4), in_parallel=True)
     robot_obj.set_lift_height(1.0, in_parallel=True)
+
     robot_obj.wait_for_all_actions_completed()
 
     # ToDo change position of set route

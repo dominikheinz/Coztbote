@@ -92,7 +92,6 @@ class PreviewUtils(metaclass=Singleton):
         cv2.imshow("Live Cam", img)
         cv2.waitKey(1)
 
-
     def apply_info_overlay(self, image):
         """
         Applies an overlay with debug info on an image
