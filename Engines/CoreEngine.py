@@ -68,7 +68,6 @@ class CoreEngine:
 
             crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
             if crossing_type is not None:
-                # Todo check if robot can turn this way at the crossing
                 Navigator.navigate()
 
         if not RobotStatusController.disable_autonomous_behavior:
