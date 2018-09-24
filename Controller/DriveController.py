@@ -21,13 +21,13 @@ class DriveController:
 
     def crossing_turn_right(self):
         """
-        Run all behaviour associated with turning right at a crossing
+        Run all behavior associated with turning right at a crossing
         """
         if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
-            self.stop_autonomous_behaviour()
+            self.stop_autonomous_behavior()
 
             # Approach the crossing
             drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
@@ -41,13 +41,13 @@ class DriveController:
 
     def crossing_turn_left(self):
         """
-        Run all behaviour associated with turning left at a crossing
+        Run all behavior associated with turning left at a crossing
         """
         if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
-            self.stop_autonomous_behaviour()
+            self.stop_autonomous_behavior()
 
             # Approach the crossing
             drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
@@ -61,13 +61,13 @@ class DriveController:
 
     def crossing_go_straight(self):
         """
-        Run all behaviour associated with going straight at a crossing
+        Run all behavior associated with going straight at a crossing
         """
         if not Settings.disable_driving:
             RobotStatusController.is_at_crossing = True
 
             # Stop all driving behavior
-            self.stop_autonomous_behaviour()
+            self.stop_autonomous_behavior()
 
             # Approach the crossing
             drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
@@ -92,23 +92,23 @@ class DriveController:
 
     def _continue_after_crossing(self):
         """
-        Restart normal behaviour after crossing has been passed
+        Restart normal behavior after crossing has been passed
         """
         RobotStatusController.is_at_crossing = False
-        self.continue_autonomous_behaviour()
+        self.continue_autonomous_behavior()
 
-    def stop_autonomous_behaviour(self):
+    def stop_autonomous_behavior(self):
         """
-        Stop all autonomous behaviour like lane correction, crossing detection and sign detection.
+        Stop all autonomous behavior like lane correction, crossing detection and sign detection.
         Cozmo will stop driving.
         """
         RobotStatusController.disable_autonomous_behavior = True
         self.robot.drive_wheel_motors(0, 0)
         self.robot.stop_all_motors()
 
-    def continue_autonomous_behaviour(self):
+    def continue_autonomous_behavior(self):
         """
-        Continue all autonomous behaviour like lane correction, crossing detection and sign detection.
+        Continue all autonomous behavior like lane correction, crossing detection and sign detection.
         Cozmo will start driving.
         """
         RobotStatusController.disable_autonomous_behavior = False
@@ -116,11 +116,11 @@ class DriveController:
         self.start()
 
     def turn_around(self):
-        self.stop_autonomous_behaviour()
+        self.stop_autonomous_behavior()
         turn_action = self.robot.turn_in_place(util.degrees(180), speed=util.degrees(180))
         turn_duration = (180 / Settings.cozmo_turn_speed_degrees_per_second) * 1000
         TimingUtils.run_function_after_if_action_finished(turn_duration, turn_action,
-                                                          self.continue_autonomous_behaviour)
+                                                          self.continue_autonomous_behavior)
 
     def correct(self, correction_value):
         """

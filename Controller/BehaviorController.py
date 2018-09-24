@@ -40,14 +40,14 @@ class BehaviorController:
     def move_head_middle(self):
         self.robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE / 4, in_parallel=True)
 
-    def run_packet_station_behaviour(self):
+    def run_packet_station_behavior(self):
 
         if not RobotStatusController.is_in_packetstation:
             print("Enter packetstation")
             PreviewUtils.show_preview_text("Picking up package")
             RobotStatusController.is_in_packetstation = True
             Settings.cozmo_drive_speed = 35
-            self.drive_controller.stop_autonomous_behaviour()
+            self.drive_controller.stop_autonomous_behavior()
             self.go_to_cube_searching_pose()
 
             self.perceived_cubes = []
@@ -71,7 +71,7 @@ class BehaviorController:
             except IndexError:
                 print("No cube found in array!")
 
-            self.drive_controller.continue_autonomous_behaviour()
+            self.drive_controller.continue_autonomous_behavior()
 
         else:
             RobotStatusController.is_in_packetstation = False
@@ -86,7 +86,7 @@ class BehaviorController:
         if RobotStatusController.is_holding_cube:
             PreviewUtils.show_preview_text("Checking house")
 
-            self.drive_controller.stop_autonomous_behaviour()
+            self.drive_controller.stop_autonomous_behavior()
             self.go_to_face_recognition_pose()
 
             self.perceived_faces.append(self._look_for_faces())
@@ -98,7 +98,7 @@ class BehaviorController:
 
             self._retry_cube_face_pairing(cube_matches_face)
             self._reinitialize_for_lanetracking()
-            self.drive_controller.continue_autonomous_behaviour()
+            self.drive_controller.continue_autonomous_behavior()
         else:
             SignHandler.trigger_sign_detection_cooldown()
             self.drive_controller.turn_around()
@@ -220,7 +220,7 @@ class BehaviorController:
         self.perceived_faces = []
 
     def _reinitialize_for_lanetracking(self):
-        self.drive_controller.stop_autonomous_behaviour()
+        self.drive_controller.stop_autonomous_behavior()
         self.go_to_lane_tracking_pose()
         self.robot.drive_straight(distance_mm(-30), speed_mmps(20), False, False, 3).wait_for_completed()
         self.robot.turn_in_place(degrees(180)).wait_for_completed()
