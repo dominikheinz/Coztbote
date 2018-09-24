@@ -52,7 +52,8 @@ class DriveController:
 
             # Approach the crossing
             drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
-                                                     util.speed_mmps(RobotStatusController.drive_speed), should_play_anim=False)
+                                                     util.speed_mmps(RobotStatusController.drive_speed),
+                                                     should_play_anim=False)
 
             # Calculate how long the approaching will take
             drive_duration = ((Settings.crossing_approach_distance / RobotStatusController.drive_speed) * 1000)
@@ -72,7 +73,8 @@ class DriveController:
 
             # Approach the crossing
             drive_action = self.robot.drive_straight(util.distance_mm(Settings.crossing_approach_distance),
-                                                     util.speed_mmps(RobotStatusController.drive_speed), should_play_anim=False)
+                                                     util.speed_mmps(RobotStatusController.drive_speed),
+                                                     should_play_anim=False)
 
             # Calculate how long the approaching will take
             drive_duration = ((Settings.crossing_approach_distance / RobotStatusController.drive_speed) * 1000)

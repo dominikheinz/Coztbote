@@ -86,7 +86,7 @@ class BehaviorController:
             self.perceived_faces = []
 
             try:
-                self._pickup_cube_until_successful(self.perceived_cubes[0])
+                self._pickup_cube_until_successful()
 
                 self.robot.turn_in_place(degrees(-90), in_parallel=False, num_retries=1).wait_for_completed()
 
