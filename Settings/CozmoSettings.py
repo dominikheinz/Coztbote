@@ -1,7 +1,8 @@
 class Settings:
     """ Environment settings """
-    owner_dict = {"Eric": 0, "Fabian hehe": 1, "Fabian": 1, "Julian": 2, "Dominik": 2, '': -1}  # -1 as error code for unknown access
-    image_binarization_threshold = 30
+    # -1 as error code for unknown access
+    owner_dict = {"Schäffer": 0, "Brechtel": 1, "Faltin": 1, "Reinhardt": 2, "Heinz": 3, "Knoblauch": 3, '': -1}
+    image_binarization_threshold = 25
 
     """ Image Preprocessor """
     processing_frequency_ms = 40
@@ -46,5 +47,6 @@ class Settings:
     trigger_line_position = 185
 
     """ All TTS """
-    tts_packet_delivered = "Paket zugestellt, schönen Tag noch."
+    tts_packet_delivered = "Paket zugestellt, schönen Tag noch, Herr "
+    tts_wrong_house_personal = "Verzeihung, bin hier wohl falsch, Herr "
     tts_wrong_house = "Verzeihung, bin hier wohl falsch."

@@ -1,3 +1,4 @@
+from Controller.RobotStatusController import RobotStatusController
 from Utils.InstanceManager import InstanceManager
 from Engines.Navigation.TrackLoader import TrackLoader
 
@@ -7,7 +8,7 @@ class Navigator:
     route_turn_index = 0
     route_is_reversed = False
     current_start = 0
-    current_end = 2
+    current_end = 0
 
     @staticmethod
     def set_route(start_point, end_point):
@@ -15,6 +16,7 @@ class Navigator:
         :param start_point: The start_point of the route
         :param end_point: The end_point of the route
         """
+        print("Set route", str(start_point), str(end_point))
         Navigator.route_turn_index = 0
         Navigator.current_start = start_point
         Navigator.current_end = end_point
@@ -61,11 +63,21 @@ class Navigator:
         # Update route turn index
         Navigator.route_turn_index += 1
 
-        # All track turns are completed, we have arrived at end point
-        # Reverse route to drive back
-        if (Navigator.route_turn_index >= len(Navigator.current_track) and not Navigator.route_is_reversed) or \
-                (Navigator.route_turn_index < 0 and Navigator.route_is_reversed):
-            Navigator.reverse_route()
+    @staticmethod
+    def set_route_first_house():
+        print("Go to first house", str(Navigator.current_end))
+        Navigator.set_route(0, 1)
 
-        # Return false if route was not yet completed
-        return False
+    @staticmethod
+    def set_route_packet_station():
+        Navigator.set_route(Navigator.current_end, 0)
+
+    @staticmethod
+    def set_route_next_house():
+        print("Go to next house", str(Navigator.current_end))
+        try:
+            Navigator.set_route(Navigator.current_end, Navigator.current_end + 1)
+        except ValueError:
+            RobotStatusController.cube_undeliverable = True
+            Navigator.current_end -= 1
+            Navigator.set_route_packet_station()

@@ -1,7 +1,7 @@
 class RobotStatusController:
 
-    # Set to true if Cozmo is in the packetstation, false otherwise
-    is_in_packetstation = False
+    # Set to true if Cozmo is in the paketstation, false otherwise
+    is_in_packet_station = False
 
     # If true sign detection is enabled, false otherwise
     scan_for_signs = False
@@ -18,3 +18,7 @@ class RobotStatusController:
 
     # Cozmo is holding a cube
     is_holding_cube = False
+    holding_cube_id = None
+
+    # Cozmo has not found a house matching with cube
+    cube_undeliverable = False

@@ -2,6 +2,8 @@ import cv2
 import datetime
 import os
 import numpy
+
+from Engines.Navigation.Navigator import Navigator
 from Settings.CozmoSettings import Settings
 from Utils.Singleton import Singleton
 from Utils.InstanceManager import InstanceManager
@@ -12,6 +14,9 @@ from Controller.RobotStatusController import RobotStatusController
 
 class PreviewUtils(metaclass=Singleton):
     last_frame = None
+
+    current_destination = 0
+    current_cube_owner = None
 
     def __init__(self):
         self.correction_calculator_obj = InstanceManager.get_instance("CorrectionCalculator")
@@ -106,7 +111,20 @@ class PreviewUtils(metaclass=Singleton):
             CrossingType.get_crossing_as_string(CrossingTypeIdentifier.last_crossing_type))
         overlay_text_signs = "Amount of Signs: " + str(RobotStatusController.sign_count)
         overlay_color_signs = 128 if RobotStatusController.enable_sign_recognition else (220, 220, 220)
+        overlay_text_destination = "Destination: " + ("Packetstation" if Navigator.current_end == 0
+                                                      else "House " + str(Navigator.current_end))
+        if not self.current_destination == Navigator.current_end:
+            self.current_cube_owner = ""
+            for owner_name in Settings.owner_dict:
+                if Settings.owner_dict[owner_name] == RobotStatusController.holding_cube_id:
+                    if not self.current_cube_owner == "":
+                        self.current_cube_owner += ", "
+                    self.current_cube_owner += "Herr " + owner_name
+            self.current_destination = Navigator.current_end
+        overlay_text_cube_owner = "Cube Owner: " + str(self.current_cube_owner)
         cv2.putText(image, overlay_text_correction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_voltage, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
         cv2.putText(image, overlay_text_signs, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, overlay_color_signs, 2)
         cv2.putText(image, overlay_lane_type, (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        cv2.putText(image, overlay_text_destination, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)
+        cv2.putText(image, overlay_text_cube_owner, (10, 180), cv2.FONT_HERSHEY_SIMPLEX, 0.7, 128, 2)

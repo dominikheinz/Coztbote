@@ -42,12 +42,18 @@ class BehaviorController:
 
     def run_packet_station_behavior(self):
 
-        if not RobotStatusController.is_in_packetstation:
+        if not RobotStatusController.is_in_packet_station:
             print("Enter packetstation")
             PreviewUtils.show_preview_text("Picking up package")
-            RobotStatusController.is_in_packetstation = True
+            RobotStatusController.is_in_packet_station = True
             Settings.cozmo_drive_speed = 35
             self.drive_controller.stop_autonomous_behavior()
+
+            if RobotStatusController.cube_undeliverable:
+                self.say_text("Ich konnte den Empfänger leider nicht finden.")
+                self._place_undeliverable_package()
+                RobotStatusController.is_holding_cube = False
+
             self.go_to_cube_searching_pose()
 
             self.perceived_cubes = []
@@ -59,27 +65,32 @@ class BehaviorController:
 
                 self._pickup_cube_until_successful(self.perceived_cubes[0])
 
-                self.robot.turn_in_place(degrees(-90), False, 1).wait_for_completed()
+                self.robot.turn_in_place(degrees(-90), in_parallel=False, num_retries=1).wait_for_completed()
 
                 self.move_head_up()
                 self.robot.wait_for_all_actions_completed()
                 self.move_head_down()
                 self.robot.wait_for_all_actions_completed()
 
-                self.robot.drive_straight(distance_mm(50), speed_mmps(20), False, False, 3).wait_for_completed()
+                RobotStatusController.holding_cube_id = self.perceived_cubes[0].object_id
+
+                self.robot.drive_straight(distance_mm(50), speed_mmps(20), should_play_anim=False,
+                                          in_parallel=False, num_retries=3).wait_for_completed()
 
             except IndexError:
                 print("No cube found in array!")
 
+            RobotStatusController.cube_undeliverable = False
+            Navigator.set_route_first_house()
+
             self.drive_controller.continue_autonomous_behavior()
 
         else:
-            RobotStatusController.is_in_packetstation = False
+            RobotStatusController.is_in_packet_station = False
             Settings.cozmo_drive_speed = 50
             RobotStatusController.is_holding_cube = True
             SignHandler.trigger_sign_detection_cooldown()
             print("Leaving packetstation")
-            RobotStatusController.is_holding_cube = True
 
     def run_face_matching_behavior(self):
 
@@ -89,14 +100,7 @@ class BehaviorController:
             self.drive_controller.stop_autonomous_behavior()
             self.go_to_face_recognition_pose()
 
-            self.perceived_faces.append(self._look_for_faces())
-
-            owner_id = Settings.owner_dict[self.perceived_faces[0].name]
-            cube_matches_face = self._is_cube_matching_face(self.perceived_faces[0].name, owner_id,
-                                                            self.perceived_cubes[0].object_id,
-                                                            self.perceived_faces[0])
-
-            self._retry_cube_face_pairing(cube_matches_face)
+            self._cube_face_pairing()
             self._reinitialize_for_lanetracking()
             self.drive_controller.continue_autonomous_behavior()
         else:
@@ -104,15 +108,34 @@ class BehaviorController:
             self.drive_controller.turn_around()
 
     def _pickup_cube_until_successful(self, perceived_cube):
-        pickup_action = self.robot.pickup_object(perceived_cube, use_pre_dock_pose=False, in_parallel=False, num_retries=3)
+        pickup_action = self.robot.pickup_object(perceived_cube, use_pre_dock_pose=False, in_parallel=False,
+                                                 num_retries=3)
         pickup_action.wait_for_completed()
 
         while pickup_action.has_failed:
             print("Picking up failed")
-            self.robot.drive_straight(distance_mm(-50), speed_mmps(20), True, False, 3).wait_for_completed()
+            self.robot.drive_straight(distance_mm(-50), speed_mmps(20), should_play_anim=False,
+                                      in_parallel=False, num_retries=3).wait_for_completed()
+            self.perceived_cubes = []
+            self.perceived_cubes.append(self._search_for_cube(timeout=30))
             pickup_action = self.robot.pickup_object(perceived_cube, False, False, 3)
             pickup_action.wait_for_completed()
             print(pickup_action)
+
+    def _place_undeliverable_package(self):
+        self.robot.drive_straight(distance_mm(50), speed_mmps(Settings.cozmo_drive_speed), should_play_anim=True,
+                                  in_parallel=False, num_retries=3).wait_for_completed()
+        self.robot.turn_in_place(degrees(-90), in_parallel=False, num_retries=1).wait_for_completed()
+        self.robot.drive_straight(distance_mm(100), speed_mmps(Settings.cozmo_drive_speed), should_play_anim=True,
+                                  in_parallel=False, num_retries=3).wait_for_completed()
+
+        # Place cube on ground
+        self.robot.place_object_on_ground_here(self.perceived_cubes[0],
+                                               in_parallel=False).wait_for_completed()
+
+        self.robot.drive_straight(distance_mm(-100), speed_mmps(Settings.cozmo_drive_speed), should_play_anim=True,
+                                  in_parallel=False, num_retries=3).wait_for_completed()
+        self.robot.turn_in_place(degrees(170), in_parallel=False, num_retries=1).wait_for_completed()
 
     def _search_for_cube(self, timeout):
         """
@@ -193,17 +216,22 @@ class BehaviorController:
         print("Value of face var:", face)
         return face
 
-    def _retry_cube_face_pairing(self, cube_is_matching_face):
+    def _cube_face_pairing(self):
         matching_counter = 0
+        cube_is_matching_face = False
         self.face_recognized_but_not_matching = False
         while matching_counter < 10 and not cube_is_matching_face:
             self.perceived_faces = []
             self.perceived_faces.append(self._look_for_faces())
 
-            owner_id = Settings.owner_dict[self.perceived_faces[0].name]
-            cube_is_matching_face = self._is_cube_matching_face(self.perceived_faces[0].name, owner_id,
-                                                                self.perceived_cubes[0].object_id,
-                                                                self.perceived_faces[0])
+            try:
+                owner_id = Settings.owner_dict[self.perceived_faces[0].name]
+                cube_is_matching_face = self._is_cube_matching_face(self.perceived_faces[0].name, owner_id,
+                                                                    self.perceived_cubes[0].object_id,
+                                                                    self.perceived_faces[0])
+            except AttributeError as e:
+                print("Owner error:", self.perceived_faces)
+                print(e)
 
             if self.face_recognized_but_not_matching:
                 break
@@ -213,10 +241,14 @@ class BehaviorController:
         if cube_is_matching_face:
             self.robot.place_object_on_ground_here(self.perceived_cubes[0],
                                                    in_parallel=False).wait_for_completed()
-            Navigator.set_route(Navigator.current_end, 0)
+            RobotStatusController.is_holding_cube = False
+            Navigator.set_route_packet_station()
         else:
-            self.say_text(Settings.tts_wrong_house + self.perceived_faces[0].name)
-            Navigator.set_route(Navigator.current_end, 1 if Navigator.current_end == 4 else 0)
+            if self.face_recognized_but_not_matching:
+                self.say_text(Settings.tts_wrong_house_personal + self.perceived_faces[0].name)
+            else:
+                self.say_text(Settings.tts_wrong_house)
+            Navigator.set_route_next_house()
         self.perceived_faces = []
 
     def _reinitialize_for_lanetracking(self):
@@ -225,4 +257,3 @@ class BehaviorController:
         self.robot.drive_straight(distance_mm(-30), speed_mmps(20), False, False, 3).wait_for_completed()
         self.robot.turn_in_place(degrees(180)).wait_for_completed()
         SignHandler.trigger_sign_detection_cooldown()
-

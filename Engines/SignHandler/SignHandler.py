@@ -39,7 +39,7 @@ class SignHandler:
 
         elif sign_count == 2:
             # Handling for two spotted signs
-            if RobotStatusController.is_holding_cube:
+            if RobotStatusController.is_holding_cube and not RobotStatusController.cube_undeliverable:
                 print("Noise detected")
             else:
                 self.behavior_controller.run_packet_station_behavior()
