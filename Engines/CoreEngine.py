@@ -66,9 +66,10 @@ class CoreEngine:
             # Calculate lane correction based on image data
             lane_correction = self.corr_calculator.calculate_lane_correction(lane_img)
 
-            crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
-            if crossing_type is not None:
-                Navigator.navigate()
+            if not RobotStatusController.is_in_packet_station:
+                crossing_type = CrossingTypeIdentifier.analyze_frame(lane_img)
+                if crossing_type is not None:
+                    Navigator.navigate()
 
         if not RobotStatusController.disable_autonomous_behavior:
             # If correction is required let Cozmo correct
