@@ -46,5 +46,5 @@ class Settings:
     trigger_line_position = 185
 
     """ All TTS """
-    tts_packet_deliverd = "Paket zugestellt, schönen Tag noch "
-    tts_wrong_house = "Verzeihung, bin hier wohl falsch"
+    tts_packet_delivered = "Paket zugestellt, schönen Tag noch."
+    tts_wrong_house = "Verzeihung, bin hier wohl falsch."
