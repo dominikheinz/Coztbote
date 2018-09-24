@@ -1,8 +1,8 @@
 import numpy
 from Settings.CozmoSettings import Settings
+from Utils.InstanceManager import InstanceManager
 from Utils.ImagePreprocessor import ImagePreprocessor
 from Engines.LaneAnalyzer.CrossingType import CrossingType
-from Utils.InstanceManager import InstanceManager
 
 
 class CrossingTypeIdentifier:

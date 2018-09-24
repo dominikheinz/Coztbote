@@ -1,7 +1,7 @@
-from Settings.CozmoSettings import Settings
-from Utils.InstanceManager import InstanceManager
-from Controller.RobotStatusController import RobotStatusController
 from Utils import TimingUtils
+from Utils.InstanceManager import InstanceManager
+from Settings.CozmoSettings import Settings
+from Controller.RobotStatusController import RobotStatusController
 
 
 class SignHandler:

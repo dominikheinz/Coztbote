@@ -1,7 +1,7 @@
 from cozmo import util
 from Utils import TimingUtils
-from Settings.CozmoSettings import Settings
 from Utils.InstanceManager import InstanceManager
+from Settings.CozmoSettings import Settings
 from Controller.RobotStatusController import RobotStatusController
 
 

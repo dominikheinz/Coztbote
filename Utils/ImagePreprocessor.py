@@ -1,7 +1,7 @@
 import numpy
 import cv2
-from Settings.CozmoSettings import Settings
 from itertools import groupby
+from Settings.CozmoSettings import Settings
 
 
 class ImagePreprocessor:

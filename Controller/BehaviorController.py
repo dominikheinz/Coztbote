@@ -1,13 +1,13 @@
 import asyncio
+import cozmo
 
+from cozmo.util import degrees, distance_mm, speed_mmps, Angle
 from Engines.Navigation.Navigator import Navigator
 from Engines.SignHandler.SignHandler import SignHandler
 from Utils.InstanceManager import InstanceManager
-import cozmo
-from Settings.CozmoSettings import Settings
-from cozmo.util import degrees, distance_mm, speed_mmps, Angle
-from Controller.RobotStatusController import RobotStatusController
 from Utils.PreviewUtils import PreviewUtils
+from Settings.CozmoSettings import Settings
+from Controller.RobotStatusController import RobotStatusController
 
 
 class BehaviorController:
