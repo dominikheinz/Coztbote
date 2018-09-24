@@ -42,6 +42,3 @@ class TestLaneSegmentIdentifier(TestCase):
 
     def test_is_crossing(self):
         self.check_lane_types(CrossingTypeIdentifier.is_crossing, 3)
-
-    def test_is_t_crossing(self):
-        self.check_lane_types(CrossingTypeIdentifier.is_t_crossing, 2)
