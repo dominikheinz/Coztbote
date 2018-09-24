@@ -12,7 +12,12 @@ class CrossingTypeIdentifier:
 
     @staticmethod
     def analyze_frame(image):
-
+        """
+        Analyzes a frame to check it it contains a crossing. A crossing type needs to stay unchanged for 2 frames
+        for it to be confirmed as valid and returned.
+        :param image: The image as captured by Cozmos camera
+        :return: The last confirmed crossing type
+        """
         correction_calculator_obj = InstanceManager.get_instance("CorrectionCalculator")
 
         # If lane correction is too much the crossing may be invalid and should be discarded
@@ -34,7 +39,7 @@ class CrossingTypeIdentifier:
         row_patterns = CrossingTypeIdentifier.filter_invalid_row_pattern(row_patterns)
 
         # Set last crossing type for preview window
-        crossing_type = CrossingTypeIdentifier.row_patterns_to_lane_type(row_patterns)
+        crossing_type = CrossingTypeIdentifier.row_patterns_to_crossing_type(row_patterns)
 
         # Confirm crossing type if at least on two frames
         if crossing_type == CrossingTypeIdentifier.last_crossing_type:
@@ -44,12 +49,15 @@ class CrossingTypeIdentifier:
 
         CrossingTypeIdentifier.last_crossing_type = crossing_type
 
-        # Determine lane type based on pixel rows
         return CrossingTypeIdentifier.last_confirmed_crossing_type
 
     @staticmethod
-    def row_patterns_to_lane_type(rows):
-
+    def row_patterns_to_crossing_type(rows):
+        """
+        Convert a row pattern array to a crossing type
+        :param rows:
+        :return:
+        """
         # Determine lane type
         if CrossingTypeIdentifier.is_t_crossing(rows):
             return CrossingType.T_Crossing

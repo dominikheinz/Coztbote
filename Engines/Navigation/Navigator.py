@@ -13,6 +13,7 @@ class Navigator:
     @staticmethod
     def set_route(start_point, end_point):
         """
+        Sets the current route
         :param start_point: The start_point of the route
         :param end_point: The end_point of the route
         """
@@ -24,6 +25,9 @@ class Navigator:
 
     @staticmethod
     def reverse_route():
+        """
+        Reverse the currently loaded route
+        """
         reversed_route = Navigator.current_track
 
         reversed_route.reverse()
@@ -41,7 +45,6 @@ class Navigator:
     def navigate():
         """
         Navigates the robot from start to endpoint
-        :return: True if robot has arrived at endpoint, false otherwise
         """
 
         drive_controller = InstanceManager.get_instance("DriveController")
@@ -65,16 +68,23 @@ class Navigator:
 
     @staticmethod
     def set_route_first_house():
-        print("Go to first house", str(Navigator.current_end))
+        """
+        Sets the route from the packing station to the first house
+        """
         Navigator.set_route(0, 1)
 
     @staticmethod
     def set_route_packet_station():
+        """
+        Set the route from the current house to the packet station
+        """
         Navigator.set_route(Navigator.current_end, 0)
 
     @staticmethod
     def set_route_next_house():
-        print("Go to next house", str(Navigator.current_end))
+        """
+        Sets the route from the current house to the next house
+        """
         try:
             Navigator.set_route(Navigator.current_end, Navigator.current_end + 1)
         except ValueError:

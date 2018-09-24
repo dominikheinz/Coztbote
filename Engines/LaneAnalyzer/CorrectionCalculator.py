@@ -15,8 +15,7 @@ class CorrectionCalculator:
         """
         Calculates a correction value between [-1..1], negative values meaning correct to the left,
         positive values to the right. The closer the value is to 0, the slighter the correction needs to be.
-        :param image:
-        :return:
+        :param image: An image as captured by Cozmos camera
         """
 
         x_row_1, x_row_2, x_row_3 = self.calculate_lane_correction_points(image)

@@ -11,9 +11,6 @@ class SignHandler:
     behavior_controller = None
 
     def __init__(self):
-        """
-        Creating an instance of robot and getting the cooldown_time_ms from Settings.py
-        """
         self.robot = InstanceManager.get_instance("Robot")
         self.correction_calculator = InstanceManager.get_instance("CorrectionCalculator")
         self.drive_controller = InstanceManager.get_instance("DriveController")
@@ -21,6 +18,9 @@ class SignHandler:
 
     @staticmethod
     def trigger_sign_detection_cooldown():
+        """
+        Triggers the sign detection cooldown so signs won't be detected for a short while
+        """
         RobotStatusController.enable_sign_recognition = False
 
         def restart_detection():
@@ -35,12 +35,13 @@ class SignHandler:
         """
         if (sign_count % 2) == 1:
             # Handling for falsely identified signs, because only even amounts of signs are valid
-            print("Odd_Sign_Count_Error")
+            pass
 
         elif sign_count == 2:
             # Handling for two spotted signs
             if RobotStatusController.is_holding_cube and not RobotStatusController.cube_undeliverable:
-                print("Noise detected")
+                # Cozmo has a cube and hasn't tried delivering it to all houses, so it is probably just noise
+                pass
             else:
                 self.behavior_controller.run_packet_station_behavior()
 

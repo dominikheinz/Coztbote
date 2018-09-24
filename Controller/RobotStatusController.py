@@ -1,6 +1,12 @@
+from Settings.CozmoSettings import Settings
+
+
 class RobotStatusController:
 
-    # Set to true if Cozmo is in the paketstation, false otherwise
+    # How fast cozmo should currently drive
+    drive_speed = Settings.cozmo_drive_speed
+
+    # Set to true if Cozmo is in the packet station, false otherwise
     is_in_packet_station = False
 
     # If true sign detection is enabled, false otherwise

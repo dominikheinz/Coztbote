@@ -77,6 +77,10 @@ class PreviewUtils(metaclass=Singleton):
 
     @staticmethod
     def show_preview_text(text):
+        """
+        Shows a text in the live preview window
+        :param text:  The text to show
+        """
         img = numpy.zeros((240, 320), dtype=numpy.uint8)
 
         font = cv2.FONT_HERSHEY_SIMPLEX

@@ -1,4 +1,5 @@
 class TrackLoader:
+    # 0 = packet station, 1 - 5 = houses
     street_map = {
         (0, 1): ['R'],
         (0, 2): ['S'],

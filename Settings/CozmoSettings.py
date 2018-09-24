@@ -19,6 +19,7 @@ class Settings:
 
     """ Driving settings """
     cozmo_drive_speed = 50
+    cozmo_packet_station_drive_speed = 35
     cozmo_turn_speed_slow_wheel = 0
     cozmo_turn_speed_fast_wheel = cozmo_drive_speed * 0.8
     cozmo_turn_speed_degrees_per_second = 180
@@ -27,8 +28,8 @@ class Settings:
     show_live_preview = True
     live_preview_resolution = (1080, 720)
     live_preview_screenshot_include_points = False
-    live_preview_show_signs = True
-    live_preview_show_crossing_detection_region = True
+    live_preview_show_signs = False
+    live_preview_show_crossing_detection_region = False
 
     """ Crossing settings """
     crossing_top_crop = 90
@@ -36,7 +37,7 @@ class Settings:
     crossing_left_crop = 10
     crossing_right_crop = 10
     # Minimum distance the correction point has to have from the frame edge to be a valid crossing
-    crossing_correction_min_dist_to_edge = 50
+    crossing_correction_min_dist_to_edge = 60
 
     lane_pattern_min_width_threshold = 6
     crossing_approach_distance = 100

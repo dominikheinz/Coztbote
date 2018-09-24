@@ -24,6 +24,11 @@ last_frame = None
 
 # noinspection PyUnusedLocal
 def save_last_frame(e, image):
+    """
+    Saves a frame as the last frame
+    :param e: The camera frame event
+    :param image: The image captured
+    """
     global last_frame
     last_frame = image
 
@@ -93,6 +98,7 @@ def run(robot_obj: cozmo.robot.Robot):
 
     s = sched.scheduler(time.time, time.sleep)
 
+    # runs the frame analysis in the specified frequency
     def run_analysis(sc):
         if last_frame is not None:
             TimingUtils.run_all_elapsed()
