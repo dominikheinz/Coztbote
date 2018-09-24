@@ -91,7 +91,7 @@ class ImagePreprocessor:
     def find_contours(image):
         """
         Gets an array of contours, each as a vector of points.
-        :param image: Image containing the contures to find
+        :param image: Image containing the contours to find
         :return:
         """
         # Invert the image
@@ -100,7 +100,7 @@ class ImagePreprocessor:
         # Calculate all detected contours
         contours_raw = cv2.findContours(inverted_img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Use array of contures only
+        # Use array of contours only
         contours = contours_raw[1]
 
         return contours

@@ -38,8 +38,8 @@ class CoreEngine:
 
     def process_frame(self, image):
         """
-        Processes the frame captured by Cozmos camera
-        :param image: Current frame from Cozmos feed
+        Processes the frame captured by Cozmo's camera
+        :param image: Current frame from Cozmo's feed
         :type image: PIL image
         """
         # Convert image to binary

@@ -54,7 +54,7 @@ class BehaviorController:
             self.perceived_faces = []
 
             try:
-                self.perceived_cubes.append(self._search_for_cube(timeout=30) )
+                self.perceived_cubes.append(self._search_for_cube(timeout=30))
                 print("Cube found:", self.perceived_cubes[0].descriptive_name)
 
                 self._pickup_cube_until_successful(self.perceived_cubes[0])
@@ -167,7 +167,7 @@ class BehaviorController:
             if face_id == cube_id:
                 print("Face matches cube!")
                 self.move_lift_down()
-                self.say_text(Settings.tts_packet_deliverd + name)
+                self.say_text(Settings.tts_packet_delivered + name)
                 self.robot.wait_for_all_actions_completed()
 
                 face_matching = True
@@ -190,7 +190,7 @@ class BehaviorController:
                 print(asyncio.TimeoutError)
                 face = []
                 break
-        print("Value of face var:",face)
+        print("Value of face var:", face)
         return face
 
     def _retry_cube_face_pairing(self, cube_is_matching_face):

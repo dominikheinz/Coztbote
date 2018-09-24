@@ -41,7 +41,7 @@ class CorrectionCalculator:
     def calculate_lane_correction_points(self, image):
         """
         Calculates three points which are on the lane
-        :param image: Frame from Cozmos feed as numpy array
+        :param image: Frame from Cozmo's feed as numpy array
         :return: Three points on the lane
         :rtype: int, int, int
         """

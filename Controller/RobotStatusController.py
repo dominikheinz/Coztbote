@@ -1,6 +1,6 @@
 class RobotStatusController:
 
-    # Set to true if Cozmo is in the paketstation, false otherwise
+    # Set to true if Cozmo is in the packetstation, false otherwise
     is_in_packetstation = False
 
     # If true sign detection is enabled, false otherwise
