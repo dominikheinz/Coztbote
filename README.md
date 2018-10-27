@@ -1,10 +1,14 @@
 # Coztbote
 
+## Overview
+
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 <img align="right" src="https://i.imgur.com/oyCr3nq.png" width="200">
 
 _Coztbote_ was a university project over a period of 3 weeks. The main purpouse was to deepen the students knowledge about robotics and graphical data analysis. Using Anki's robot _Cozmo_ we simulated a logistics system which involved autonomous driving and face detection techniques. In this project _Cozmo_ plays the role of the mailman delivering packages in a city. The packages are represented by the cubes that come with the _Cozmo_ robot. The lane system was build from white cardbard where as the lane tracks are made from black tape.
 
-# Features
+## Features
 - Autonomous driving on a lane system by analyzing live camera data
   - Support for detecting crosses and curves in the road network
   - Scanning lane for signs to execute specified tasks (stop, turn, deliver ..)
@@ -15,16 +19,16 @@ _Coztbote_ was a university project over a period of 3 weeks. The main purpouse 
 - Scalability
   - The project can be scaled for large lane systems with many crossings and endpoints
 
-# Algorithms
+## Algorithms
 
-## Lane Keeping
+### Lane Keeping
 
 To ensure that the Cozmo robot can follow a line of any shape a correction value is computed. This is done by using the live image data from the _Cozmo_ camera. A still image is taken, binarized and segmented. The upper 1/3 of the frame only contains parts of the lane that are more then 20cm away from _Cozmo_ and therefore not relevant for the correction calculation. The lower 2/3 of the image are splitted into three equally sized sections. For each section the geographic center of the black pixels (the lane) is calculated. This gives us three points in total, one for each section. These points are used for the navigation of the robot. These navigation points are used hierarchically, meaning the point in the upper section is used first. In case of light reflections in the upper section the navigation points might not be calculated and the next navigation point one section down is used instead. This ensures a more reliable, less error-prone navigation. The actual correction to the left/right is calculated based on the distance from the navigation point to the section center.
 
 ![](https://i.imgur.com/xgrFgMJ.png)
 ![](https://i.imgur.com/cEcTJhn.gif)
 
-## Crossing Detection
+### Crossing Detection
 
 To detect crossings in lane system, the camera frame is first cropped to a smaller section and then identified using pattern matching. The cropped section consists of less pixels an is therefore faster and in the processing stage. The crossing detection goes as follows:
 
@@ -42,7 +46,7 @@ These are all possible crossing patterns that _Cozmo_ can handle:
 
 ![](https://i.imgur.com/j9rSg5y.png")
 
-## Lane-Sign Detection
+### Lane-Sign Detection
 
 To trigger additional behaviours during navigation _"street signs"_ were added. Black squares are placed symmetrical to the left and the right of the lane. Using OpenCV's conture detection these signs are detected and their size gets measured.
 
@@ -55,10 +59,10 @@ One the signs reach a triggerline (orange) on the lower section of the frame, th
 - `4` Signs, `2` per Side: Start face matching process
 - `6` Signs, `3` per Side: Cozmo turns 180 degrees
 
-# Installation
+## Installation
 
-## Requirements
-### Requiremented Hardware
+### Requirements
+#### Requiremented Hardware
 
 The following hardware is required to setup this project:
 
@@ -67,20 +71,20 @@ The following hardware is required to setup this project:
   - USB Connection cable
 - Computer running Windows or Linux
  
-### Required Software
+#### Required Software
 
 The following software is required to run this project:
 
 - [Python3](https://www.python.org/) to run the main project
 - [pipenv](https://pipenv.readthedocs.io/en/latest/) for the dependency installation. Alternativly `pip` can be used too.
 
-### Required Materials
+#### Required Materials
 
 A test track with white ground and black lines for the lanes. It is recommended to have white barriers around the track to reduce the change of noise detections. During the project assignment the following track was used:
 
 <img align="center" src="https://i.imgur.com/tCibXdc.jpg" width="500">
 
-## Installation Procedure
+### Installation Procedure
 
 To install and run this project on either windows or linx:
 1. Clone repository
@@ -90,6 +94,6 @@ To install and run this project on either windows or linx:
 5. Enable SDK Mode in the Cozmo App
 6. Place Cozmo on the test track and start the project on your computer by executing `python core.py`
 
-# License
+## License
 
 This project is licensed under the [GNU Lesser General Public License v3.0](https://github.com/dominikheinz/Coztbote/blob/master/LICENSE).
