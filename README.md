@@ -1,7 +1,7 @@
 # Coztbote
 
-
 <img align="right" src="https://i.imgur.com/oyCr3nq.png" width="200">
+
 _Coztbote_ was a university project over a period of 3 weeks. The main purpouse was to deepen the students knowledge about robotics and graphical data analysis. Using Anki's robot _Cozmo_ we simulated a logistics system which involved autonomous driving and face detection techniques. In this project _Cozmo_ plays the role of the mailman delivering packages in a city.
 
 
