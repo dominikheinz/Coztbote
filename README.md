@@ -1,9 +1,3 @@
-<script src="//yihui.name/js/math-code.js"></script>
-<!-- Just one possible MathJax CDN below. You may use others. -->
-<script async
-  src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
 # Coztbote
 
 <img align="right" src="https://i.imgur.com/oyCr3nq.png" width="200">
@@ -25,7 +19,15 @@ _Coztbote_ was a university project over a period of 3 weeks. The main purpouse 
 
 ## Lane Keeping
 
-To ensure that the Cozmo robot can follow a line of any shape a correction value is computed. This is done by using the live image data from the _Cozmo_ camera. A still image is taken, binarized and segmented. The lower `$\frac{2}{3}$` of the image
+
+<img align="right" src="https://i.imgur.com/xgrFgMJ.png">
+
+<img align="right" src="https://i.imgur.com/cEcTJhn.gif">
+
+To ensure that the Cozmo robot can follow a line of any shape a correction value is computed. This is done by using the live image data from the _Cozmo_ camera. A still image is taken, binarized and segmented. The upper 1/3 of the frame only contains parts of the lane that are more then 20cm away from _Cozmo_ and therefore not relevant for the correction calculation. 
+The lower 2/3 of the image are splitted into three equally sized sections. For each section the geographic center of the black pixels (the lane) is calculated. This gives us three points in total, one for each section. These points are used for the navigation of the robot.
+
+
 
 # Installation
 
